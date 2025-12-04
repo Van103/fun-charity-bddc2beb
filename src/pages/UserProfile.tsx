@@ -10,11 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { PostsTab } from "@/components/profile/PostsTab";
+import { PhotosTab } from "@/components/profile/PhotosTab";
+import { FriendsTab } from "@/components/profile/FriendsTab";
 import {
-  Camera,
   Edit3,
   Users,
-  Heart,
   Activity,
   Image as ImageIcon,
   FileText,
@@ -34,24 +35,37 @@ interface Profile {
   is_verified: boolean | null;
 }
 
+interface Stats {
+  followers: number;
+  following: number;
+  friends: number;
+  posts: number;
+}
+
 export default function UserProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [stats, setStats] = useState<Stats>({
+    followers: 0,
+    following: 0,
+    friends: 0,
+    posts: 0,
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Mock stats (would come from DB in real app)
-  const stats = {
-    followers: 1248,
-    following: 856,
-    friends: 342,
-  };
 
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (profile?.user_id) {
+      fetchStats();
+    }
+  }, [profile?.user_id]);
 
   const fetchProfile = async () => {
     try {
@@ -61,6 +75,8 @@ export default function UserProfile() {
         navigate("/auth");
         return;
       }
+
+      setCurrentUserId(user.id);
 
       const { data, error } = await supabase
         .from("profiles")
@@ -81,6 +97,40 @@ export default function UserProfile() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    if (!profile?.user_id) return;
+
+    try {
+      // Count posts
+      const { count: postsCount } = await supabase
+        .from("posts")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", profile.user_id);
+
+      // Count friends (accepted friendships)
+      const { count: sentCount } = await supabase
+        .from("friendships")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", profile.user_id)
+        .eq("status", "accepted");
+
+      const { count: receivedCount } = await supabase
+        .from("friendships")
+        .select("*", { count: "exact", head: true })
+        .eq("friend_id", profile.user_id)
+        .eq("status", "accepted");
+
+      setStats({
+        followers: 0, // Would need followers table
+        following: 0, // Would need following table  
+        friends: (sentCount || 0) + (receivedCount || 0),
+        posts: postsCount || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
     }
   };
 
@@ -250,33 +300,15 @@ export default function UserProfile() {
             </TabsList>
 
             <TabsContent value="posts" className="mt-6">
-              <div className="glass-card p-8 text-center">
-                <FileText className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Chưa có bài viết</h3>
-                <p className="text-muted-foreground">
-                  Các bài viết và chia sẻ của bạn sẽ xuất hiện ở đây
-                </p>
-              </div>
+              <PostsTab profile={profile} currentUserId={currentUserId} />
             </TabsContent>
 
             <TabsContent value="photos" className="mt-6">
-              <div className="glass-card p-8 text-center">
-                <ImageIcon className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Chưa có hình ảnh</h3>
-                <p className="text-muted-foreground">
-                  Các hình ảnh bạn đăng tải sẽ xuất hiện ở đây
-                </p>
-              </div>
+              <PhotosTab userId={profile?.user_id || null} />
             </TabsContent>
 
             <TabsContent value="friends" className="mt-6">
-              <div className="glass-card p-8 text-center">
-                <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Chưa có bạn bè</h3>
-                <p className="text-muted-foreground">
-                  Kết nối với cộng đồng để mở rộng mạng lưới của bạn
-                </p>
-              </div>
+              <FriendsTab userId={profile?.user_id || null} currentUserId={currentUserId} />
             </TabsContent>
 
             <TabsContent value="activity" className="mt-6">
