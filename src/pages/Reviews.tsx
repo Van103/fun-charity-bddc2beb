@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Star,
   ThumbsUp,
@@ -18,7 +20,25 @@ import {
   Send,
 } from "lucide-react";
 
-const reviews = [
+interface Review {
+  id: number;
+  campaign: string;
+  reviewer: {
+    name: string;
+    avatar: string;
+    reputation: number;
+    verified: boolean;
+  };
+  rating: number;
+  content: string;
+  date: string;
+  likes: number;
+  comments: number;
+  reward: string;
+  helpful: boolean;
+}
+
+const initialReviews: Review[] = [
   {
     id: 1,
     campaign: "Nước Sạch Cho Vùng Nông Thôn Việt Nam",
@@ -75,6 +95,76 @@ const reviews = [
 const Reviews = () => {
   const [newReview, setNewReview] = useState("");
   const [selectedRating, setSelectedRating] = useState(0);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [currentUser, setCurrentUser] = useState<{name: string; avatar: string} | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, avatar_url")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        
+        setCurrentUser({
+          name: profile?.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || "Người dùng",
+          avatar: profile?.avatar_url || ""
+        });
+      }
+    };
+    fetchUser();
+  }, []);
+
+  const handleSubmitReview = () => {
+    if (!newReview.trim()) {
+      toast({
+        title: "Vui lòng nhập nội dung đánh giá",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (selectedRating === 0) {
+      toast({
+        title: "Vui lòng chọn số sao đánh giá",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const newReviewItem: Review = {
+      id: Date.now(),
+      campaign: "Chiến Dịch Chung",
+      reviewer: {
+        name: currentUser?.name || "Người dùng ẩn danh",
+        avatar: currentUser?.avatar || "",
+        reputation: 4.5,
+        verified: !!currentUser,
+      },
+      rating: selectedRating,
+      content: newReview,
+      date: "Vừa xong",
+      likes: 0,
+      comments: 0,
+      reward: selectedRating >= 4 ? "Huy Hiệu Vàng + 50 FUN" : "Huy Hiệu Bạc + 25 FUN",
+      helpful: false,
+    };
+
+    setReviews([newReviewItem, ...reviews]);
+    setNewReview("");
+    setSelectedRating(0);
+    setIsSubmitting(false);
+
+    toast({
+      title: "Đánh giá đã được gửi!",
+      description: "Cảm ơn bạn đã chia sẻ. Phần thưởng sẽ được xét duyệt.",
+    });
+  };
 
   return (
     <main className="min-h-screen bg-background">
@@ -275,9 +365,14 @@ const Reviews = () => {
                   </p>
                 </div>
 
-                <Button variant="hero" className="w-full">
+                <Button 
+                  variant="hero" 
+                  className="w-full"
+                  onClick={handleSubmitReview}
+                  disabled={isSubmitting}
+                >
                   <Send className="w-4 h-4" />
-                  Gửi Đánh Giá
+                  {isSubmitting ? "Đang gửi..." : "Gửi Đánh Giá"}
                 </Button>
               </motion.div>
 
