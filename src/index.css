@@ -179,6 +179,31 @@
     background-image: var(--gradient-gold);
   }
 
+  /* Logo "Charity" text - bright gold gradient with shimmer */
+  .logo-charity-text {
+    @apply bg-clip-text text-transparent font-bold;
+    background-image: linear-gradient(
+      135deg,
+      hsl(43 80% 70%) 0%,
+      hsl(38 90% 75%) 25%,
+      hsl(43 95% 80%) 50%,
+      hsl(38 90% 75%) 75%,
+      hsl(43 80% 70%) 100%
+    );
+    background-size: 200% 100%;
+    animation: logo-shimmer 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px hsl(43 70% 60% / 0.5));
+  }
+
+  @keyframes logo-shimmer {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
   .gradient-bg {
     background-image: var(--gradient-primary);
   }
