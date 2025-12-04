@@ -6,6 +6,12 @@ import { Logo } from "@/components/brand/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { MotionToggle } from "@/components/background/MotionToggle";
+import {
   Menu,
   X,
   Bell,
@@ -17,6 +23,7 @@ import {
   Newspaper,
   LogOut,
   User as UserIcon,
+  Settings,
 } from "lucide-react";
 
 const navItems = [
@@ -86,6 +93,21 @@ export function Navbar() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full animate-pulse" />
             </Button>
+
+            {/* Settings Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm">Cài đặt giao diện</h4>
+                  <MotionToggle />
+                </div>
+              </PopoverContent>
+            </Popover>
             
             <Button variant="wallet" size="sm" className="gap-2">
               <Wallet className="w-4 h-4" />

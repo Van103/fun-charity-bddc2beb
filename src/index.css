@@ -142,6 +142,16 @@
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     @apply font-semibold tracking-tight;
   }
+
+  /* High contrast text for animated backgrounds - WCAG AA compliance */
+  .text-high-contrast {
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+  }
+
+  /* Ensure readable text over animated background */
+  .dark body {
+    --foreground: 45 40% 98%;
+  }
 }
 
 @layer components {
