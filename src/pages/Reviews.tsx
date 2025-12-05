@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +19,21 @@ import {
   Gift,
   Trophy,
   Send,
+  X,
 } from "lucide-react";
+
+interface ReviewComment {
+  id: number;
+  reviewId: number;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  content: string;
+  date: string;
+  likes: number;
+  isLiked: boolean;
+}
 
 interface Review {
   id: number;
@@ -36,6 +51,7 @@ interface Review {
   comments: number;
   reward: string;
   helpful: boolean;
+  isLiked: boolean;
 }
 
 const initialReviews: Review[] = [
@@ -52,9 +68,10 @@ const initialReviews: Review[] = [
     content: "Tôi đã theo dõi chiến dịch này từ đầu và thực sự ấn tượng với sự minh bạch. Mọi chi tiêu đều có biên lai và bằng chứng on-chain. Báo cáo tác động rất chi tiết và có thể xác minh được.",
     date: "2 ngày trước",
     likes: 45,
-    comments: 12,
+    comments: 2,
     reward: "Huy Hiệu Vàng + 50 FUN",
     helpful: true,
+    isLiked: false,
   },
   {
     id: 2,
@@ -69,9 +86,10 @@ const initialReviews: Review[] = [
     content: "Chiến dịch tốt, team NGO rất phản hồi nhanh. Một số cập nhật hơi chậm nhưng tổng thể tác động rất tích cực. Khuyến nghị!",
     date: "5 ngày trước",
     likes: 28,
-    comments: 5,
+    comments: 1,
     reward: "Huy Hiệu Bạc + 25 FUN",
     helpful: true,
+    isLiked: false,
   },
   {
     id: 3,
@@ -86,9 +104,49 @@ const initialReviews: Review[] = [
     content: "Là nhà tài trợ doanh nghiệp, chúng tôi đặc biệt đánh giá cao sự minh bạch trong báo cáo. Mọi việc sử dụng quỹ đều được theo dõi on-chain và có kiểm toán bên thứ ba. Đây là cách từ thiện nên được làm.",
     date: "1 tuần trước",
     likes: 89,
-    comments: 23,
+    comments: 1,
     reward: "Huy Hiệu Bạch Kim + 100 FUN",
     helpful: true,
+    isLiked: false,
+  },
+];
+
+const initialComments: ReviewComment[] = [
+  {
+    id: 1,
+    reviewId: 1,
+    author: { name: "Lan Phương", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200" },
+    content: "Đồng ý! Tôi cũng đã đóng góp và rất hài lòng với sự minh bạch.",
+    date: "1 ngày trước",
+    likes: 5,
+    isLiked: false,
+  },
+  {
+    id: 2,
+    reviewId: 1,
+    author: { name: "Hoàng Anh", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200" },
+    content: "Cảm ơn bạn đã chia sẻ chi tiết!",
+    date: "12 giờ trước",
+    likes: 3,
+    isLiked: false,
+  },
+  {
+    id: 3,
+    reviewId: 2,
+    author: { name: "Thu Hà", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200" },
+    content: "Tôi cũng thấy team rất nhiệt tình!",
+    date: "3 ngày trước",
+    likes: 8,
+    isLiked: false,
+  },
+  {
+    id: 4,
+    reviewId: 3,
+    author: { name: "Việt Hoàng", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200" },
+    content: "Blockchain thực sự đang thay đổi cách làm từ thiện!",
+    date: "5 ngày trước",
+    likes: 12,
+    isLiked: false,
   },
 ];
 
@@ -96,8 +154,11 @@ const Reviews = () => {
   const [newReview, setNewReview] = useState("");
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [comments, setComments] = useState<ReviewComment[]>(initialComments);
   const [currentUser, setCurrentUser] = useState<{name: string; avatar: string} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedComments, setExpandedComments] = useState<number | null>(null);
+  const [newCommentText, setNewCommentText] = useState<{[key: number]: string}>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -153,6 +214,7 @@ const Reviews = () => {
       comments: 0,
       reward: selectedRating >= 4 ? "Huy Hiệu Vàng + 50 FUN" : "Huy Hiệu Bạc + 25 FUN",
       helpful: false,
+      isLiked: false,
     };
 
     setReviews([newReviewItem, ...reviews]);
@@ -164,6 +226,77 @@ const Reviews = () => {
       title: "Đánh giá đã được gửi!",
       description: "Cảm ơn bạn đã chia sẻ. Phần thưởng sẽ được xét duyệt.",
     });
+  };
+
+  const handleLikeReview = (reviewId: number) => {
+    setReviews(reviews.map(review => {
+      if (review.id === reviewId) {
+        return {
+          ...review,
+          likes: review.isLiked ? review.likes - 1 : review.likes + 1,
+          isLiked: !review.isLiked
+        };
+      }
+      return review;
+    }));
+  };
+
+  const handleToggleComments = (reviewId: number) => {
+    setExpandedComments(expandedComments === reviewId ? null : reviewId);
+  };
+
+  const handleSubmitComment = (reviewId: number) => {
+    const commentText = newCommentText[reviewId]?.trim();
+    if (!commentText) {
+      toast({
+        title: "Vui lòng nhập nội dung bình luận",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newComment: ReviewComment = {
+      id: Date.now(),
+      reviewId,
+      author: {
+        name: currentUser?.name || "Người dùng ẩn danh",
+        avatar: currentUser?.avatar || ""
+      },
+      content: commentText,
+      date: "Vừa xong",
+      likes: 0,
+      isLiked: false,
+    };
+
+    setComments([...comments, newComment]);
+    setReviews(reviews.map(review => {
+      if (review.id === reviewId) {
+        return { ...review, comments: review.comments + 1 };
+      }
+      return review;
+    }));
+    setNewCommentText({ ...newCommentText, [reviewId]: "" });
+
+    toast({
+      title: "Bình luận đã được gửi!",
+    });
+  };
+
+  const handleLikeComment = (commentId: number) => {
+    setComments(comments.map(comment => {
+      if (comment.id === commentId) {
+        return {
+          ...comment,
+          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+          isLiked: !comment.isLiked
+        };
+      }
+      return comment;
+    }));
+  };
+
+  const getCommentsForReview = (reviewId: number) => {
+    return comments.filter(comment => comment.reviewId === reviewId);
   };
 
   return (
@@ -290,11 +423,25 @@ const Reviews = () => {
                   {/* Actions */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-secondary transition-colors">
-                        <ThumbsUp className="w-4 h-4" />
+                      <button 
+                        onClick={() => handleLikeReview(review.id)}
+                        className={`flex items-center gap-1 text-sm transition-colors ${
+                          review.isLiked 
+                            ? "text-secondary" 
+                            : "text-muted-foreground hover:text-secondary"
+                        }`}
+                      >
+                        <ThumbsUp className={`w-4 h-4 ${review.isLiked ? "fill-secondary" : ""}`} />
                         {review.likes} Hữu ích
                       </button>
-                      <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <button 
+                        onClick={() => handleToggleComments(review.id)}
+                        className={`flex items-center gap-1 text-sm transition-colors ${
+                          expandedComments === review.id
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
                         <MessageCircle className="w-4 h-4" />
                         {review.comments} Bình luận
                       </button>
@@ -303,6 +450,89 @@ const Reviews = () => {
                       <Flag className="w-4 h-4" />
                     </button>
                   </div>
+
+                  {/* Comments Section */}
+                  <AnimatePresence>
+                    {expandedComments === review.id && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-4 pt-4 border-t border-border/50"
+                      >
+                        {/* Existing Comments */}
+                        <div className="space-y-3 mb-4">
+                          {getCommentsForReview(review.id).length === 0 ? (
+                            <p className="text-sm text-muted-foreground text-center py-2">
+                              Chưa có bình luận nào. Hãy là người đầu tiên!
+                            </p>
+                          ) : (
+                            getCommentsForReview(review.id).map((comment) => (
+                              <div key={comment.id} className="flex gap-3 p-3 rounded-lg bg-muted/30">
+                                <Avatar className="w-8 h-8">
+                                  <AvatarImage src={comment.author.avatar} />
+                                  <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-sm font-medium">{comment.author.name}</span>
+                                    <span className="text-xs text-muted-foreground">{comment.date}</span>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">{comment.content}</p>
+                                  <button 
+                                    onClick={() => handleLikeComment(comment.id)}
+                                    className={`flex items-center gap-1 text-xs mt-2 transition-colors ${
+                                      comment.isLiked 
+                                        ? "text-secondary" 
+                                        : "text-muted-foreground hover:text-secondary"
+                                    }`}
+                                  >
+                                    <ThumbsUp className={`w-3 h-3 ${comment.isLiked ? "fill-secondary" : ""}`} />
+                                    {comment.likes}
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Add Comment */}
+                        <div className="flex gap-2">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={currentUser?.avatar} />
+                            <AvatarFallback>
+                              {currentUser?.name?.[0] || "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 flex gap-2">
+                            <Input
+                              placeholder="Viết bình luận..."
+                              value={newCommentText[review.id] || ""}
+                              onChange={(e) => setNewCommentText({
+                                ...newCommentText,
+                                [review.id]: e.target.value
+                              })}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSubmitComment(review.id);
+                                }
+                              }}
+                              className="flex-1"
+                            />
+                            <Button 
+                              size="icon" 
+                              variant="ghost"
+                              onClick={() => handleSubmitComment(review.id)}
+                              className="hover:bg-secondary/20"
+                            >
+                              <Send className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               ))}
             </div>
