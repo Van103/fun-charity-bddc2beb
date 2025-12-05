@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          badge_type: Database["public"]["Enums"]["badge_type"]
+          created_at: string
+          description: string | null
+          description_vi: string | null
+          icon_url: string | null
+          id: string
+          is_nft: boolean | null
+          name: string
+          name_vi: string
+          points_required: number | null
+        }
+        Insert: {
+          badge_type: Database["public"]["Enums"]["badge_type"]
+          created_at?: string
+          description?: string | null
+          description_vi?: string | null
+          icon_url?: string | null
+          id?: string
+          is_nft?: boolean | null
+          name: string
+          name_vi: string
+          points_required?: number | null
+        }
+        Update: {
+          badge_type?: Database["public"]["Enums"]["badge_type"]
+          created_at?: string
+          description?: string | null
+          description_vi?: string | null
+          icon_url?: string | null
+          id?: string
+          is_nft?: boolean | null
+          name?: string
+          name_vi?: string
+          points_required?: number | null
+        }
+        Relationships: []
+      }
       campaign_audits: {
         Row: {
           action: string
@@ -251,6 +290,118 @@ export type Database = {
           },
         ]
       }
+      donation_receipts: {
+        Row: {
+          created_at: string
+          donation_id: string
+          id: string
+          pdf_url: string | null
+          receipt_number: string
+          sent_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          donation_id: string
+          id?: string
+          pdf_url?: string | null
+          receipt_number: string
+          sent_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          donation_id?: string
+          id?: string
+          pdf_url?: string | null
+          receipt_number?: string
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donation_receipts_donation_id_fkey"
+            columns: ["donation_id"]
+            isOneToOne: true
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      donations: {
+        Row: {
+          amount: number
+          amount_usd: number | null
+          block_number: number | null
+          campaign_id: string
+          chain: string | null
+          completed_at: string | null
+          created_at: string
+          currency: string
+          donor_id: string | null
+          id: string
+          is_anonymous: boolean | null
+          is_recurring: boolean | null
+          message: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          status: Database["public"]["Enums"]["donation_status"]
+          stripe_payment_id: string | null
+          stripe_receipt_url: string | null
+          tx_hash: string | null
+          wallet_from: string | null
+          wallet_to: string | null
+        }
+        Insert: {
+          amount: number
+          amount_usd?: number | null
+          block_number?: number | null
+          campaign_id: string
+          chain?: string | null
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          donor_id?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_recurring?: boolean | null
+          message?: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          status?: Database["public"]["Enums"]["donation_status"]
+          stripe_payment_id?: string | null
+          stripe_receipt_url?: string | null
+          tx_hash?: string | null
+          wallet_from?: string | null
+          wallet_to?: string | null
+        }
+        Update: {
+          amount?: number
+          amount_usd?: number | null
+          block_number?: number | null
+          campaign_id?: string
+          chain?: string | null
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          donor_id?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_recurring?: boolean | null
+          message?: string | null
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          status?: Database["public"]["Enums"]["donation_status"]
+          stripe_payment_id?: string | null
+          stripe_receipt_url?: string | null
+          tx_hash?: string | null
+          wallet_from?: string | null
+          wallet_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -446,6 +597,68 @@ export type Database = {
         }
         Relationships: []
       }
+      reputation_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          points: number
+          reference_id: string | null
+          reference_type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          points: number
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          points?: number
+          reference_id?: string | null
+          reference_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          tx_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          tx_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          tx_hash?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -513,6 +726,21 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      badge_type:
+        | "donor_bronze"
+        | "donor_silver"
+        | "donor_gold"
+        | "donor_platinum"
+        | "donor_diamond"
+        | "volunteer_starter"
+        | "volunteer_active"
+        | "volunteer_hero"
+        | "first_donation"
+        | "recurring_donor"
+        | "campaign_creator"
+        | "verified_ngo"
+        | "community_helper"
+        | "early_adopter"
       campaign_category:
         | "education"
         | "healthcare"
@@ -531,6 +759,19 @@ export type Database = {
         | "completed"
         | "rejected"
         | "cancelled"
+      donation_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "refunded"
+      payment_method:
+        | "fiat_card"
+        | "fiat_bank_transfer"
+        | "crypto_eth"
+        | "crypto_btc"
+        | "crypto_usdt"
+        | "crypto_other"
       user_role: "donor" | "volunteer" | "ngo" | "beneficiary"
     }
     CompositeTypes: {
@@ -660,6 +901,22 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      badge_type: [
+        "donor_bronze",
+        "donor_silver",
+        "donor_gold",
+        "donor_platinum",
+        "donor_diamond",
+        "volunteer_starter",
+        "volunteer_active",
+        "volunteer_hero",
+        "first_donation",
+        "recurring_donor",
+        "campaign_creator",
+        "verified_ngo",
+        "community_helper",
+        "early_adopter",
+      ],
       campaign_category: [
         "education",
         "healthcare",
@@ -679,6 +936,21 @@ export const Constants = {
         "completed",
         "rejected",
         "cancelled",
+      ],
+      donation_status: [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "refunded",
+      ],
+      payment_method: [
+        "fiat_card",
+        "fiat_bank_transfer",
+        "crypto_eth",
+        "crypto_btc",
+        "crypto_usdt",
+        "crypto_other",
       ],
       user_role: ["donor", "volunteer", "ngo", "beneficiary"],
     },
