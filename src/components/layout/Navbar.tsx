@@ -12,6 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MotionToggle } from "@/components/background/MotionToggle";
+import { WalletConnectModal } from "@/components/wallet/WalletConnectModal";
 import {
   Menu,
   X,
@@ -25,6 +26,7 @@ import {
   LogOut,
   User as UserIcon,
   Settings,
+  Check,
 } from "lucide-react";
 
 const navItems = [
@@ -39,6 +41,8 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -46,32 +50,40 @@ export function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchUserAvatar(session.user.id);
+        fetchUserData(session.user.id);
       } else {
         setAvatarUrl(null);
+        setConnectedWallet(null);
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchUserAvatar(session.user.id);
+        fetchUserData(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserAvatar = async (userId: string) => {
+  const fetchUserData = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("avatar_url")
+      .select("avatar_url, wallet_address")
       .eq("user_id", userId)
       .single();
     
     if (data?.avatar_url) {
       setAvatarUrl(data.avatar_url);
     }
+    if (data?.wallet_address) {
+      setConnectedWallet(data.wallet_address);
+    }
+  };
+
+  const shortenAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   const handleLogout = async () => {
@@ -131,10 +143,30 @@ export function Navbar() {
               </PopoverContent>
             </Popover>
             
-            <Button variant="wallet" size="sm" className="gap-2">
-              <Wallet className="w-4 h-4" />
-              <span className="font-mono text-xs">Kết Nối Ví</span>
+            <Button 
+              variant="wallet" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setWalletModalOpen(true)}
+            >
+              {connectedWallet ? (
+                <>
+                  <Check className="w-4 h-4 text-success" />
+                  <span className="font-mono text-xs">{shortenAddress(connectedWallet)}</span>
+                </>
+              ) : (
+                <>
+                  <Wallet className="w-4 h-4" />
+                  <span className="font-mono text-xs">Kết Nối Ví</span>
+                </>
+              )}
             </Button>
+
+            <WalletConnectModal 
+              open={walletModalOpen} 
+              onOpenChange={setWalletModalOpen}
+              onWalletConnected={(address) => setConnectedWallet(address)}
+            />
 
             <div className="flex items-center gap-2 pl-3 border-l border-border">
               {user ? (
@@ -210,9 +242,25 @@ export function Navbar() {
                 );
               })}
               <div className="pt-4 space-y-2 border-t border-border">
-                <Button variant="wallet" className="w-full">
-                  <Wallet className="w-4 h-4" />
-                  Kết Nối Ví
+                <Button 
+                  variant="wallet" 
+                  className="w-full"
+                  onClick={() => {
+                    setWalletModalOpen(true);
+                    setIsOpen(false);
+                  }}
+                >
+                  {connectedWallet ? (
+                    <>
+                      <Check className="w-4 h-4 text-success" />
+                      {shortenAddress(connectedWallet)}
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="w-4 h-4" />
+                      Kết Nối Ví
+                    </>
+                  )}
                 </Button>
                 {user ? (
                   <>
