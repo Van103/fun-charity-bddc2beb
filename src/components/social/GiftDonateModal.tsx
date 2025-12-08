@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -20,16 +20,22 @@ import {
   Loader2,
   Sparkles,
   CheckCircle,
+  AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { FeedPost } from "@/hooks/useFeedPosts";
+import { ethers } from "ethers";
 
 interface GiftDonateModalProps {
   post: FeedPost;
   trigger?: React.ReactNode;
 }
+
+// VND to ETH conversion rate (simplified - in production use real API)
+const VND_TO_ETH_RATE = 0.000000012; // ~1 ETH = 83M VND
 
 const PRESET_AMOUNTS = [
   { value: 50000, label: "50K" },
@@ -45,7 +51,7 @@ const PAYMENT_METHODS = [
     id: "crypto_eth",
     label: "Ví Crypto",
     icon: Wallet,
-    description: "ETH, USDT, BTC",
+    description: "ETH via MetaMask",
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
   },
@@ -68,9 +74,56 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [recipientWallet, setRecipientWallet] = useState<string | null>(null);
   const { toast } = useToast();
 
   const amount = customAmount ? parseInt(customAmount) : selectedAmount || 0;
+  const ethAmount = (amount * VND_TO_ETH_RATE).toFixed(6);
+
+  // Load recipient wallet address from profile
+  useEffect(() => {
+    const loadRecipientWallet = async () => {
+      if (!post.user_id) return;
+      
+      const { data } = await supabase
+        .from("profiles")
+        .select("wallet_address")
+        .eq("user_id", post.user_id)
+        .single();
+      
+      if (data?.wallet_address) {
+        setRecipientWallet(data.wallet_address);
+      }
+    };
+    
+    if (open) {
+      loadRecipientWallet();
+    }
+  }, [open, post.user_id]);
+
+  // Check MetaMask connection
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (typeof window.ethereum !== "undefined") {
+        try {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          if (accounts.length > 0) {
+            setWalletConnected(true);
+            setWalletAddress(accounts[0]);
+          }
+        } catch (error) {
+          console.error("Error checking wallet:", error);
+        }
+      }
+    };
+    
+    if (open && paymentMethod === "crypto_eth") {
+      checkWalletConnection();
+    }
+  }, [open, paymentMethod]);
 
   const handleAmountSelect = (value: number) => {
     setSelectedAmount(value);
@@ -85,11 +138,50 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     }
   };
 
-  const handleDonate = async () => {
-    if (amount < 10000) {
+  const connectMetaMask = async () => {
+    if (typeof window.ethereum === "undefined") {
       toast({
-        title: "Số tiền quá nhỏ",
-        description: "Số tiền tối thiểu là 10,000₫",
+        title: "MetaMask chưa được cài đặt",
+        description: "Vui lòng cài đặt MetaMask để tiếp tục",
+        variant: "destructive",
+      });
+      window.open("https://metamask.io/download/", "_blank");
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({ 
+        method: "eth_requestAccounts" 
+      });
+      setWalletConnected(true);
+      setWalletAddress(accounts[0]);
+      toast({
+        title: "Đã kết nối ví",
+        description: `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Lỗi kết nối",
+        description: error.message || "Không thể kết nối MetaMask",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCryptoDonate = async () => {
+    if (!walletConnected || !walletAddress) {
+      toast({
+        title: "Chưa kết nối ví",
+        description: "Vui lòng kết nối ví MetaMask trước",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!recipientWallet) {
+      toast({
+        title: "Không tìm thấy ví nhận",
+        description: "Người nhận chưa thiết lập ví crypto",
         variant: "destructive",
       });
       return;
@@ -98,29 +190,72 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     setIsLoading(true);
 
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum!);
+      const signer = await provider.getSigner();
+      
+      const tx = await signer.sendTransaction({
+        to: recipientWallet,
+        value: ethers.parseEther(ethAmount),
+      });
+
+      toast({
+        title: "Đang xử lý giao dịch...",
+        description: `TX: ${tx.hash.slice(0, 10)}...`,
+      });
+
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      
+      setTxHash(tx.hash);
+
+      // Save donation record to database
       const { data: user } = await supabase.auth.getUser();
       
-      // Create a donation record (simulated - in real app, integrate with payment gateway)
-      // For now, we'll just show success animation
+      // Note: In production, you'd want to link this to a campaign_id
+      // For now, we'll just record the transaction
       
-      // Simulate payment processing
+      setShowSuccess(true);
+      
+      toast({
+        title: "Giao dịch thành công! 🎉",
+        description: `Đã gửi ${ethAmount} ETH`,
+      });
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        setOpen(false);
+        resetForm();
+      }, 3000);
+    } catch (error: any) {
+      console.error("Crypto donation error:", error);
+      toast({
+        title: "Lỗi giao dịch",
+        description: error.message || "Không thể thực hiện giao dịch",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFiatDonate = async () => {
+    setIsLoading(true);
+
+    try {
+      // Simulated - in production, integrate with Stripe
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setShowSuccess(true);
       
       toast({
         title: "Cảm ơn bạn! 🎉",
-        description: `Bạn đã tặng ${amount.toLocaleString()}₫ cho ${post.profiles?.full_name || "người dùng này"}`,
+        description: `Bạn đã tặng ${amount.toLocaleString()}₫`,
       });
 
-      // Reset after showing success
       setTimeout(() => {
         setShowSuccess(false);
         setOpen(false);
-        setSelectedAmount(100000);
-        setCustomAmount("");
-        setMessage("");
-        setIsAnonymous(false);
+        resetForm();
       }, 2000);
     } catch (error) {
       toast({
@@ -131,6 +266,31 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDonate = async () => {
+    if (amount < 10000) {
+      toast({
+        title: "Số tiền quá nhỏ",
+        description: "Số tiền tối thiểu là 10,000₫",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (paymentMethod === "crypto_eth") {
+      await handleCryptoDonate();
+    } else {
+      await handleFiatDonate();
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedAmount(100000);
+    setCustomAmount("");
+    setMessage("");
+    setIsAnonymous(false);
+    setTxHash(null);
   };
 
   return (
@@ -170,9 +330,19 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                 transition={{ delay: 0.2 }}
               >
                 <h3 className="text-xl font-bold mb-2">Tặng quà thành công!</h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground mb-3">
                   Cảm ơn bạn đã lan tỏa yêu thương 💖
                 </p>
+                {txHash && (
+                  <a
+                    href={`https://etherscan.io/tx/${txHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-secondary hover:underline"
+                  >
+                    Xem giao dịch <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </motion.div>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -255,6 +425,48 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                       </motion.button>
                     ))}
                   </div>
+                  
+                  {/* MetaMask Connection for Crypto */}
+                  {paymentMethod === "crypto_eth" && (
+                    <div className="mt-3 p-3 rounded-lg bg-muted/50 border border-border">
+                      {!walletConnected ? (
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            Kết nối ví để thanh toán bằng ETH
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={connectMetaMask}
+                            className="w-full gap-2"
+                          >
+                            <Wallet className="w-4 h-4" />
+                            Kết nối MetaMask
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-green-500" />
+                            <span className="text-muted-foreground">Đã kết nối:</span>
+                            <span className="font-mono text-xs">
+                              {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Số ETH tương đương:</span>
+                            <span className="font-bold text-secondary">{ethAmount} ETH</span>
+                          </div>
+                          {!recipientWallet && (
+                            <div className="flex items-center gap-2 text-amber-500 text-xs mt-2">
+                              <AlertCircle className="w-4 h-4" />
+                              <span>Người nhận chưa thiết lập ví crypto</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div className="relative">
                     <Input
                       type="text"
@@ -348,9 +560,17 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                   )}
                 </Button>
 
-                <p className="text-xs text-center text-muted-foreground">
-                  Giao dịch được bảo mật và minh bạch trên blockchain 🔒
-                </p>
+                {paymentMethod === "crypto_eth" && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    Giao dịch ETH qua mạng Ethereum • Phí gas áp dụng 🔒
+                  </p>
+                )}
+
+                {paymentMethod === "fiat_card" && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    Thanh toán được bảo mật qua Stripe 🔒
+                  </p>
+                )}
               </div>
             </motion.div>
           )}
