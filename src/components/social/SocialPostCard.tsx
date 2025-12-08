@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   MoreHorizontal,
   MessageCircle,
-  Gift,
   Coins,
   MapPin,
   CheckCircle,
@@ -18,6 +17,7 @@ import { FeedReactionPicker, REACTIONS } from "./FeedReactionPicker";
 import { usePostReactions } from "@/hooks/useFeedReactions";
 import { FeedComments } from "./FeedComments";
 import { SharePopover } from "./SharePopover";
+import { GiftDonateModal } from "./GiftDonateModal";
 import { supabase } from "@/integrations/supabase/client";
 
 interface SocialPostCardProps {
@@ -238,10 +238,7 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
           <MessageCircle className="w-5 h-5" />
           Bình luận
         </Button>
-        <Button variant="ghost" className="flex-1 gap-2 text-muted-foreground hover:text-foreground">
-          <Gift className="w-5 h-5" />
-          Tặng
-        </Button>
+        <GiftDonateModal post={post} />
         <SharePopover post={post} currentUserAvatar={currentUserAvatar} />
       </div>
 
