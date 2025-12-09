@@ -11,14 +11,15 @@ interface Story {
   avatar: string;
   hasNew: boolean;
   isLive?: boolean;
+  coverImage?: string;
 }
 
 const mockStories: Story[] = [
-  { id: "1", userName: "Anh Elgon", avatar: "", hasNew: true },
-  { id: "2", userName: "Kim Ngọc", avatar: "", hasNew: true },
-  { id: "3", userName: "Lê Minh Trí", avatar: "", hasNew: true },
-  { id: "4", userName: "Lê Huỳnh Như", avatar: "", hasNew: false },
-  { id: "5", userName: "Na Trần", avatar: "", hasNew: true },
+  { id: "1", userName: "Anh Elgon", avatar: "", hasNew: true, coverImage: "from-pink-400/60 to-purple-500/60" },
+  { id: "2", userName: "Kim Ngọc", avatar: "", hasNew: true, coverImage: "from-amber-400/60 to-orange-500/60" },
+  { id: "3", userName: "Lê Minh Trí", avatar: "", hasNew: true, coverImage: "from-emerald-400/60 to-teal-500/60" },
+  { id: "4", userName: "Lê Huỳnh Như", avatar: "", hasNew: false, coverImage: "from-blue-400/60 to-indigo-500/60" },
+  { id: "5", userName: "Na Trần", avatar: "", hasNew: true, coverImage: "from-rose-400/60 to-pink-500/60" },
 ];
 
 export function StoriesSection() {
@@ -39,17 +40,17 @@ export function StoriesSection() {
 
         <TabsContent value="stories" className="mt-0">
           <div className="relative">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
               {/* Create Story */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
-                className="shrink-0 w-24 cursor-pointer"
+                className="shrink-0 cursor-pointer"
               >
-                <div className="relative h-36 rounded-xl bg-gradient-to-br from-muted to-muted/50 border-2 border-dashed border-secondary/30 flex flex-col items-center justify-center gap-2 hover:border-secondary/50 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
-                    <Plus className="w-5 h-5 text-secondary-foreground" />
+                <div className="relative w-20 h-28 rounded-xl bg-gradient-to-br from-muted to-muted/50 border-2 border-dashed border-secondary/30 flex flex-col items-center justify-center gap-1 hover:border-secondary/50 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                    <Plus className="w-4 h-4 text-secondary-foreground" />
                   </div>
-                  <span className="text-xs text-center text-muted-foreground">Tạo tin</span>
+                  <span className="text-[10px] text-center text-muted-foreground">Tạo tin</span>
                 </div>
               </motion.div>
 
@@ -61,22 +62,22 @@ export function StoriesSection() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02 }}
-                  className="shrink-0 w-24 cursor-pointer group"
+                  className="shrink-0 cursor-pointer group"
                 >
-                  <div className="relative h-36 rounded-xl overflow-hidden">
-                    {/* Background */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-secondary/40" />
+                  <div className="relative w-20 h-28 rounded-xl overflow-hidden">
+                    {/* Background gradient */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${story.coverImage || "from-primary/40 to-secondary/40"}`} />
                     
-                    {/* Avatar - centered with gradient ring */}
+                    {/* Avatar - circular with gradient ring at center */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className={`p-0.5 rounded-full ${
                         story.hasNew 
                           ? "bg-gradient-to-br from-secondary via-secondary-light to-secondary" 
                           : "bg-border"
                       }`}>
-                        <Avatar className="w-16 h-16 border-2 border-background">
+                        <Avatar className="w-12 h-12 border-2 border-background">
                           <AvatarImage src={story.avatar} />
-                          <AvatarFallback className="bg-secondary/20 text-lg">
+                          <AvatarFallback className="bg-secondary/20 text-sm">
                             {story.userName.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -85,16 +86,16 @@ export function StoriesSection() {
 
                     {/* Live indicator */}
                     {story.isLive && (
-                      <div className="absolute top-2 right-2">
-                        <span className="px-2 py-0.5 bg-destructive text-destructive-foreground text-xs rounded-full">
+                      <div className="absolute top-1 right-1">
+                        <span className="px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[9px] rounded-full">
                           LIVE
                         </span>
                       </div>
                     )}
 
-                    {/* Name */}
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
-                      <span className="text-xs text-white font-medium line-clamp-2 text-center">
+                    {/* Name at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/70 to-transparent">
+                      <span className="text-[10px] text-white font-medium line-clamp-1 text-center block">
                         {story.userName}
                       </span>
                     </div>
@@ -103,12 +104,9 @@ export function StoriesSection() {
               ))}
             </div>
 
-            {/* Navigation Arrows */}
-            <button className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-8 h-8 bg-background/90 rounded-full shadow-lg flex items-center justify-center hover:bg-background transition-colors">
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 w-8 h-8 bg-background/90 rounded-full shadow-lg flex items-center justify-center hover:bg-background transition-colors">
-              <ChevronRight className="w-5 h-5" />
+            {/* Navigation Arrow */}
+            <button className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-7 h-7 bg-background/90 rounded-full shadow-lg flex items-center justify-center hover:bg-background transition-colors">
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </TabsContent>
