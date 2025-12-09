@@ -49,12 +49,12 @@ interface HonorStat {
 }
 
 const honorStats: HonorStat[] = [
-  { label: "TOP PROFILE", value: "1|1|1|1|1|1|1|1|1", barWidth: 100 },
-  { label: "THU NHẬP", value: "9|9|9|9|9|9|9|9|9", barWidth: 95 },
-  { label: "BÀI VIẾT", value: "9|9|9", barWidth: 45 },
-  { label: "VIDEO", value: "9|9|9", barWidth: 45 },
-  { label: "BẠN BÈ", value: "1|1|1|1|1|1|1|1|1", barWidth: 100 },
-  { label: "SỐ NFT", value: "1|1|1|1|1|1|1|1|1", barWidth: 100 },
+  { label: "TOP PROFILE", value: "1 1 1 1 1 1 1 1 1", barWidth: 100 },
+  { label: "THU NHẬP", value: "9 9 9 9 9 9 9 9 9", barWidth: 95 },
+  { label: "BÀI VIẾT", value: "9 9 9", barWidth: 40 },
+  { label: "VIDEO", value: "9 9 9", barWidth: 40 },
+  { label: "BẠN BÈ", value: "1 1 1 1 1 1 1 1 1", barWidth: 100 },
+  { label: "SỐ NFT", value: "1 1 1 1 1 1 1 1 1", barWidth: 100 },
 ];
 
 export function RightSidebar() {
@@ -62,21 +62,21 @@ export function RightSidebar() {
     <aside className="w-80 shrink-0 space-y-4 sticky top-20">
       {/* Honor Board */}
       <div className="glass-card overflow-hidden">
-        <div className="bg-gradient-to-r from-secondary to-secondary-light p-3">
-          <h3 className="text-sm font-bold text-secondary-foreground text-center">
+        <div className="bg-gradient-to-r from-secondary to-secondary-light p-2.5">
+          <h3 className="text-xs font-bold text-secondary-foreground text-center tracking-wide">
             HONOR BOARD
           </h3>
         </div>
-        <div className="p-3 space-y-2">
+        <div className="p-2.5 space-y-1.5 bg-secondary/5">
           {honorStats.map((stat) => (
             <div key={stat.label} className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground w-20 shrink-0">{stat.label}</span>
-              <div className="flex-1 h-5 bg-muted/50 rounded overflow-hidden flex items-center">
+              <span className="text-[9px] text-muted-foreground w-16 shrink-0 font-medium">{stat.label}</span>
+              <div className="flex-1 h-4 bg-muted/30 rounded-sm overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-secondary/80 to-secondary flex items-center justify-end px-1"
+                  className="h-full bg-gradient-to-r from-secondary/90 to-secondary flex items-center px-1"
                   style={{ width: `${stat.barWidth}%` }}
                 >
-                  <span className="text-[9px] font-mono text-secondary-foreground tracking-wider">
+                  <span className="text-[8px] font-mono text-secondary-foreground tracking-widest font-bold">
                     {stat.value}
                   </span>
                 </div>
@@ -88,43 +88,46 @@ export function RightSidebar() {
 
       {/* Top Ranking */}
       <div className="glass-card overflow-hidden">
-        <div className="bg-gradient-to-r from-primary to-primary-light p-3">
-          <h3 className="text-sm font-bold text-primary-foreground text-center">
+        <div className="bg-gradient-to-r from-primary to-primary-light p-2.5">
+          <h3 className="text-xs font-bold text-primary-foreground text-center tracking-wide">
             TOP RANKING
           </h3>
         </div>
-        <ScrollArea className="h-[320px]">
-          <div className="p-2 space-y-1">
+        <ScrollArea className="h-[280px]">
+          <div className="p-1.5 space-y-0.5">
             {topRankers.map((ranker) => (
               <div
                 key={ranker.rank}
-                className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors"
               >
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                  ranker.rank <= 3 
-                    ? "bg-gradient-to-br from-secondary to-secondary-light text-secondary-foreground" 
-                    : "bg-muted text-muted-foreground"
-                }`}>
-                  #{ranker.rank}
+                {/* Rank badge with avatar overlay */}
+                <div className="relative">
+                  <Avatar className="w-8 h-8 border-2 border-secondary/30">
+                    <AvatarImage src={ranker.avatar} />
+                    <AvatarFallback className="bg-primary/10 text-[10px]">
+                      {ranker.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ${
+                    ranker.rank <= 3 
+                      ? "bg-gradient-to-br from-secondary to-secondary-light text-secondary-foreground" 
+                      : "bg-muted text-muted-foreground border border-background"
+                  }`}>
+                    {ranker.rank}
+                  </div>
                 </div>
-                <Avatar className="w-9 h-9 border-2 border-secondary/30">
-                  <AvatarImage src={ranker.avatar} />
-                  <AvatarFallback className="bg-primary/10 text-xs">
-                    {ranker.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-medium truncate">{ranker.name}</span>
+                    <span className="text-xs font-medium truncate">{ranker.name}</span>
                     {ranker.verified && (
-                      <span className="text-secondary">💜</span>
+                      <span className="text-secondary text-[10px]">💜</span>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">{ranker.location}</span>
+                  <span className="text-[10px] text-muted-foreground">{ranker.location}</span>
                 </div>
-                <Badge variant="outline" className="text-xs text-secondary shrink-0">
+                <span className="text-[10px] font-semibold text-secondary shrink-0">
                   {ranker.amount}
-                </Badge>
+                </span>
               </div>
             ))}
           </div>
