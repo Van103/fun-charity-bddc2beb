@@ -79,8 +79,8 @@ export function HeroSection() {
             "Nơi lòng tốt trở nên minh bạch – kết nối – và bất tử hóa bằng blockchain."
           </motion.p>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="text-base text-secondary font-medium mb-8">
-            Từ thiện là ánh sáng. Minh bạch là vàng.
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="text-lg md:text-xl slogan-glow mb-8">
+            ✨ Từ thiện là ánh sáng. Minh bạch là vàng. ✨
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">

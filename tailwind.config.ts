@@ -73,15 +73,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Brand specific colors
+        // Brand specific colors - #4B0082 Purple + #FFD700 Gold
         purple: {
-          deep: "#2E0F4A",
-          light: "#4A2070",
+          deep: "#4B0082",
+          light: "#6B21A8",
+          dark: "#3B0066",
         },
         gold: {
-          metallic: "#C9A23D",
-          light: "#D4B85A",
-          dark: "#A88A2D",
+          metallic: "#FFD700",
+          light: "#FFDF33",
+          dark: "#CCB000",
         },
       },
       borderRadius: {

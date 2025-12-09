@@ -11,120 +11,120 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Deep Purple + Metallic Gold - Luxury Tech Feel */
+    /* Brand Colors - Deep Purple #4B0082 + Metallic Gold #FFD700 */
     --background: 270 25% 98%;
-    --foreground: 270 50% 10%;
+    --foreground: 270 100% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 270 50% 10%;
+    --card-foreground: 270 100% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 50% 10%;
+    --popover-foreground: 270 100% 25%;
 
-    /* Primary - Deep Purple (Royal, Trustworthy) */
-    --primary: 275 70% 18%;
-    --primary-foreground: 45 60% 95%;
-    --primary-light: 275 60% 30%;
-    --primary-dark: 275 80% 12%;
+    /* Primary - Deep Purple #4B0082 (Royal, Trustworthy) */
+    --primary: 270 100% 25%;
+    --primary-foreground: 51 100% 50%;
+    --primary-light: 270 80% 35%;
+    --primary-dark: 270 100% 18%;
 
-    /* Secondary - Metallic Gold (Luxury, Achievement) */
-    --secondary: 43 55% 52%;
-    --secondary-foreground: 270 50% 10%;
-    --secondary-light: 43 65% 62%;
-    --secondary-dark: 43 50% 42%;
+    /* Secondary - Metallic Gold #FFD700 (Luxury, Achievement) */
+    --secondary: 51 100% 50%;
+    --secondary-foreground: 270 100% 25%;
+    --secondary-light: 51 100% 60%;
+    --secondary-dark: 51 100% 40%;
 
     /* Accent - Warm Gold Glow */
-    --accent: 43 70% 55%;
-    --accent-foreground: 270 50% 10%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 270 100% 25%;
 
     /* Muted - Soft lavender */
     --muted: 270 20% 94%;
-    --muted-foreground: 270 15% 45%;
+    --muted-foreground: 270 30% 45%;
 
     /* Status colors */
     --success: 152 60% 42%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 55%;
-    --warning-foreground: 270 50% 10%;
+    --warning-foreground: 270 100% 25%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 90%;
-    --input: 270 20% 90%;
-    --ring: 275 70% 18%;
+    --border: 270 20% 88%;
+    --input: 270 20% 88%;
+    --ring: 270 100% 25%;
 
     --radius: 0.75rem;
 
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(275 70% 18%), hsl(275 60% 30%));
-    --gradient-secondary: linear-gradient(135deg, hsl(43 55% 52%), hsl(43 65% 62%));
-    --gradient-gold: linear-gradient(135deg, hsl(43 55% 52%), hsl(38 70% 60%), hsl(43 55% 52%));
-    --gradient-luxury: linear-gradient(135deg, hsl(275 70% 18%), hsl(275 50% 25%), hsl(43 55% 52%));
-    --gradient-hero: linear-gradient(135deg, hsl(275 70% 18% / 0.95), hsl(275 60% 25% / 0.9));
+    /* Custom gradients - Purple to Gold */
+    --gradient-primary: linear-gradient(135deg, hsl(270 100% 25%), hsl(270 80% 35%));
+    --gradient-secondary: linear-gradient(135deg, hsl(51 100% 50%), hsl(51 100% 60%));
+    --gradient-gold: linear-gradient(135deg, hsl(51 100% 45%), hsl(45 100% 55%), hsl(51 100% 50%));
+    --gradient-luxury: linear-gradient(to right, hsl(270 100% 25%), hsl(51 100% 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 100% 25% / 0.95), hsl(270 80% 30% / 0.9));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(270 25% 98%));
     --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.9), hsl(0 0% 100% / 0.6));
-    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(43 55% 52% / 0.3), transparent);
+    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(51 100% 50% / 0.4), transparent);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px hsl(270 50% 10% / 0.05);
-    --shadow-md: 0 4px 12px hsl(270 50% 10% / 0.08);
-    --shadow-lg: 0 8px 24px hsl(270 50% 10% / 0.12);
-    --shadow-xl: 0 16px 48px hsl(270 50% 10% / 0.16);
-    --shadow-glow: 0 0 40px hsl(43 55% 52% / 0.35);
-    --shadow-glow-purple: 0 0 40px hsl(275 70% 18% / 0.3);
+    --shadow-sm: 0 1px 2px hsl(270 100% 25% / 0.05);
+    --shadow-md: 0 4px 12px hsl(270 100% 25% / 0.08);
+    --shadow-lg: 0 8px 24px hsl(270 100% 25% / 0.12);
+    --shadow-xl: 0 16px 48px hsl(270 100% 25% / 0.16);
+    --shadow-glow: 0 0 40px hsl(51 100% 50% / 0.5);
+    --shadow-glow-purple: 0 0 40px hsl(270 100% 25% / 0.4);
 
     /* Sidebar */
-    --sidebar-background: 275 70% 18%;
-    --sidebar-foreground: 45 60% 95%;
-    --sidebar-primary: 43 55% 52%;
-    --sidebar-primary-foreground: 270 50% 10%;
-    --sidebar-accent: 275 60% 25%;
-    --sidebar-accent-foreground: 45 60% 95%;
-    --sidebar-border: 275 50% 25%;
-    --sidebar-ring: 43 55% 52%;
+    --sidebar-background: 270 100% 25%;
+    --sidebar-foreground: 51 100% 90%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 270 100% 25%;
+    --sidebar-accent: 270 80% 35%;
+    --sidebar-accent-foreground: 51 100% 90%;
+    --sidebar-border: 270 80% 35%;
+    --sidebar-ring: 51 100% 50%;
   }
 
   .dark {
-    --background: 270 40% 6%;
-    --foreground: 45 30% 95%;
+    --background: 270 50% 6%;
+    --foreground: 51 100% 95%;
 
-    --card: 270 35% 10%;
-    --card-foreground: 45 30% 95%;
+    --card: 270 50% 10%;
+    --card-foreground: 51 100% 95%;
 
-    --popover: 270 35% 10%;
-    --popover-foreground: 45 30% 95%;
+    --popover: 270 50% 10%;
+    --popover-foreground: 51 100% 95%;
 
-    --primary: 43 55% 52%;
-    --primary-foreground: 270 50% 10%;
+    --primary: 51 100% 50%;
+    --primary-foreground: 270 100% 15%;
 
-    --secondary: 275 50% 30%;
-    --secondary-foreground: 45 60% 95%;
+    --secondary: 270 80% 40%;
+    --secondary-foreground: 51 100% 95%;
 
-    --accent: 43 65% 55%;
-    --accent-foreground: 270 50% 10%;
+    --accent: 51 100% 55%;
+    --accent-foreground: 270 100% 15%;
 
-    --muted: 270 30% 15%;
-    --muted-foreground: 270 15% 60%;
+    --muted: 270 40% 15%;
+    --muted-foreground: 270 20% 65%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 30% 18%;
-    --input: 270 30% 18%;
-    --ring: 43 55% 52%;
+    --border: 270 40% 20%;
+    --input: 270 40% 20%;
+    --ring: 51 100% 50%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(270 40% 8%), hsl(275 50% 15%));
-    --gradient-card: linear-gradient(180deg, hsl(270 35% 12%), hsl(270 40% 8%));
-    --gradient-glass: linear-gradient(135deg, hsl(270 35% 15% / 0.8), hsl(270 35% 12% / 0.4));
+    --gradient-hero: linear-gradient(135deg, hsl(270 50% 8%), hsl(270 60% 18%));
+    --gradient-card: linear-gradient(180deg, hsl(270 50% 12%), hsl(270 50% 8%));
+    --gradient-glass: linear-gradient(135deg, hsl(270 50% 15% / 0.8), hsl(270 50% 12% / 0.4));
 
-    --sidebar-background: 270 40% 8%;
-    --sidebar-foreground: 45 30% 95%;
-    --sidebar-primary: 43 55% 52%;
-    --sidebar-primary-foreground: 270 50% 10%;
-    --sidebar-accent: 275 50% 20%;
-    --sidebar-accent-foreground: 45 30% 95%;
-    --sidebar-border: 270 30% 18%;
-    --sidebar-ring: 43 55% 52%;
+    --sidebar-background: 270 50% 8%;
+    --sidebar-foreground: 51 100% 95%;
+    --sidebar-primary: 51 100% 50%;
+    --sidebar-primary-foreground: 270 100% 15%;
+    --sidebar-accent: 270 60% 25%;
+    --sidebar-accent-foreground: 51 100% 95%;
+    --sidebar-border: 270 40% 20%;
+    --sidebar-ring: 51 100% 50%;
   }
 }
 
@@ -171,12 +171,39 @@
 
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(43 75% 45%), hsl(38 85% 50%), hsl(43 70% 40%));
+    background-image: linear-gradient(135deg, hsl(51 100% 45%), hsl(45 100% 55%), hsl(51 100% 50%));
   }
 
   .gradient-text-luxury {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(43 80% 42%), hsl(38 90% 48%), hsl(43 75% 38%));
+    background-image: linear-gradient(135deg, hsl(51 100% 45%), hsl(45 100% 55%), hsl(51 100% 50%));
+  }
+
+  /* Glowing slogan text */
+  .slogan-glow {
+    @apply text-secondary font-semibold;
+    text-shadow: 
+      0 0 10px hsl(51 100% 50% / 0.6),
+      0 0 20px hsl(51 100% 50% / 0.4),
+      0 0 30px hsl(51 100% 50% / 0.3),
+      0 0 40px hsl(51 100% 50% / 0.2);
+    animation: slogan-pulse 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes slogan-pulse {
+    from {
+      text-shadow: 
+        0 0 10px hsl(51 100% 50% / 0.6),
+        0 0 20px hsl(51 100% 50% / 0.4),
+        0 0 30px hsl(51 100% 50% / 0.3);
+    }
+    to {
+      text-shadow: 
+        0 0 15px hsl(51 100% 50% / 0.8),
+        0 0 30px hsl(51 100% 50% / 0.6),
+        0 0 45px hsl(51 100% 50% / 0.4),
+        0 0 60px hsl(51 100% 50% / 0.2);
+    }
   }
 
   /* Logo "Charity" text - purple-gold gradient with shimmer */
@@ -184,16 +211,16 @@
     @apply bg-clip-text text-transparent font-bold;
     background-image: linear-gradient(
       90deg,
-      hsl(275 80% 35%) 0%,
-      hsl(280 75% 45%) 20%,
-      hsl(43 85% 48%) 40%,
-      hsl(38 90% 52%) 60%,
-      hsl(280 75% 45%) 80%,
-      hsl(275 80% 35%) 100%
+      hsl(270 100% 35%) 0%,
+      hsl(270 90% 45%) 20%,
+      hsl(51 100% 50%) 40%,
+      hsl(45 100% 55%) 60%,
+      hsl(270 90% 45%) 80%,
+      hsl(270 100% 35%) 100%
     );
     background-size: 300% 100%;
     animation: logo-shimmer 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px hsl(43 70% 60% / 0.4)) drop-shadow(0 0 20px hsl(275 70% 50% / 0.3));
+    filter: drop-shadow(0 0 10px hsl(51 100% 50% / 0.5)) drop-shadow(0 0 20px hsl(270 100% 50% / 0.3));
   }
 
   @keyframes logo-shimmer {
@@ -222,10 +249,10 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       90deg,
-      hsl(275 80% 35%) 0%,
-      hsl(280 70% 45%) 30%,
-      hsl(43 85% 55%) 70%,
-      hsl(38 90% 60%) 100%
+      hsl(270 100% 35%) 0%,
+      hsl(270 90% 45%) 30%,
+      hsl(51 100% 50%) 70%,
+      hsl(51 100% 55%) 100%
     );
   }
 

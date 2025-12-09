@@ -90,7 +90,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-primary-light/30 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-primary-foreground/60">
             © 2024 FUN Charity. Bản quyền thuộc về FUN Charity. Được xây dựng với{" "}
-            <Heart className="inline w-3 h-3 text-secondary" fill="currentColor" /> trên Web3.
+            <Heart className="inline w-3 h-3 text-secondary" fill="currentColor" /> Web3.
           </p>
           <div className="flex items-center gap-2 text-sm text-primary-foreground/60">
             <Sparkles className="w-4 h-4 text-secondary" />
