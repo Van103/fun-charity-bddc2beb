@@ -34,6 +34,16 @@ const topRankers: TopRanker[] = [
   { rank: 10, name: "Nông Liên", location: "Viet Nam", amount: "1M ₫", verified: true },
 ];
 
+// Rank badge colors
+const getRankBadgeStyle = (rank: number) => {
+  switch (rank) {
+    case 1: return "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white";
+    case 2: return "bg-gradient-to-br from-gray-300 to-gray-500 text-white";
+    case 3: return "bg-gradient-to-br from-amber-600 to-amber-800 text-white";
+    default: return "bg-secondary text-secondary-foreground";
+  }
+};
+
 const contacts = [
   "Lê Minh Trí",
   "Lê Huỳnh Như",
@@ -88,13 +98,13 @@ export function RightSidebar() {
 
       {/* Top Ranking */}
       <div className="glass-card overflow-hidden">
-        <div className="bg-gradient-to-r from-primary to-primary-light p-2.5">
-          <h3 className="text-xs font-bold text-primary-foreground text-center tracking-wide">
+        <div className="bg-gradient-to-r from-secondary to-secondary-light p-2.5">
+          <h3 className="text-xs font-bold text-secondary-foreground text-center tracking-wide">
             TOP RANKING
           </h3>
         </div>
-        <ScrollArea className="h-[280px]">
-          <div className="p-1.5 space-y-0.5">
+        <ScrollArea className="h-[320px]">
+          <div className="p-2 space-y-1">
             {topRankers.map((ranker) => (
               <div
                 key={ranker.rank}
@@ -102,30 +112,26 @@ export function RightSidebar() {
               >
                 {/* Rank badge with avatar overlay */}
                 <div className="relative">
-                  <Avatar className="w-8 h-8 border-2 border-secondary/30">
+                  <Avatar className="w-9 h-9 border-2 border-secondary/30">
                     <AvatarImage src={ranker.avatar} />
-                    <AvatarFallback className="bg-primary/10 text-[10px]">
+                    <AvatarFallback className="bg-primary/10 text-xs">
                       {ranker.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold ${
-                    ranker.rank <= 3 
-                      ? "bg-gradient-to-br from-secondary to-secondary-light text-secondary-foreground" 
-                      : "bg-muted text-muted-foreground border border-background"
-                  }`}>
-                    {ranker.rank}
+                  <div className={`absolute -bottom-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shadow-sm ${getRankBadgeStyle(ranker.rank)}`}>
+                    #{ranker.rank}
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 ml-1">
                   <div className="flex items-center gap-1">
-                    <span className="text-xs font-medium truncate">{ranker.name}</span>
+                    <span className="text-xs font-semibold truncate">{ranker.name}</span>
                     {ranker.verified && (
                       <span className="text-secondary text-[10px]">💜</span>
                     )}
                   </div>
                   <span className="text-[10px] text-muted-foreground">{ranker.location}</span>
                 </div>
-                <span className="text-[10px] font-semibold text-secondary shrink-0">
+                <span className="text-xs font-bold text-secondary shrink-0">
                   {ranker.amount}
                 </span>
               </div>

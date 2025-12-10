@@ -1,8 +1,7 @@
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Image, Video, Sparkles, X, Loader2, Send, PenSquare } from "lucide-react";
+import { Image, Video, Sparkles, X, Loader2 } from "lucide-react";
 import { useCreateFeedPost } from "@/hooks/useFeedPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -127,26 +126,28 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
 
   return (
     <>
-      <div className="glass-card p-4">
-        <div className="flex items-start gap-3 mb-4">
-          <Avatar className="w-10 h-10 border-2 border-secondary/30">
+      <div className="glass-card overflow-hidden">
+        {/* Input area with purple gradient background */}
+        <div className="bg-gradient-to-r from-secondary/90 to-secondary p-3 flex items-center gap-3">
+          <Avatar className="w-10 h-10 border-2 border-white/30">
             <AvatarImage src={profile?.avatar_url || ""} />
-            <AvatarFallback className="bg-secondary/20">
+            <AvatarFallback className="bg-white/20 text-white">
               {profile?.full_name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
-          <Textarea
-            placeholder="Đăng bài để nhận từ 999 Happy Camly Coin trở lên nhé 🎉"
+          <input
+            type="text"
+            placeholder="Đăng bài để nhận từ 999 Happy Camly Coin trở lên nhé 🤗"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="flex-1 min-h-[60px] bg-muted/50 border-none rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-secondary resize-none"
+            className="flex-1 bg-white/20 border-none rounded-full px-4 py-2.5 text-sm text-white placeholder:text-white/70 focus:outline-none focus:ring-2 focus:ring-white/30"
             disabled={isSubmitting}
           />
         </div>
 
         {/* Media Previews */}
         {mediaPreviews.length > 0 && (
-          <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="p-3 grid grid-cols-2 sm:grid-cols-3 gap-2 bg-background">
             {mediaPreviews.map((preview, index) => (
               <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-muted">
                 {mediaFiles[index]?.type.startsWith("video/") ? (
@@ -186,8 +187,9 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
           onChange={(e) => handleFileSelect(e, "video")}
         />
 
-        <div className="flex items-center justify-between pt-3 border-t border-border">
-          <div className="flex items-center gap-2">
+        {/* Action buttons */}
+        <div className="flex items-center justify-between px-4 py-3 bg-background border-t border-border">
+          <div className="flex items-center gap-1">
             <Button 
               variant="ghost" 
               size="sm" 

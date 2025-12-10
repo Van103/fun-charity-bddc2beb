@@ -92,16 +92,16 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold text-foreground">
                   {post.profiles?.full_name || "Người dùng"}
                 </span>
                 {post.profiles?.is_verified && (
-                  <CheckCircle className="w-4 h-4 text-secondary fill-secondary/20" />
+                  <span className="text-secondary">💜</span>
                 )}
                 {post.location && (
                   <>
-                    <span className="text-muted-foreground text-sm">tại</span>
+                    <span className="text-muted-foreground text-sm">cùng với</span>
                     <span className="text-secondary text-sm font-medium flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
                       {post.location}
@@ -114,12 +114,10 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            {post.target_amount && post.target_amount > 0 && (
-              <Badge variant="outline" className="text-secondary border-secondary/30 gap-1">
-                <Coins className="w-3 h-3" />
-                {post.target_amount.toLocaleString()} ₫
-              </Badge>
-            )}
+            {/* Earned amount badge */}
+            <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/30 gap-1 text-xs font-medium">
+              Đã EARN {(post.fulfilled_amount || 99999).toLocaleString()}₫
+            </Badge>
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <MoreHorizontal className="w-4 h-4" />
             </Button>
@@ -246,17 +244,21 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
           ) : (
             <div className="flex -space-x-1">
               <span className="text-base">👍</span>
+              <span className="text-base">❤️</span>
+              <span className="text-base">😆</span>
+              <span className="text-base">😮</span>
             </div>
           )}
-          <span>{totalReactions || post.reactions_count || 0} người đã bày tỏ cảm xúc</span>
+          <span className="text-xs">{(totalReactions || post.reactions_count || 1.8).toLocaleString()} tỷ người đã bày tỏ cảm xúc</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span>{post.comments_count || 0} Bình luận</span>
+        <div className="flex items-center gap-4 text-xs">
+          <span>{(post.comments_count || 3.7).toLocaleString()} tỷ bình luận</span>
+          <span>1 tỷ lượt chia sẻ</span>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="px-4 py-2 border-t border-border flex items-center justify-around gap-1">
+      <div className="px-4 py-2 border-t border-border flex items-center justify-between gap-1">
         <FeedReactionPicker
           currentReaction={userReaction}
           onReact={(type) => addReaction.mutate(type)}
@@ -265,10 +267,11 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         />
         <Button 
           variant="ghost" 
-          className={`flex-1 gap-2 ${showComments ? "text-secondary" : "text-muted-foreground hover:text-foreground"}`}
+          size="sm"
+          className={`gap-1.5 text-xs ${showComments ? "text-secondary" : "text-muted-foreground hover:text-foreground"}`}
           onClick={() => setShowComments(!showComments)}
         >
-          <MessageCircle className="w-5 h-5" />
+          <MessageCircle className="w-4 h-4" />
           Bình luận
         </Button>
         <GiftDonateModal post={post} />
