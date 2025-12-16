@@ -75,16 +75,21 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Brand specific colors - #4B0082 Purple + #FFD700 Gold
+        // Brand specific colors - Luxury Purple + Champagne Gold
         purple: {
-          deep: "#4B0082",
-          light: "#6B21A8",
-          dark: "#3B0066",
+          soft: "#7A5AF8",
+          light: "#B9A6FF",
+          dark: "#5B3FD9",
         },
         gold: {
-          metallic: "#FFD700",
-          light: "#FFDF33",
-          dark: "#CCB000",
+          champagne: "#F5C77A",
+          light: "#F8D89E",
+          dark: "#E5B05A",
+        },
+        // Additional luxury colors
+        lavender: {
+          soft: "#F5F3FF",
+          DEFAULT: "#E6E1FA",
         },
       },
       borderRadius: {
