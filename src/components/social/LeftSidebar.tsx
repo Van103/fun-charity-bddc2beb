@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   User,
@@ -15,7 +14,7 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  { icon: User, label: "Fun Profile", href: "/profile", active: true },
+  { icon: User, label: "Fun Profile", href: "/profile" },
   { icon: GraduationCap, label: "Fun Academy", href: "/academy" },
   { icon: TrendingUp, label: "Fun Trading", href: "/trading" },
   { icon: PiggyBank, label: "Fun Investment", href: "/investment" },
@@ -39,7 +38,7 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
     <aside className="w-64 shrink-0 space-y-4 sticky top-20">
       {/* Platform Ecosystem */}
       <div className="glass-card p-4">
-        <h3 className="text-sm font-semibold text-primary mb-3">
+        <h3 className="text-sm font-semibold text-foreground mb-1">
           Các Platform F.U. Ecosystem
         </h3>
         <p className="text-xs text-muted-foreground mb-4">Coming soon</p>
@@ -53,8 +52,8 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
                 to={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
                   isActive
-                    ? "bg-primary text-primary-foreground font-medium"
-                    : "text-foreground hover:bg-muted"
+                    ? "bg-gradient-to-r from-primary to-primary-light text-primary-foreground font-medium shadow-sm"
+                    : "text-foreground hover:bg-muted/50"
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -69,7 +68,7 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
       <div className="glass-card p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold text-foreground">Lối tắt của bạn</h3>
-          <Button variant="ghost" size="sm" className="text-xs text-primary">
+          <Button variant="ghost" size="sm" className="text-xs text-primary hover:text-primary-dark hover:bg-primary/5">
             <Edit className="w-3 h-3 mr-1" />
             Chỉnh sửa
           </Button>
@@ -77,12 +76,12 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
         
         <Link 
           to="/wallet" 
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-primary/20 to-primary/10 hover:from-primary/30 hover:to-primary/20 transition-all"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gradient-to-r from-gold-champagne/20 to-gold-champagne/10 hover:from-gold-champagne/30 hover:to-gold-champagne/20 transition-all border border-gold-champagne/20"
         >
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-            <Coins className="w-4 h-4 text-primary" />
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light flex items-center justify-center">
+            <Coins className="w-4 h-4 text-white" />
           </div>
-          <span className="text-sm font-medium">CAMLY COIN</span>
+          <span className="text-sm font-medium text-foreground">CAMLY COIN</span>
         </Link>
       </div>
 

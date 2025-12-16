@@ -5,9 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   MoreHorizontal,
   MessageCircle,
-  Coins,
   MapPin,
-  CheckCircle,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FeedPost } from "@/hooks/useFeedPosts";
@@ -20,10 +20,29 @@ import { SharePopover } from "./SharePopover";
 import { GiftDonateModal } from "./GiftDonateModal";
 import { ImageLightbox } from "./ImageLightbox";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SocialPostCardProps {
   post: FeedPost;
 }
+
+// Soft gradient backgrounds for letter avatars
+const getAvatarGradient = (name: string) => {
+  const gradients = [
+    "from-purple-soft to-purple-light",
+    "from-gold-champagne to-gold-light",
+    "from-pink-400 to-rose-300",
+    "from-sky-400 to-blue-300",
+    "from-emerald-400 to-teal-300",
+  ];
+  const index = (name?.charCodeAt(0) || 0) % gradients.length;
+  return gradients[index];
+};
 
 export function SocialPostCard({ post }: SocialPostCardProps) {
   const [showComments, setShowComments] = useState(false);
@@ -75,6 +94,8 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
     locale: vi 
   });
 
+  const userName = post.profiles?.full_name || "Người dùng";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -85,24 +106,27 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       <div className="p-4 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <Avatar className="w-10 h-10 border-2 border-secondary/30">
-              <AvatarImage src={post.profiles?.avatar_url || ""} />
-              <AvatarFallback className="bg-secondary/20">
-                {post.profiles?.full_name?.charAt(0) || "U"}
-              </AvatarFallback>
-            </Avatar>
+            {/* Avatar with gold ring */}
+            <div className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light">
+              <Avatar className="w-11 h-11 border-2 border-card">
+                <AvatarImage src={post.profiles?.avatar_url || ""} />
+                <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(userName)} text-white font-semibold`}>
+                  {userName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-foreground">
-                  {post.profiles?.full_name || "Người dùng"}
+                <span className="font-semibold text-foreground hover:underline cursor-pointer">
+                  {userName}
                 </span>
                 {post.profiles?.is_verified && (
-                  <span className="text-secondary">💜</span>
+                  <span className="text-primary text-sm">✓</span>
                 )}
                 {post.location && (
                   <>
-                    <span className="text-muted-foreground text-sm">cùng với</span>
-                    <span className="text-secondary text-sm font-medium flex items-center gap-1">
+                    <span className="text-muted-foreground text-sm">tại</span>
+                    <span className="text-primary text-sm font-medium flex items-center gap-1 hover:underline cursor-pointer">
                       <MapPin className="w-3 h-3" />
                       {post.location}
                     </span>
@@ -115,12 +139,28 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
 
           <div className="flex items-center gap-2">
             {/* Earned amount badge */}
-            <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/30 gap-1 text-xs font-medium">
-              Đã EARN {(post.fulfilled_amount || 99999).toLocaleString()}₫
+            <Badge variant="outline" className="bg-gold-champagne/10 text-gold-dark border-gold-champagne/30 gap-1 text-xs font-medium">
+              +{(post.fulfilled_amount || 99999).toLocaleString()}₫
             </Badge>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
+            
+            {/* More options dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
+                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem className="gap-2 cursor-pointer">
+                  <Pencil className="w-4 h-4" />
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                  <Trash2 className="w-4 h-4" />
+                  Xóa bài
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -128,26 +168,26 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       {/* Title */}
       {post.title && (
         <div className="px-4 pb-2">
-          <h3 className="font-semibold text-lg">{post.title}</h3>
+          <h3 className="font-semibold text-lg text-foreground">{post.title}</h3>
         </div>
       )}
 
       {/* Content */}
       <div className="px-4 pb-3">
-        <div className="whitespace-pre-wrap text-sm leading-relaxed">
+        <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
           {post.content}
         </div>
       </div>
 
       {/* Media - Responsive size with click to open lightbox */}
       {mediaUrls.length > 0 && (
-        <div className="relative px-4 pb-3">
+        <div className="relative">
           {mediaUrls.length === 1 ? (
             mediaUrls[0].type === "video" ? (
               <video
                 src={mediaUrls[0].url}
                 controls
-                className="w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] lg:max-h-[350px] object-cover rounded-xl"
+                className="w-full max-h-[400px] object-cover"
               />
             ) : (
               <img
@@ -157,11 +197,11 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
                   setLightboxIndex(0);
                   setLightboxOpen(true);
                 }}
-                className="w-full max-h-[200px] sm:max-h-[250px] md:max-h-[300px] lg:max-h-[350px] object-cover rounded-xl cursor-pointer hover:opacity-95 transition-opacity"
+                className="w-full max-h-[400px] object-cover cursor-pointer hover:opacity-95 transition-opacity"
               />
             )
           ) : (
-            <div className={`grid gap-1 rounded-xl overflow-hidden ${
+            <div className={`grid gap-0.5 ${
               mediaUrls.length === 2 ? "grid-cols-2" :
               mediaUrls.length === 3 ? "grid-cols-2" :
               "grid-cols-2"
@@ -179,7 +219,7 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
                       className={`w-full object-cover ${
                         mediaUrls.length === 3 && i === 0 
                           ? "h-full" 
-                          : "aspect-square max-h-[100px] sm:max-h-[120px] md:max-h-[150px]"
+                          : "aspect-square"
                       }`}
                     />
                   ) : (
@@ -193,7 +233,7 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
                       className={`w-full object-cover cursor-pointer hover:opacity-95 transition-opacity ${
                         mediaUrls.length === 3 && i === 0 
                           ? "h-full" 
-                          : "aspect-square max-h-[100px] sm:max-h-[120px] md:max-h-[150px]"
+                          : "aspect-square"
                       }`}
                     />
                   )}
@@ -205,7 +245,7 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
                         setLightboxOpen(true);
                       }}
                     >
-                      <span className="text-white text-lg sm:text-xl font-bold">
+                      <span className="text-white text-2xl font-bold">
                         +{mediaUrls.length - 4}
                       </span>
                     </div>
@@ -226,8 +266,8 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       />
 
       {/* Stats */}
-      <div className="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
+      <div className="px-4 py-3 flex items-center justify-between text-sm text-muted-foreground border-b border-border">
+        <div className="flex items-center gap-1.5">
           {topReactions.length > 0 ? (
             <div className="flex -space-x-1">
               {topReactions.map((reaction) => (
@@ -246,19 +286,20 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
               <span className="text-base">👍</span>
               <span className="text-base">❤️</span>
               <span className="text-base">😆</span>
-              <span className="text-base">😮</span>
             </div>
           )}
-          <span className="text-xs">{(totalReactions || post.reactions_count || 1.8).toLocaleString()} tỷ người đã bày tỏ cảm xúc</span>
+          <span className="text-xs hover:underline cursor-pointer">
+            {(totalReactions || post.reactions_count || 0).toLocaleString()} người
+          </span>
         </div>
         <div className="flex items-center gap-4 text-xs">
-          <span>{(post.comments_count || 3.7).toLocaleString()} tỷ bình luận</span>
-          <span>1 tỷ lượt chia sẻ</span>
+          <span className="hover:underline cursor-pointer">{(post.comments_count || 0).toLocaleString()} bình luận</span>
+          <span className="hover:underline cursor-pointer">0 chia sẻ</span>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="px-4 py-2 border-t border-border flex items-center justify-between gap-1">
+      <div className="px-2 py-1 flex items-center justify-between">
         <FeedReactionPicker
           currentReaction={userReaction}
           onReact={(type) => addReaction.mutate(type)}
@@ -268,10 +309,10 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         <Button 
           variant="ghost" 
           size="sm"
-          className={`gap-1.5 text-xs ${showComments ? "text-secondary" : "text-muted-foreground hover:text-foreground"}`}
+          className={`gap-2 text-sm rounded-lg flex-1 mx-1 ${showComments ? "text-primary bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
           onClick={() => setShowComments(!showComments)}
         >
-          <MessageCircle className="w-4 h-4" />
+          <MessageCircle className="w-5 h-5" />
           Bình luận
         </Button>
         <GiftDonateModal post={post} />
