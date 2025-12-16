@@ -23,7 +23,7 @@ const menuItems = [
   { icon: Sprout, label: "Fun Farm", href: "/farm" },
   { icon: Globe, label: "Fun Planet", href: "/planet" },
   { icon: Gamepad2, label: "Fun Play", href: "/play" },
-  { icon: MessageCircle, label: "Fun Chat", href: "/chat" },
+  { icon: MessageCircle, label: "Fun Chat", href: "/messages" },
   { icon: GraduationCap, label: "Fun Academy", href: "/academy" },
   { icon: TrendingUp, label: "Fun Trading", href: "/trading" },
   { icon: PiggyBank, label: "Fun Investment", href: "/investment" },

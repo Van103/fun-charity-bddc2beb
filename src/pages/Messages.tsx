@@ -7,9 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Send, ArrowLeft, Search } from "lucide-react";
+import { Loader2, Send, ArrowLeft, Search, Image as ImageIcon, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
+import { usePresence, getOnlineStatus } from "@/hooks/usePresence";
+import { useMessageNotifications } from "@/hooks/useMessageNotifications";
+import { ChatStickerPicker } from "@/components/chat/ChatStickerPicker";
+import { useToast } from "@/hooks/use-toast";
 
 interface Conversation {
   id: string;
@@ -22,6 +26,7 @@ interface Conversation {
     avatar_url: string | null;
   };
   lastMessage?: string;
+  isOnline?: boolean;
 }
 
 interface Message {
@@ -29,6 +34,7 @@ interface Message {
   conversation_id: string;
   sender_id: string;
   content: string;
+  image_url: string | null;
   is_read: boolean;
   created_at: string;
 }
@@ -36,6 +42,7 @@ interface Message {
 export default function Messages() {
   const [searchParams] = useSearchParams();
   const targetUserId = searchParams.get("user");
+  const { toast } = useToast();
   
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -45,7 +52,16 @@ export default function Messages() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Setup presence tracking
+  usePresence(currentUserId);
+  
+  // Setup message notifications
+  useMessageNotifications(currentUserId, activeConversation?.id || null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -61,7 +77,6 @@ export default function Messages() {
       setCurrentUserId(user.id);
       await loadConversations(user.id);
       
-      // If targeting a specific user, create or get conversation
       if (targetUserId) {
         await openConversationWithUser(user.id, targetUserId);
       }
@@ -81,7 +96,13 @@ export default function Messages() {
 
     if (!convos) return;
 
-    // Load other user profiles
+    // Load other user profiles and online status
+    const otherUserIds = convos.map(c => 
+      c.participant1_id === userId ? c.participant2_id : c.participant1_id
+    );
+    
+    const onlineStatusMap = await getOnlineStatus(otherUserIds);
+
     const enrichedConvos = await Promise.all(
       convos.map(async (convo) => {
         const otherUserId = convo.participant1_id === userId ? convo.participant2_id : convo.participant1_id;
@@ -92,10 +113,9 @@ export default function Messages() {
           .eq("user_id", otherUserId)
           .maybeSingle();
 
-        // Get last message
         const { data: lastMsg } = await supabase
           .from("messages")
-          .select("content")
+          .select("content, image_url")
           .eq("conversation_id", convo.id)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -104,7 +124,8 @@ export default function Messages() {
         return {
           ...convo,
           otherUser: profile || undefined,
-          lastMessage: lastMsg?.content || ""
+          lastMessage: lastMsg?.image_url ? "📷 Hình ảnh" : lastMsg?.content || "",
+          isOnline: onlineStatusMap.get(otherUserId) || false
         };
       })
     );
@@ -113,7 +134,6 @@ export default function Messages() {
   };
 
   const openConversationWithUser = async (myId: string, theirId: string) => {
-    // Check if conversation exists
     const { data: existing } = await supabase
       .from("conversations")
       .select("*")
@@ -123,7 +143,6 @@ export default function Messages() {
     let convo = existing;
 
     if (!convo) {
-      // Create new conversation
       const { data: newConvo } = await supabase
         .from("conversations")
         .insert({ participant1_id: myId, participant2_id: theirId })
@@ -135,16 +154,18 @@ export default function Messages() {
     }
 
     if (convo) {
-      // Get other user profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("user_id, full_name, avatar_url")
         .eq("user_id", theirId)
         .maybeSingle();
 
+      const onlineStatusMap = await getOnlineStatus([theirId]);
+
       setActiveConversation({
         ...convo,
-        otherUser: profile || undefined
+        otherUser: profile || undefined,
+        isOnline: onlineStatusMap.get(theirId) || false
       });
       
       await loadMessages(convo.id);
@@ -160,7 +181,6 @@ export default function Messages() {
 
     setMessages(data || []);
 
-    // Mark messages as read
     if (currentUserId) {
       await supabase
         .from("messages")
@@ -175,31 +195,90 @@ export default function Messages() {
     await loadMessages(convo.id);
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File quá lớn",
+        description: "Vui lòng chọn ảnh dưới 10MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleStickerSelect = (sticker: string) => {
+    setNewMessage(prev => prev + sticker);
+  };
+
   const sendMessage = async () => {
-    if (!newMessage.trim() || !activeConversation || !currentUserId) return;
+    if ((!newMessage.trim() && !imageFile) || !activeConversation || !currentUserId) return;
     
     setIsSending(true);
     
-    const { error } = await supabase
-      .from("messages")
-      .insert({
-        conversation_id: activeConversation.id,
-        sender_id: currentUserId,
-        content: newMessage.trim()
-      });
+    try {
+      let imageUrl = null;
 
-    if (!error) {
+      // Upload image if exists
+      if (imageFile) {
+        const fileExt = imageFile.name.split(".").pop();
+        const filePath = `${currentUserId}/${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("post-images")
+          .upload(filePath, imageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(filePath);
+
+        imageUrl = urlData.publicUrl;
+      }
+
+      const { error } = await supabase
+        .from("messages")
+        .insert({
+          conversation_id: activeConversation.id,
+          sender_id: currentUserId,
+          content: newMessage.trim() || (imageUrl ? "" : ""),
+          image_url: imageUrl
+        });
+
+      if (error) throw error;
+
       setNewMessage("");
+      setImageFile(null);
+      setImagePreview(null);
       await loadMessages(activeConversation.id);
       
-      // Update conversation last_message_at
       await supabase
         .from("conversations")
         .update({ last_message_at: new Date().toISOString() })
         .eq("id", activeConversation.id);
+    } catch (error: any) {
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể gửi tin nhắn",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSending(false);
     }
-    
-    setIsSending(false);
   };
 
   // Realtime subscription for messages
@@ -226,6 +305,30 @@ export default function Messages() {
       supabase.removeChannel(channel);
     };
   }, [activeConversation?.id]);
+
+  // Realtime subscription for presence changes
+  useEffect(() => {
+    const channel = supabase
+      .channel("presence-updates")
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_presence'
+        },
+        async () => {
+          if (currentUserId) {
+            await loadConversations(currentUserId);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUserId]);
 
   if (isLoading) {
     return (
@@ -280,10 +383,16 @@ export default function Messages() {
                       activeConversation?.id === convo.id ? 'bg-muted/50' : ''
                     }`}
                   >
-                    <Avatar>
-                      <AvatarImage src={convo.otherUser?.avatar_url || ""} />
-                      <AvatarFallback>{convo.otherUser?.full_name?.charAt(0) || "U"}</AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar>
+                        <AvatarImage src={convo.otherUser?.avatar_url || ""} />
+                        <AvatarFallback>{convo.otherUser?.full_name?.charAt(0) || "U"}</AvatarFallback>
+                      </Avatar>
+                      {/* Online indicator */}
+                      <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-card ${
+                        convo.isOnline ? 'bg-green-500' : 'bg-muted-foreground'
+                      }`} />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{convo.otherUser?.full_name || "Người dùng"}</p>
                       <p className="text-xs text-muted-foreground truncate">{convo.lastMessage}</p>
@@ -311,11 +420,14 @@ export default function Messages() {
                   >
                     <ArrowLeft className="w-5 h-5" />
                   </Button>
-                  <Link to={`/user/${activeConversation.otherUser?.user_id}`}>
+                  <Link to={`/user/${activeConversation.otherUser?.user_id}`} className="relative">
                     <Avatar>
                       <AvatarImage src={activeConversation.otherUser?.avatar_url || ""} />
                       <AvatarFallback>{activeConversation.otherUser?.full_name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
+                    <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-card ${
+                      activeConversation.isOnline ? 'bg-green-500' : 'bg-muted-foreground'
+                    }`} />
                   </Link>
                   <div>
                     <Link 
@@ -324,6 +436,13 @@ export default function Messages() {
                     >
                       {activeConversation.otherUser?.full_name || "Người dùng"}
                     </Link>
+                    <p className="text-xs text-muted-foreground">
+                      {activeConversation.isOnline ? (
+                        <span className="text-green-500">● Đang hoạt động</span>
+                      ) : (
+                        "Ngoại tuyến"
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -336,14 +455,28 @@ export default function Messages() {
                         className={`flex ${msg.sender_id === currentUserId ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[70%] px-4 py-2 rounded-2xl ${
+                          className={`max-w-[70%] rounded-2xl overflow-hidden ${
                             msg.sender_id === currentUserId
                               ? 'bg-primary text-primary-foreground'
                               : 'bg-muted'
                           }`}
                         >
-                          <p className="text-sm">{msg.content}</p>
-                          <p className={`text-xs mt-1 ${
+                          {/* Image message */}
+                          {msg.image_url && (
+                            <img 
+                              src={msg.image_url} 
+                              alt="Shared image" 
+                              className="max-w-full max-h-60 object-cover cursor-pointer"
+                              onClick={() => window.open(msg.image_url!, '_blank')}
+                            />
+                          )}
+                          {/* Text content */}
+                          {msg.content && (
+                            <div className="px-4 py-2">
+                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                            </div>
+                          )}
+                          <p className={`text-xs px-4 pb-2 ${
                             msg.sender_id === currentUserId ? 'text-primary-foreground/70' : 'text-muted-foreground'
                           }`}>
                             {formatDistanceToNow(new Date(msg.created_at), { locale: vi })}
@@ -355,12 +488,47 @@ export default function Messages() {
                   </div>
                 </ScrollArea>
 
+                {/* Image Preview */}
+                {imagePreview && (
+                  <div className="px-4 py-2 border-t border-border">
+                    <div className="relative inline-block">
+                      <img src={imagePreview} alt="Preview" className="max-h-20 rounded-lg" />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                        onClick={removeImage}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Message Input */}
                 <div className="p-4 border-t border-border">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageSelect}
+                  />
                   <form 
                     onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                    className="flex gap-2"
+                    className="flex items-center gap-2"
                   >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isSending}
+                    >
+                      <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                    </Button>
+                    <ChatStickerPicker onSelect={handleStickerSelect} />
                     <Input
                       placeholder="Nhập tin nhắn..."
                       value={newMessage}
@@ -368,7 +536,7 @@ export default function Messages() {
                       disabled={isSending}
                       className="flex-1"
                     />
-                    <Button type="submit" disabled={isSending || !newMessage.trim()}>
+                    <Button type="submit" disabled={isSending || (!newMessage.trim() && !imageFile)}>
                       {isSending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
