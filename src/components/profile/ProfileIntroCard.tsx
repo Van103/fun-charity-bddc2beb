@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { 
   Briefcase, 
   GraduationCap, 
@@ -5,10 +6,9 @@ import {
   Home, 
   Heart,
   Clock,
-  Edit,
-  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EditDetailsModal } from "./EditDetailsModal";
 
 interface ProfileIntroCardProps {
   profile: {
@@ -20,6 +20,8 @@ interface ProfileIntroCardProps {
 }
 
 export function ProfileIntroCard({ profile, onEdit }: ProfileIntroCardProps) {
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+
   // Mock data for demonstration - in real app, fetch from profile extended fields
   const introItems = [
     { icon: Briefcase, text: "Làm việc tại GEIN Academy", type: "work" },
@@ -32,77 +34,55 @@ export function ProfileIntroCard({ profile, onEdit }: ProfileIntroCardProps) {
   ];
 
   return (
-    <div className="glass-card overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-border">
-        <h3 className="text-lg font-bold text-foreground">Giới thiệu</h3>
-      </div>
+    <>
+      <div className="glass-card overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b border-border">
+          <h3 className="text-lg font-bold text-foreground">Giới thiệu</h3>
+        </div>
 
-      <div className="p-4 space-y-4">
-        {/* Bio/Quote */}
-        {profile?.bio && (
-          <div className="text-center">
-            <p className="text-foreground">{profile.bio}</p>
-          </div>
-        )}
-
-        {/* Edit Bio Button */}
-        <Button 
-          variant="secondary" 
-          className="w-full"
-          onClick={onEdit}
-        >
-          Chỉnh sửa tiểu sử
-        </Button>
-
-        {/* Intro Items */}
-        <div className="space-y-3">
-          {introItems.map((item, index) => (
-            <div key={index} className="flex items-start gap-3">
-              <item.icon className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-              <span className="text-sm text-foreground">{item.text}</span>
+        <div className="p-4 space-y-4">
+          {/* Bio/Quote */}
+          {profile?.bio && (
+            <div className="text-center">
+              <p className="text-foreground">{profile.bio}</p>
             </div>
-          ))}
-        </div>
+          )}
 
-        {/* Add Info Buttons */}
-        <div className="space-y-2 pt-2">
+          {/* Edit Bio Button */}
           <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 text-primary hover:text-primary"
+            variant="secondary" 
+            className="w-full"
             onClick={onEdit}
           >
-            <Plus className="w-4 h-4" />
-            Thêm nơi làm việc
+            Chỉnh sửa tiểu sử
           </Button>
+
+          {/* Intro Items */}
+          <div className="space-y-3">
+            {introItems.map((item, index) => (
+              <div key={index} className="flex items-start gap-3">
+                <item.icon className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+                <span className="text-sm text-foreground">{item.text}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Edit Details Button */}
           <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 text-primary hover:text-primary"
-            onClick={onEdit}
+            variant="secondary" 
+            className="w-full"
+            onClick={() => setDetailsModalOpen(true)}
           >
-            <Plus className="w-4 h-4" />
-            Thêm trường học
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full justify-start gap-2 text-primary hover:text-primary"
-            onClick={onEdit}
-          >
-            <Plus className="w-4 h-4" />
-            Thêm thành phố hiện tại
+            Chỉnh sửa chi tiết
           </Button>
         </div>
-
-        {/* Edit Details Button */}
-        <Button 
-          variant="ghost" 
-          className="w-full text-muted-foreground hover:text-foreground"
-          onClick={onEdit}
-        >
-          <Edit className="w-4 h-4 mr-2" />
-          Chỉnh sửa chi tiết
-        </Button>
       </div>
-    </div>
+
+      <EditDetailsModal 
+        isOpen={detailsModalOpen}
+        onClose={() => setDetailsModalOpen(false)}
+      />
+    </>
   );
 }

@@ -30,28 +30,43 @@ export function PhotosTab({ userId }: PhotosTabProps) {
     if (!userId) return;
 
     try {
-      const { data, error } = await supabase
+      // Fetch from posts table
+      const { data: postsData } = await supabase
         .from("posts")
         .select("image_url, media_urls")
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      // Fetch from feed_posts table
+      const { data: feedPostsData } = await supabase
+        .from("feed_posts")
+        .select("media_urls")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
       
       const allMedia: MediaItem[] = [];
       
-      data.forEach((post) => {
-        // Check media_urls first (new format)
+      // Process posts
+      postsData?.forEach((post) => {
         if (post.media_urls && Array.isArray(post.media_urls)) {
           (post.media_urls as unknown as MediaItem[]).forEach((item) => {
             if (item && item.url) {
               allMedia.push(item);
             }
           });
-        }
-        // Fallback to image_url (old format)
-        else if (post.image_url) {
+        } else if (post.image_url) {
           allMedia.push({ url: post.image_url, type: "image" });
+        }
+      });
+
+      // Process feed_posts
+      feedPostsData?.forEach((post) => {
+        if (post.media_urls && Array.isArray(post.media_urls)) {
+          (post.media_urls as unknown as MediaItem[]).forEach((item) => {
+            if (item && item.url) {
+              allMedia.push(item);
+            }
+          });
         }
       });
       
@@ -129,6 +144,117 @@ export function PhotosTab({ userId }: PhotosTabProps) {
           </DialogContent>
         </Dialog>
       ))}
+    </div>
+  );
+}
+
+// Preview component for profile sidebar
+interface PhotosPreviewCardProps {
+  userId: string | null;
+  onViewAll?: () => void;
+}
+
+export function PhotosPreviewCard({ userId, onViewAll }: PhotosPreviewCardProps) {
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (userId) {
+      fetchPhotos();
+    }
+  }, [userId]);
+
+  const fetchPhotos = async () => {
+    if (!userId) return;
+
+    try {
+      const allPhotos: string[] = [];
+
+      // Fetch from posts
+      const { data: postsData } = await supabase
+        .from("posts")
+        .select("image_url, media_urls")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      // Fetch from feed_posts
+      const { data: feedPostsData } = await supabase
+        .from("feed_posts")
+        .select("media_urls")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      postsData?.forEach(post => {
+        if (allPhotos.length >= 9) return;
+        if (post.image_url) {
+          allPhotos.push(post.image_url);
+        }
+        const mediaUrls = post.media_urls as unknown as MediaItem[] | null;
+        if (mediaUrls && Array.isArray(mediaUrls)) {
+          mediaUrls.forEach(media => {
+            if (media.type === 'image' && media.url && allPhotos.length < 9) {
+              allPhotos.push(media.url);
+            }
+          });
+        }
+      });
+
+      feedPostsData?.forEach(post => {
+        if (allPhotos.length >= 9) return;
+        const mediaUrls = post.media_urls as unknown as MediaItem[] | null;
+        if (mediaUrls && Array.isArray(mediaUrls)) {
+          mediaUrls.forEach(media => {
+            if (media.type === 'image' && media.url && allPhotos.length < 9) {
+              allPhotos.push(media.url);
+            }
+          });
+        }
+      });
+
+      setPhotos(allPhotos.slice(0, 9));
+    } catch (error) {
+      console.error("Error fetching photos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-3 gap-1">
+        {[...Array(9)].map((_, i) => (
+          <div key={i} className="aspect-square bg-muted animate-pulse rounded-md" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-3 gap-1">
+      {photos.length > 0 ? (
+        photos.map((photo, index) => (
+          <div 
+            key={index}
+            className="aspect-square cursor-pointer overflow-hidden rounded-md hover:opacity-90 transition-opacity"
+            onClick={onViewAll}
+          >
+            <img 
+              src={photo} 
+              alt={`Photo ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))
+      ) : (
+        [...Array(9)].map((_, i) => (
+          <div 
+            key={i} 
+            className="aspect-square bg-gradient-to-br from-secondary/20 to-primary/20 rounded-md"
+          />
+        ))
+      )}
     </div>
   );
 }

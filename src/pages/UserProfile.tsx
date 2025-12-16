@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ProfileIntroCard } from "@/components/profile/ProfileIntroCard";
-import { RightSidebar } from "@/components/social/RightSidebar";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
 import { PostCardSkeletonList, PostCardSkeleton } from "@/components/social/PostCardSkeleton";
 import { PullToRefresh } from "@/components/social/PullToRefresh";
+import { PhotosPreviewCard, PhotosTab } from "@/components/profile/PhotosTab";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
@@ -18,8 +18,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Camera, Edit, User as UserIcon, Plus, ChevronDown, Users, Images, Video, CalendarCheck } from "lucide-react";
+import { Camera, Edit, User as UserIcon, Plus, ChevronDown } from "lucide-react";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Profile {
   id: string;
@@ -39,6 +40,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
+  const [photosModalOpen, setPhotosModalOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -263,17 +265,20 @@ export default function UserProfile() {
                 <div className="glass-card overflow-hidden">
                   <div className="p-4 flex items-center justify-between">
                     <h3 className="text-lg font-bold text-foreground">Ảnh</h3>
-                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-primary hover:text-primary/80"
+                      onClick={() => setPhotosModalOpen(true)}
+                    >
                       Xem tất cả ảnh
                     </Button>
                   </div>
-                  <div className="px-4 pb-4 grid grid-cols-3 gap-1">
-                    {[1,2,3,4,5,6,7,8,9].map((i) => (
-                      <div 
-                        key={i} 
-                        className="aspect-square bg-gradient-to-br from-secondary/20 to-primary/20 rounded-md"
-                      />
-                    ))}
+                  <div className="px-4 pb-4">
+                    <PhotosPreviewCard 
+                      userId={profile?.user_id || null} 
+                      onViewAll={() => setPhotosModalOpen(true)} 
+                    />
                   </div>
                 </div>
 
@@ -354,6 +359,16 @@ export default function UserProfile() {
           onUpdate={handleProfileUpdate}
         />
       )}
+
+      {/* Photos Modal */}
+      <Dialog open={photosModalOpen} onOpenChange={setPhotosModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Ảnh</DialogTitle>
+          </DialogHeader>
+          <PhotosTab userId={profile?.user_id || null} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
