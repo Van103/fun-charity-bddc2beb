@@ -297,6 +297,79 @@
   .bg-soft-purple {
     background-color: hsl(252 100% 98%);
   }
+
+  /* Luxury Sparkle Card - Purple to Gold gradient with bokeh */
+  .luxury-sparkle-card {
+    position: relative;
+    background: linear-gradient(
+      135deg,
+      hsl(252 60% 25%) 0%,
+      hsl(252 70% 40%) 25%,
+      hsl(252 80% 50%) 40%,
+      hsl(38 86% 60%) 70%,
+      hsl(38 86% 72%) 100%
+    );
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid hsl(38 86% 72% / 0.3);
+  }
+
+  .luxury-sparkle-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(circle at 15% 25%, hsl(38 86% 75% / 0.7) 0%, transparent 12%),
+      radial-gradient(circle at 85% 15%, hsl(38 86% 72% / 0.6) 0%, transparent 10%),
+      radial-gradient(circle at 70% 60%, hsl(38 86% 80% / 0.5) 0%, transparent 15%),
+      radial-gradient(circle at 25% 75%, hsl(38 86% 72% / 0.4) 0%, transparent 8%),
+      radial-gradient(circle at 90% 85%, hsl(38 86% 75% / 0.5) 0%, transparent 10%),
+      radial-gradient(circle at 50% 40%, hsl(0 0% 100% / 0.25) 0%, transparent 20%),
+      radial-gradient(circle at 35% 50%, hsl(38 86% 72% / 0.3) 0%, transparent 6%),
+      radial-gradient(circle at 60% 30%, hsl(38 86% 80% / 0.4) 0%, transparent 8%);
+    pointer-events: none;
+    animation: bokeh-float 6s ease-in-out infinite alternate;
+  }
+
+  .luxury-sparkle-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(0 0% 0% / 0.1) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Hover effect for other cards */
+  .hover-luxury-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-luxury-glow:hover {
+    background: linear-gradient(
+      135deg,
+      hsl(252 60% 25% / 0.08) 0%,
+      hsl(38 86% 72% / 0.12) 100%
+    );
+    box-shadow: 
+      0 0 20px hsl(252 91% 66% / 0.15),
+      0 0 40px hsl(38 86% 72% / 0.1);
+    border-color: hsl(38 86% 72% / 0.3);
+  }
+}
+
+@keyframes bokeh-float {
+  0% {
+    opacity: 0.85;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.02);
+  }
 }
 
 @layer utilities {

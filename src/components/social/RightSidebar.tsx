@@ -79,22 +79,22 @@ export function RightSidebar() {
   return (
     <aside className="w-80 shrink-0 space-y-4 sticky top-20">
       {/* Honor Board */}
-      <div className="glass-card overflow-hidden">
-        <div className="bg-gradient-to-r from-primary to-primary-light p-3">
-          <h3 className="text-xs font-bold text-primary-foreground text-center tracking-wider">
-            HONOR BOARD
+      <div className="luxury-sparkle-card overflow-hidden">
+        <div className="p-3 border-b border-white/20">
+          <h3 className="text-xs font-bold text-white text-center tracking-wider drop-shadow-sm">
+            ✨ HONOR BOARD ✨
           </h3>
         </div>
-        <div className="p-3 space-y-2 bg-muted/20">
+        <div className="p-3 space-y-2 bg-black/10 backdrop-blur-sm">
           {honorStats.map((stat) => (
             <div key={stat.label} className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground w-16 shrink-0 font-medium">{stat.label}</span>
-              <div className="flex-1 h-5 bg-muted/50 rounded overflow-hidden">
+              <span className="text-[10px] text-white/80 w-16 shrink-0 font-medium">{stat.label}</span>
+              <div className="flex-1 h-5 bg-black/20 rounded overflow-hidden backdrop-blur-sm">
                 <div 
-                  className="h-full bg-gradient-to-r from-primary to-primary-light flex items-center px-2"
+                  className="h-full bg-gradient-to-r from-white/30 to-white/50 flex items-center px-2"
                   style={{ width: `${stat.barWidth}%` }}
                 >
-                  <span className="text-[9px] font-mono text-primary-foreground tracking-widest font-bold">
+                  <span className="text-[9px] font-mono text-white tracking-widest font-bold drop-shadow-sm">
                     {stat.value}
                   </span>
                 </div>
@@ -105,23 +105,23 @@ export function RightSidebar() {
       </div>
 
       {/* Top Ranking */}
-      <div className="glass-card overflow-hidden">
-        <div className="bg-gradient-to-r from-primary to-primary-light p-3">
-          <h3 className="text-xs font-bold text-primary-foreground text-center tracking-wider">
-            TOP RANKING
+      <div className="luxury-sparkle-card overflow-hidden">
+        <div className="p-3 border-b border-white/20">
+          <h3 className="text-xs font-bold text-white text-center tracking-wider drop-shadow-sm">
+            👑 TOP RANKING 👑
           </h3>
         </div>
         <ScrollArea className="h-[300px]">
-          <div className="p-2 space-y-1">
+          <div className="p-2 space-y-1 bg-black/10 backdrop-blur-sm">
             {topRankers.map((ranker) => (
               <div
                 key={ranker.rank}
-                className="flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-muted/50 transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-2 py-2 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
               >
                 {/* Rank badge with avatar */}
                 <div className="relative">
-                  <div className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne/50 to-gold-champagne/30">
-                    <Avatar className="w-9 h-9 border-2 border-card">
+                  <div className="p-0.5 rounded-full bg-gradient-to-br from-white/50 to-white/30">
+                    <Avatar className="w-9 h-9 border-2 border-white/30">
                       <AvatarImage src={ranker.avatar} />
                       <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(ranker.name)} text-white text-xs font-medium`}>
                         {ranker.name.charAt(0)}
@@ -134,14 +134,14 @@ export function RightSidebar() {
                 </div>
                 <div className="flex-1 min-w-0 ml-1">
                   <div className="flex items-center gap-1">
-                    <span className="text-xs font-semibold truncate text-foreground">{ranker.name}</span>
+                    <span className="text-xs font-semibold truncate text-white">{ranker.name}</span>
                     {ranker.verified && (
-                      <span className="text-primary text-[10px]">✓</span>
+                      <span className="text-secondary text-[10px]">✓</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-muted-foreground">{ranker.location}</span>
+                  <span className="text-[10px] text-white/70">{ranker.location}</span>
                 </div>
-                <span className="text-xs font-bold text-primary shrink-0">
+                <span className="text-xs font-bold text-secondary shrink-0 drop-shadow-sm">
                   {ranker.amount}
                 </span>
               </div>
@@ -151,7 +151,7 @@ export function RightSidebar() {
       </div>
 
       {/* Birthdays */}
-      <div className="glass-card p-4">
+      <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <Cake className="w-4 h-4 text-gold-champagne" />
           <h3 className="text-sm font-semibold text-foreground">Sinh nhật</h3>
@@ -163,7 +163,7 @@ export function RightSidebar() {
       </div>
 
       {/* Contacts */}
-      <div className="glass-card p-4">
+      <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Người liên hệ</h3>
@@ -189,7 +189,7 @@ export function RightSidebar() {
       </div>
 
       {/* Group Chats */}
-      <div className="glass-card p-4">
+      <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <MessageCircle className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Cuộc trò chuyện nhóm</h3>
