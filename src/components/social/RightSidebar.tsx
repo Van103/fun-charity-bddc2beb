@@ -79,13 +79,14 @@ export function RightSidebar() {
   return (
     <aside className="w-80 shrink-0 space-y-4 sticky top-20">
       {/* Honor Board */}
-      <div className="luxury-sparkle-card overflow-hidden">
-        <div className="p-3 border-b border-white/20">
+      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-galaxy-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+        <div className="relative p-3 border-b border-white/20">
           <h3 className="text-xs font-bold text-white text-center tracking-wider drop-shadow-sm">
             ✨ HONOR BOARD ✨
           </h3>
         </div>
-        <div className="p-3 space-y-2 bg-black/10 backdrop-blur-sm">
+        <div className="relative p-3 space-y-2">
           {honorStats.map((stat) => (
             <div key={stat.label} className="flex items-center gap-2">
               <span className="text-[10px] text-white/80 w-16 shrink-0 font-medium">{stat.label}</span>
@@ -105,14 +106,15 @@ export function RightSidebar() {
       </div>
 
       {/* Top Ranking */}
-      <div className="luxury-sparkle-card overflow-hidden">
-        <div className="p-3 border-b border-white/20">
+      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-galaxy-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
+        <div className="relative p-3 border-b border-white/20">
           <h3 className="text-xs font-bold text-white text-center tracking-wider drop-shadow-sm">
             👑 TOP RANKING 👑
           </h3>
         </div>
         <ScrollArea className="h-[300px]">
-          <div className="p-2 space-y-1 bg-black/10 backdrop-blur-sm">
+          <div className="relative p-2 space-y-1">
             {topRankers.map((ranker) => (
               <div
                 key={ranker.rank}

@@ -35,18 +35,18 @@ export function StoriesSection() {
   const [activeTab, setActiveTab] = useState("stories");
 
   return (
-    <div className="luxury-sparkle-card p-4">
+    <div className="glass-card p-4 bg-white">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 mb-4 bg-black/20 backdrop-blur-sm p-1 rounded-xl border border-white/10">
+        <TabsList className="grid w-full grid-cols-2 mb-4 bg-muted p-1 rounded-xl border border-border">
           <TabsTrigger 
             value="stories" 
-            className="rounded-lg text-white/80 data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+            className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
           >
             📖 Stories
           </TabsTrigger>
           <TabsTrigger 
             value="live" 
-            className="rounded-lg text-white/80 data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+            className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
           >
             <Video className="w-4 h-4 mr-1" />
             Live
@@ -63,11 +63,11 @@ export function StoriesSection() {
               >
                 <div className="flex flex-col items-center gap-2">
                   <div className="relative">
-                    <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border-2 border-dashed border-white/40 flex items-center justify-center hover:border-white/60 hover:bg-white/30 transition-all">
-                      <Plus className="w-6 h-6 text-white" />
+                    <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-muted-foreground/40 flex items-center justify-center hover:border-primary/60 hover:bg-muted/80 transition-all">
+                      <Plus className="w-6 h-6 text-muted-foreground" />
                     </div>
                   </div>
-                  <span className="text-xs text-white/90 font-medium">Tạo tin</span>
+                  <span className="text-xs text-foreground font-medium">Tạo tin</span>
                 </div>
               </motion.div>
 
@@ -106,7 +106,7 @@ export function StoriesSection() {
                     )}
 
                     {/* Name */}
-                    <span className="text-xs text-white font-medium line-clamp-1 max-w-[64px] text-center drop-shadow-sm">
+                    <span className="text-xs text-foreground font-medium line-clamp-1 max-w-[64px] text-center">
                       {story.userName}
                     </span>
                   </div>
@@ -122,7 +122,7 @@ export function StoriesSection() {
         </TabsContent>
 
         <TabsContent value="live" className="mt-0">
-          <div className="flex items-center justify-center h-32 text-white/70">
+          <div className="flex items-center justify-center h-32 text-muted-foreground">
             <div className="text-center">
               <Video className="w-8 h-8 mx-auto mb-2 opacity-70" />
               <p className="text-sm">Chưa có ai đang phát trực tiếp</p>

@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   User,
-  Users,
   GraduationCap,
   TrendingUp,
   PiggyBank,
@@ -19,7 +18,6 @@ import {
 
 const menuItems = [
   { icon: User, label: "Fun Profile", href: "/profile" },
-  { icon: Users, label: "Bạn bè", href: "/friends" },
   { icon: Sprout, label: "Fun Farm", href: "/farm" },
   { icon: Globe, label: "Fun Planet", href: "/planet" },
   { icon: Gamepad2, label: "Fun Play", href: "/play" },
