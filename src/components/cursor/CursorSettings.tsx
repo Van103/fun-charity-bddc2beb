@@ -19,14 +19,14 @@ const CursorSettings = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full bg-primary/90 text-primary-foreground hover:bg-primary shadow-lg hover:shadow-xl transition-all duration-300"
+          className="h-9 w-9 rounded-full hover:bg-muted/50"
           title="Cài đặt con trỏ"
         >
-          <Sparkles className="h-5 w-5" />
+          <Sparkles className="h-4 w-4 text-secondary" />
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        side="top" 
+        side="bottom" 
         align="end" 
         className="w-72 p-4 bg-card/95 backdrop-blur-xl border-border/50"
       >

@@ -8,7 +8,6 @@ import { CursorProvider } from "@/contexts/CursorContext";
 import { AnimatedBackground } from "@/components/background/AnimatedBackground";
 import { EnergyBokeh } from "@/components/background/EnergyBokeh";
 import CustomCursor from "@/components/cursor/CustomCursor";
-import CursorSettings from "@/components/cursor/CursorSettings";
 import Index from "./pages/Index";
 import Campaigns from "./pages/Campaigns";
 import CampaignDetail from "./pages/CampaignDetail";
@@ -54,7 +53,6 @@ const App = () => (
           <Toaster />
           <Sonner />
           <CustomCursor />
-          <CursorSettings />
           <BrowserRouter>
             <BackgroundWithVariant />
             <EnergyBokeh />

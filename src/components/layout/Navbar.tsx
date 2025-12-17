@@ -16,6 +16,7 @@ import { WalletConnectModal } from "@/components/wallet/WalletConnectModal";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SearchBar } from "./SearchBar";
 import { LanguageToggle } from "./LanguageToggle";
+import CursorSettings from "@/components/cursor/CursorSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFriendRequestNotifications } from "@/hooks/useFriendNotifications";
 import {
@@ -172,6 +173,7 @@ export function Navbar() {
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-2">
             <LanguageToggle />
+            <CursorSettings />
             <NotificationDropdown />
 
             {/* Settings Popover */}
