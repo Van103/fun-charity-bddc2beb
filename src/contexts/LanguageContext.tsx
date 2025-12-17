@@ -18,6 +18,7 @@ export const translations: Translations = {
   "nav.overview": { en: "Overview", vi: "Tổng quan" },
   "nav.platform": { en: "Platform", vi: "Nền tảng" },
   "nav.reviews": { en: "Reviews", vi: "Đánh giá" },
+  "nav.profiles": { en: "Profiles", vi: "Hồ sơ" },
   "nav.search": { en: "Search on FUN Charity", vi: "Tìm kiếm trên FUN Charity" },
   
   // Left Sidebar
@@ -97,6 +98,11 @@ export const translations: Translations = {
   "common.delete": { en: "Delete", vi: "Xóa" },
   "common.edit": { en: "Edit", vi: "Chỉnh sửa" },
   "common.close": { en: "Close", vi: "Đóng" },
+  "common.settings": { en: "Interface Settings", vi: "Cài đặt giao diện" },
+  "common.login": { en: "Login", vi: "Đăng Nhập" },
+  "common.donate": { en: "Donate", vi: "Quyên Góp" },
+  "common.connectWallet": { en: "Connect Wallet", vi: "Kết nối ví" },
+  "common.walletPrefix": { en: "Wallet:", vi: "Ví:" },
   
   // User menu
   "user.profile": { en: "Personal Profile", vi: "Hồ sơ cá nhân" },

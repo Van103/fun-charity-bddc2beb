@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   User,
   GraduationCap,
@@ -17,16 +18,16 @@ import {
 } from "lucide-react";
 
 const menuItems = [
-  { icon: User, label: "Fun Profile", href: "/profile" },
-  { icon: Sprout, label: "Fun Farm", href: "/farm" },
-  { icon: Globe, label: "Fun Planet", href: "/planet" },
-  { icon: Gamepad2, label: "Fun Play", href: "/play" },
-  { icon: MessageCircle, label: "Fun Chat", href: "/messages" },
-  { icon: GraduationCap, label: "Fun Academy", href: "/academy" },
-  { icon: TrendingUp, label: "Fun Trading", href: "/trading" },
-  { icon: PiggyBank, label: "Fun Investment", href: "/investment" },
-  { icon: Heart, label: "Fun Life", href: "/life" },
-  { icon: Scale, label: "Fun Legal", href: "/legal" },
+  { icon: User, labelKey: "menu.profile", href: "/profile" },
+  { icon: Sprout, labelKey: "menu.farm", href: "/farm" },
+  { icon: Globe, labelKey: "menu.planet", href: "/planet" },
+  { icon: Gamepad2, labelKey: "menu.play", href: "/play" },
+  { icon: MessageCircle, labelKey: "menu.chat", href: "/messages" },
+  { icon: GraduationCap, labelKey: "menu.academy", href: "/academy" },
+  { icon: TrendingUp, labelKey: "menu.trading", href: "/trading" },
+  { icon: PiggyBank, labelKey: "menu.investment", href: "/investment" },
+  { icon: Heart, labelKey: "menu.life", href: "/life" },
+  { icon: Scale, labelKey: "menu.legal", href: "/legal" },
 ];
 
 interface LeftSidebarProps {
@@ -39,22 +40,23 @@ interface LeftSidebarProps {
 
 export function LeftSidebar({ profile }: LeftSidebarProps) {
   const location = useLocation();
+  const { t } = useLanguage();
 
   return (
     <aside className="w-64 shrink-0 space-y-4 sticky top-20">
       {/* Platform Ecosystem */}
       <div className="glass-card p-4 hover-luxury-glow">
         <h3 className="font-semibold mb-1 text-primary/90" style={{ fontSize: '20px' }}>
-          F.U. Ecosystem Platforms
+          {t("sidebar.ecosystem")}
         </h3>
-        <p className="text-xs mb-4 text-primary/60">Coming soon</p>
+        <p className="text-xs mb-4 text-primary/60">{t("sidebar.comingSoon")}</p>
         
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (
               <Link
-                key={item.label}
+                key={item.labelKey}
                 to={item.href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                   isActive 
@@ -63,7 +65,7 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
                 }`}
               >
                 <item.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
-                <span style={{ fontSize: '18px' }}>{item.label}</span>
+                <span style={{ fontSize: '18px' }}>{t(item.labelKey)}</span>
               </Link>
             );
           })}
@@ -73,10 +75,10 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
       {/* Shortcuts */}
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">Your shortcuts</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("sidebar.shortcuts")}</h3>
           <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
             <Edit className="w-3 h-3 mr-1" />
-            Edit
+            {t("sidebar.edit")}
           </Button>
         </div>
         
@@ -96,7 +98,7 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
           <span className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">1B96868</span> Users
+            <span className="font-bold text-foreground">1B96868</span> {t("sidebar.users")}
           </span>
         </div>
       </div>

@@ -16,6 +16,7 @@ import { WalletConnectModal } from "@/components/wallet/WalletConnectModal";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SearchBar } from "./SearchBar";
 import { LanguageToggle } from "./LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useFriendRequestNotifications } from "@/hooks/useFriendNotifications";
 import {
   Menu,
@@ -42,14 +43,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const platformItems = [
-  { name: "Chiến Dịch", path: "/campaigns", icon: Newspaper },
-  { name: "Bản Đồ Nhu Cầu", path: "/needs-map", icon: MapPin },
-  { name: "Tổng Quan", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Đánh Giá", path: "/reviews", icon: Star },
+  { nameKey: "nav.campaigns", path: "/campaigns", icon: Newspaper },
+  { nameKey: "nav.needsMap", path: "/needs-map", icon: MapPin },
+  { nameKey: "nav.overview", path: "/dashboard", icon: LayoutDashboard },
+  { nameKey: "nav.reviews", path: "/reviews", icon: Star },
 ];
 
 const navItems = [
-  { name: "Hồ Sơ", path: "/profiles", icon: Users },
+  { nameKey: "nav.profiles", path: "/profiles", icon: Users },
 ];
 
 export function Navbar() {
@@ -60,6 +61,7 @@ export function Navbar() {
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Enable realtime friend request notifications
   useFriendRequestNotifications(user?.id || null);
@@ -130,7 +132,7 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-1 text-foreground hover:text-primary hover:bg-primary/10">
                   <Layers className="w-4 h-4" />
-                  Nền Tảng
+                  {t("nav.platform")}
                   <ChevronDown className="w-3 h-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -141,7 +143,7 @@ export function Navbar() {
                     <DropdownMenuItem key={item.path} asChild>
                       <Link to={item.path} className="flex items-center gap-2">
                         <Icon className="w-4 h-4" />
-                        {item.name}
+                        {t(item.nameKey)}
                       </Link>
                     </DropdownMenuItem>
                   );
@@ -160,7 +162,7 @@ export function Navbar() {
                     className={isActive ? "bg-primary/20 text-primary" : "text-foreground hover:text-primary hover:bg-primary/10"}
                   >
                     <Icon className="w-4 h-4" />
-                    {item.name}
+                    {t(item.nameKey)}
                   </Button>
                 </Link>
               );
@@ -181,7 +183,7 @@ export function Navbar() {
               </PopoverTrigger>
               <PopoverContent align="end" className="w-72">
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">Cài đặt giao diện</h4>
+                  <h4 className="font-semibold text-sm">{t("common.settings")}</h4>
                   <MotionToggle />
                 </div>
               </PopoverContent>
@@ -214,7 +216,7 @@ export function Navbar() {
                     <DropdownMenuItem asChild>
                       <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
                         <UserIcon className="w-4 h-4" />
-                        Hồ sơ cá nhân
+                        {t("user.profile")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem 
@@ -223,9 +225,9 @@ export function Navbar() {
                     >
                       <Wallet className="w-4 h-4" />
                       {connectedWallet ? (
-                        <span>Ví: {shortenAddress(connectedWallet)}</span>
+                        <span>{t("common.walletPrefix")} {shortenAddress(connectedWallet)}</span>
                       ) : (
-                        <span>Kết nối ví</span>
+                        <span>{t("common.connectWallet")}</span>
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
@@ -233,7 +235,7 @@ export function Navbar() {
                       className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
                     >
                       <LogOut className="w-4 h-4" />
-                      Đăng xuất
+                      {t("user.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -241,12 +243,12 @@ export function Navbar() {
                 <>
                   <Link to="/auth">
                     <Button variant="outline" size="sm">
-                      Đăng Nhập
+                      {t("common.login")}
                     </Button>
                   </Link>
                   <Link to="/campaigns">
                     <Button variant="hero" size="sm">
-                      Quyên Góp
+                      {t("common.donate")}
                     </Button>
                   </Link>
                 </>
@@ -279,13 +281,13 @@ export function Navbar() {
               <Link to="/social" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start gap-3">
                   <Home className="w-5 h-5" />
-                  Trang Chủ
+                  {t("nav.home")}
                 </Button>
               </Link>
               
               {/* Platform items */}
               <div className="py-2">
-                <p className="px-3 text-xs font-semibold text-muted-foreground mb-1">Nền Tảng</p>
+                <p className="px-3 text-xs font-semibold text-muted-foreground mb-1">{t("nav.platform")}</p>
                 {platformItems.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -296,7 +298,7 @@ export function Navbar() {
                     >
                       <Button variant="ghost" className="w-full justify-start gap-3">
                         <Icon className="w-5 h-5" />
-                        {item.name}
+                        {t(item.nameKey)}
                       </Button>
                     </Link>
                   );
@@ -313,7 +315,7 @@ export function Navbar() {
                   >
                     <Button variant="ghost" className="w-full justify-start gap-3">
                       <Icon className="w-5 h-5" />
-                      {item.name}
+                      {t(item.nameKey)}
                     </Button>
                   </Link>
                 );
@@ -335,7 +337,7 @@ export function Navbar() {
                   ) : (
                     <>
                       <Wallet className="w-4 h-4" />
-                      Kết Nối Ví
+                      {t("common.connectWallet")}
                     </>
                   )}
                 </Button>
@@ -354,19 +356,19 @@ export function Navbar() {
                     </Link>
                     <Button variant="outline" className="w-full" onClick={() => { handleLogout(); setIsOpen(false); }}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      Đăng Xuất
+                      {t("user.logout")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Link to="/auth" onClick={() => setIsOpen(false)}>
                       <Button variant="outline" className="w-full">
-                        Đăng Nhập
+                        {t("common.login")}
                       </Button>
                     </Link>
                     <Link to="/campaigns" onClick={() => setIsOpen(false)}>
                       <Button variant="hero" className="w-full">
-                        Quyên Góp
+                        {t("common.donate")}
                       </Button>
                     </Link>
                   </>

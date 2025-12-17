@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Users,
   Cake,
@@ -59,20 +60,17 @@ const contacts = [
   "Mỹ Phương",
 ];
 
-interface HonorStat {
-  label: string;
-  value: string;
-}
-
-const honorStats: HonorStat[] = [
-  { label: "Total USDT Donations", value: "5M" },
-  { label: "Total Camly Donations", value: "10M" },
-  { label: "Total VND", value: "500M" },
-  { label: "Total Donations", value: "1.2K" },
-  { label: "Total Donors", value: "5.7K" },
-];
-
 export function RightSidebar() {
+  const { t } = useLanguage();
+
+  const honorStats = [
+    { labelKey: "honor.usdt", value: "5M" },
+    { labelKey: "honor.camly", value: "10M" },
+    { labelKey: "honor.vnd", value: "500M" },
+    { labelKey: "honor.donations", value: "1.2K" },
+    { labelKey: "honor.donors", value: "5.7K" },
+  ];
+
   return (
     <aside className="w-80 shrink-0 space-y-4 sticky top-20">
       {/* Honor Board */}
@@ -80,20 +78,20 @@ export function RightSidebar() {
         <div className="absolute inset-0 bg-purple-900/20 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
-            <span className="animate-sparkle inline-block">✨</span> HONOR BOARD <span className="animate-sparkle-delay inline-block">✨</span>
+            <span className="animate-sparkle inline-block">✨</span> {t("honor.title")} <span className="animate-sparkle-delay inline-block">✨</span>
           </h3>
         </div>
         <div className="relative p-3 space-y-3">
           {honorStats.map((stat) => (
             <div 
-              key={stat.label} 
+              key={stat.labelKey} 
               className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-white/95 transition-colors"
               style={{ 
                 boxShadow: '0 0 12px 2px rgba(255, 215, 0, 0.5), 0 0 4px 1px rgba(255, 215, 0, 0.3)',
                 border: '2px solid rgba(255, 215, 0, 0.6)'
               }}
             >
-              <span className="font-bold whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>{stat.label}</span>
+              <span className="font-bold whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>{t(stat.labelKey)}</span>
               <span className="font-bold whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>
                 {stat.value}
               </span>
@@ -107,7 +105,7 @@ export function RightSidebar() {
         <div className="absolute inset-0 bg-purple-900/20 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
-            <span className="animate-sparkle inline-block">👑</span> TOP RANKING <span className="animate-sparkle-delay inline-block">👑</span>
+            <span className="animate-sparkle inline-block">👑</span> {t("ranking.title")} <span className="animate-sparkle-delay inline-block">👑</span>
           </h3>
         </div>
         <ScrollArea className="h-[360px]">
@@ -156,11 +154,11 @@ export function RightSidebar() {
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <Cake className="w-4 h-4 text-gold-champagne" />
-          <h3 className="text-sm font-semibold text-foreground">Birthdays</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("birthday.title")}</h3>
         </div>
         <p className="text-sm text-muted-foreground">
-          Today is the birthday of <span className="font-medium text-foreground">Nhật Thống</span> and{" "}
-          <span className="text-primary cursor-pointer hover:underline">6 others</span>
+          {t("birthday.today")} <span className="font-medium text-foreground">Nhật Thống</span> &{" "}
+          <span className="text-primary cursor-pointer hover:underline">6 {t("birthday.others")}</span>
         </p>
       </div>
 
@@ -168,7 +166,7 @@ export function RightSidebar() {
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Contacts</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("contacts.title")}</h3>
         </div>
         <div className="space-y-1">
           {contacts.map((name, index) => (
@@ -194,20 +192,20 @@ export function RightSidebar() {
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <MessageCircle className="w-4 h-4 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Group Chats</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t("groups.title")}</h3>
         </div>
         <div className="space-y-1">
           <div className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors">
             <Avatar className="w-8 h-8">
               <AvatarFallback className="bg-gradient-to-br from-purple-soft to-purple-light text-white text-xs">M</AvatarFallback>
             </Avatar>
-            <span className="text-sm text-foreground">Mother Earth Service Group</span>
+            <span className="text-sm text-foreground">{t("groups.earth")}</span>
           </div>
           <button className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 w-full text-left transition-colors">
             <div className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/50 flex items-center justify-center">
               <Plus className="w-4 h-4 text-muted-foreground" />
             </div>
-            <span className="text-sm text-muted-foreground">Add new group</span>
+            <span className="text-sm text-muted-foreground">{t("groups.add")}</span>
           </button>
         </div>
       </div>
