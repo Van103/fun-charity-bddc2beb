@@ -21,11 +21,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 270 50% 15%;
 
-    /* Primary - Vibrant Energy Purple #9333EA / #8B5CF6 */
-    --primary: 270 91% 56%;
+    /* Primary - Light Vibrant Purple #A855F7 / #C084FC */
+    --primary: 270 85% 65%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 270 85% 68%;
-    --primary-dark: 270 91% 48%;
+    --primary-light: 270 80% 75%;
+    --primary-dark: 270 85% 55%;
 
     /* Secondary - Champagne Gold #F5C77A */
     --secondary: 38 86% 72%;
@@ -52,15 +52,15 @@
     /* Light border */
     --border: 270 30% 92%;
     --input: 270 30% 92%;
-    --ring: 270 91% 56%;
+    --ring: 270 85% 65%;
 
     --radius: 0.75rem;
 
     /* Vibrant Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(270 91% 56%) 0%, hsl(270 85% 68%) 50%, hsl(38 86% 72%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(270 85% 65%) 0%, hsl(270 80% 75%) 50%, hsl(38 86% 72%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(38 86% 72%), hsl(38 86% 82%));
     --gradient-gold: linear-gradient(135deg, hsl(38 86% 70%), hsl(38 86% 80%), hsl(38 86% 72%));
-    --gradient-luxury: linear-gradient(135deg, hsl(270 91% 56%) 0%, hsl(270 85% 68%) 50%, hsl(38 86% 72%) 100%);
+    --gradient-luxury: linear-gradient(135deg, hsl(270 85% 65%) 0%, hsl(270 80% 75%) 50%, hsl(38 86% 72%) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(270 100% 99%), hsl(270 50% 97%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(270 100% 99%));
     --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.95), hsl(0 0% 100% / 0.85));
@@ -72,17 +72,17 @@
     --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.08);
     --shadow-xl: 0 16px 48px hsl(0 0% 0% / 0.1);
     --shadow-glow: 0 0 40px hsl(38 86% 72% / 0.4);
-    --shadow-glow-purple: 0 0 40px hsl(270 91% 56% / 0.35);
+    --shadow-glow-purple: 0 0 40px hsl(270 85% 65% / 0.35);
 
     /* Sidebar - Clean White with Purple accent */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 270 50% 15%;
-    --sidebar-primary: 270 91% 56%;
+    --sidebar-primary: 270 85% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 270 100% 97%;
     --sidebar-accent-foreground: 270 50% 15%;
     --sidebar-border: 270 30% 92%;
-    --sidebar-ring: 270 91% 56%;
+    --sidebar-ring: 270 85% 65%;
   }
 
   .dark {

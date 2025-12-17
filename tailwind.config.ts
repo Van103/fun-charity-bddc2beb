@@ -75,12 +75,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Brand specific colors - Vibrant Energy Purple + Champagne Gold
+        // Brand specific colors - Light Vibrant Purple + Champagne Gold
         purple: {
-          soft: "#9333EA",
-          light: "#A855F7",
-          dark: "#7C3AED",
-          vibrant: "#8B5CF6",
+          soft: "#A855F7",
+          light: "#C084FC",
+          dark: "#9333EA",
+          vibrant: "#B77FFF",
         },
         gold: {
           champagne: "#F5C77A",
@@ -93,9 +93,9 @@ export default {
           DEFAULT: "#E9E3FF",
         },
         violet: {
-          energy: "#9333EA",
-          bright: "#A855F7",
-          deep: "#7C3AED",
+          energy: "#A855F7",
+          bright: "#C084FC",
+          deep: "#9333EA",
         },
       },
       borderRadius: {
