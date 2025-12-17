@@ -120,13 +120,13 @@ export function SearchBar() {
 
     switch (result.type) {
       case "user":
-        navigate(`/profile/${result.id}`);
+        navigate(`/user/${result.id}`);
         break;
       case "campaign":
         navigate(`/campaigns/${result.id}`);
         break;
       case "post":
-        navigate(`/social`);
+        navigate(`/social#post-${result.id}`);
         break;
     }
   };

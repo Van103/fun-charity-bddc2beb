@@ -44,10 +44,10 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
     <aside className="w-64 shrink-0 space-y-4 sticky top-20">
       {/* Platform Ecosystem */}
       <div className="glass-card p-4 hover-luxury-glow">
-        <h3 className="font-semibold text-foreground mb-1" style={{ fontSize: '20px' }}>
+        <h3 className="font-semibold mb-1" style={{ fontSize: '20px', color: 'hsl(270, 70%, 35%)' }}>
           Các Platform F.U. Ecosystem
         </h3>
-        <p className="text-xs text-muted-foreground mb-4">Coming soon</p>
+        <p className="text-xs mb-4" style={{ color: 'hsl(270, 50%, 45%)' }}>Coming soon</p>
         
         <nav className="space-y-1">
           {menuItems.map((item) => {
