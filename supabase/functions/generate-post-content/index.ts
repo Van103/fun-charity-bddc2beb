@@ -1,29 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-// Allowed origins for CORS - restrict to trusted domains
-const ALLOWED_ORIGINS = [
-  'https://rsmppgcxrdywybxorvla.lovable.app',
-  'https://lovable.dev',
-  'http://localhost:5173',
-  'http://localhost:8080',
-];
+// CORS headers (public function)
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
-function getCorsHeaders(origin: string | null) {
-  // Allow all subdomains of lovable.app (including preview URLs)
-  const isLovableOrigin = origin && (
-    ALLOWED_ORIGINS.includes(origin) ||
-    origin.endsWith('.lovable.app') ||
-    origin.endsWith('.lovableproject.com')
-  );
-  
-  const allowedOrigin = isLovableOrigin ? origin : ALLOWED_ORIGINS[0];
-  
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin!,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Credentials': 'true',
-  };
-}
 
 // Input validation and sanitization
 function validateAndSanitizeInput(body: unknown): { topic?: string; style?: string } {
@@ -66,9 +49,6 @@ function validateAndSanitizeInput(body: unknown): { topic?: string; style?: stri
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin');
-  const corsHeaders = getCorsHeaders(origin);
-
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -193,8 +173,6 @@ Nội dung phải ngắn gọn (tối đa 200 từ), có emoji phù hợp và k�
     });
   } catch (error) {
     console.error("Error in generate-post-content:", error);
-    const origin = req.headers.get('origin');
-    const corsHeaders = getCorsHeaders(origin);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
       {

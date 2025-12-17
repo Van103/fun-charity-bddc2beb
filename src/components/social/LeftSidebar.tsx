@@ -44,10 +44,10 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
     <aside className="w-64 shrink-0 space-y-4 sticky top-20">
       {/* Platform Ecosystem */}
       <div className="glass-card p-4 hover-luxury-glow">
-        <h3 className="font-semibold mb-1" style={{ fontSize: '20px', color: 'hsl(270, 70%, 35%)' }}>
-          Các Platform F.U. Ecosystem
+        <h3 className="font-semibold mb-1 text-primary/90" style={{ fontSize: '20px' }}>
+          F.U. Ecosystem Platforms
         </h3>
-        <p className="text-xs mb-4" style={{ color: 'hsl(270, 50%, 45%)' }}>Coming soon</p>
+        <p className="text-xs mb-4 text-primary/60">Coming soon</p>
         
         <nav className="space-y-1">
           {menuItems.map((item) => {
@@ -73,10 +73,10 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
       {/* Shortcuts */}
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">Lối tắt của bạn</h3>
+          <h3 className="text-sm font-semibold text-foreground">Your shortcuts</h3>
           <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
             <Edit className="w-3 h-3 mr-1" />
-            Chỉnh sửa
+            Edit
           </Button>
         </div>
         
