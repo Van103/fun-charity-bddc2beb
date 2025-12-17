@@ -79,7 +79,7 @@ export function RightSidebar() {
   return (
     <aside className="w-80 shrink-0 space-y-4 sticky top-20">
       {/* Honor Board */}
-      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-light-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="absolute inset-0 bg-purple-900/30 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
@@ -106,7 +106,7 @@ export function RightSidebar() {
       </div>
 
       {/* Top Ranking */}
-      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-light-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="absolute inset-0 bg-purple-900/30 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
