@@ -82,7 +82,7 @@ export function RightSidebar() {
       <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
-          <h3 className="py-3 px-4 text-sm font-bold text-center tracking-wider drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700' }}>
+          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
             <span className="animate-sparkle inline-block">✨</span> HONOR BOARD <span className="animate-sparkle-delay inline-block">✨</span>
           </h3>
         </div>
@@ -109,7 +109,7 @@ export function RightSidebar() {
       <div className="rounded-2xl overflow-hidden relative" style={{ backgroundImage: 'url(/images/purple-sparkle-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
         <div className="relative border-b border-yellow-400/30">
-          <h3 className="py-3 px-4 text-sm font-bold text-center tracking-wider drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700' }}>
+          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full bg-gradient-to-r from-purple-900/70 via-purple-800/80 to-purple-900/70" style={{ color: '#FFD700', fontSize: '22px' }}>
             <span className="animate-sparkle inline-block">👑</span> TOP RANKING <span className="animate-sparkle-delay inline-block">👑</span>
           </h3>
         </div>
