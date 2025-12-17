@@ -127,7 +127,7 @@ export function Navbar() {
             {/* Platform Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1 text-purple-dark hover:text-primary hover:bg-primary/10">
+                <Button variant="ghost" size="sm" className="gap-1 text-foreground hover:text-primary hover:bg-primary/10">
                   <Layers className="w-4 h-4" />
                   Nền Tảng
                   <ChevronDown className="w-3 h-3" />
@@ -156,7 +156,7 @@ export function Navbar() {
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     size="sm"
-                    className={isActive ? "bg-primary/20 text-primary" : "text-purple-dark hover:text-primary hover:bg-primary/10"}
+                    className={isActive ? "bg-primary/20 text-primary" : "text-foreground hover:text-primary hover:bg-primary/10"}
                   >
                     <Icon className="w-4 h-4" />
                     {item.name}
@@ -173,7 +173,7 @@ export function Navbar() {
             {/* Settings Popover */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-purple-dark hover:text-primary hover:bg-primary/10">
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-primary hover:bg-primary/10">
                   <Settings className="w-5 h-5" />
                 </Button>
               </PopoverTrigger>
@@ -205,7 +205,7 @@ export function Navbar() {
                       <span className="font-bold max-w-[120px] truncate bg-gradient-to-r from-purple-dark via-primary to-secondary bg-clip-text text-transparent">
                         {user.user_metadata?.full_name || user.email?.split('@')[0]}
                       </span>
-                      <ChevronDown className="w-3 h-3 text-purple-dark" />
+                      <ChevronDown className="w-3 h-3 text-foreground" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
