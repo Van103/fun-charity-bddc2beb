@@ -16,16 +16,16 @@ interface TopRanker {
 }
 
 const topRankers: TopRanker[] = [
-  { rank: 1, name: "Camly Duong", amount: "8.000.000.000 ₫", verified: true },
-  { rank: 2, name: "Elon Musk", amount: "7.000.000.000 ₫" },
-  { rank: 3, name: "Lê Minh Trí", amount: "2.000.000.000 ₫", verified: true },
-  { rank: 4, name: "Diệu Ngọc", amount: "1.000.000.000 ₫" },
-  { rank: 5, name: "Vinh Hào", amount: "500.000.000 ₫" },
-  { rank: 6, name: "Trang Huyền", amount: "300.000.000 ₫" },
-  { rank: 7, name: "Tinna Tinh", amount: "100.000.000 ₫" },
-  { rank: 8, name: "Khôi Phan", amount: "50.000.000 ₫" },
-  { rank: 9, name: "Thu Thanh Hoàng", amount: "30.000.000 ₫", verified: true },
-  { rank: 10, name: "Nông Liên", amount: "10.000.000 ₫", verified: true },
+  { rank: 1, name: "Camly Duong", amount: "8B ₫", verified: true },
+  { rank: 2, name: "Elon Musk", amount: "7B ₫" },
+  { rank: 3, name: "Lê Minh Trí", amount: "2B ₫", verified: true },
+  { rank: 4, name: "Diệu Ngọc", amount: "1B ₫" },
+  { rank: 5, name: "Vinh Hào", amount: "500M ₫" },
+  { rank: 6, name: "Trang Huyền", amount: "300M ₫" },
+  { rank: 7, name: "Tinna Tinh", amount: "100M ₫" },
+  { rank: 8, name: "Khôi Phan", amount: "50M ₫" },
+  { rank: 9, name: "Thu Thanh Hoàng", amount: "30M ₫", verified: true },
+  { rank: 10, name: "Nông Liên", amount: "10M ₫", verified: true },
 ];
 
 // Rank badge colors
@@ -65,11 +65,11 @@ interface HonorStat {
 }
 
 const honorStats: HonorStat[] = [
-  { label: "Tổng Quyên Góp USDT", value: "5.000.000" },
-  { label: "Tổng Quyên Góp Camly", value: "9.999.999" },
-  { label: "Tổng VND", value: "500.000.000" },
-  { label: "Tổng Số Lần Quyên Góp", value: "1.234" },
-  { label: "Tổng Số Người Quyên Góp", value: "5.678" },
+  { label: "Tổng Quyên Góp USDT", value: "5M" },
+  { label: "Tổng Quyên Góp Camly", value: "10M" },
+  { label: "Tổng VND", value: "500M" },
+  { label: "Tổng Số Lần Quyên Góp", value: "1.2K" },
+  { label: "Tổng Số Người Quyên Góp", value: "5.7K" },
 ];
 
 export function RightSidebar() {
@@ -83,7 +83,7 @@ export function RightSidebar() {
             <span className="animate-sparkle inline-block">✨</span> HONOR BOARD <span className="animate-sparkle-delay inline-block">✨</span>
           </h3>
         </div>
-        <div className="relative p-3 space-y-2">
+        <div className="relative p-3 space-y-3">
           {honorStats.map((stat) => (
             <div 
               key={stat.label} 
@@ -111,7 +111,7 @@ export function RightSidebar() {
           </h3>
         </div>
         <ScrollArea className="h-[360px]">
-          <div className="relative p-2 space-y-1">
+          <div className="relative p-3 space-y-2.5">
             {topRankers.map((ranker) => (
               <div
                 key={ranker.rank}
