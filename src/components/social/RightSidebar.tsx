@@ -87,14 +87,14 @@ export function RightSidebar() {
           {honorStats.map((stat) => (
             <div 
               key={stat.label} 
-              className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-white/95 transition-colors"
+              className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-white/95 transition-colors"
               style={{ 
                 boxShadow: '0 0 12px 2px rgba(255, 215, 0, 0.5), 0 0 4px 1px rgba(255, 215, 0, 0.3)',
                 border: '2px solid rgba(255, 215, 0, 0.6)'
               }}
             >
-              <span className="font-bold" style={{ color: '#4C1D95', fontSize: '18px' }}>{stat.label}</span>
-              <span className="font-bold" style={{ color: '#4C1D95', fontSize: '18px' }}>
+              <span className="font-bold whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>{stat.label}</span>
+              <span className="font-bold whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>
                 {stat.value}
               </span>
             </div>
@@ -137,13 +137,13 @@ export function RightSidebar() {
                 </div>
                 <div className="flex-1 min-w-0 ml-1">
                   <div className="flex items-center gap-1">
-                    <span className="font-bold truncate" style={{ color: '#4C1D95', fontSize: '18px' }}>{ranker.name}</span>
+                    <span className="font-bold truncate" style={{ color: '#4C1D95', fontSize: '16px' }}>{ranker.name}</span>
                     {ranker.verified && (
-                      <span style={{ color: '#4C1D95', fontSize: '14px' }}>✓</span>
+                      <span style={{ color: '#4C1D95', fontSize: '12px' }}>✓</span>
                     )}
                   </div>
                 </div>
-                <span className="font-bold shrink-0" style={{ color: '#4C1D95', fontSize: '18px' }}>
+                <span className="font-bold shrink-0 whitespace-nowrap" style={{ color: '#4C1D95', fontSize: '16px' }}>
                   {ranker.amount}
                 </span>
               </div>
