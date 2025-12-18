@@ -542,8 +542,8 @@ export default function Messages() {
       </Helmet>
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 pt-4">
-        <div className="bg-card rounded-xl shadow-lg overflow-hidden h-[calc(100vh-120px)] flex border border-border">
+      <main className="max-w-6xl mx-auto px-4 pt-20 pb-4">
+        <div className="bg-card rounded-xl shadow-lg overflow-hidden h-[calc(100vh-100px)] flex border border-border">
           {/* Conversations List */}
           <div className={`w-full md:w-80 border-r border-border flex flex-col bg-card ${activeConversation ? 'hidden md:flex' : ''}`}>
             <div className="p-4 border-b border-border">
