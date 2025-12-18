@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ import {
   Search,
   Filter,
   SlidersHorizontal,
+  ArrowUpDown,
 } from "lucide-react";
 
 interface Profile {
@@ -55,6 +56,7 @@ interface Friendship {
 }
 
 const Profiles = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("donors");
   const [donors, setDonors] = useState<Profile[]>([]);
   const [volunteers, setVolunteers] = useState<Profile[]>([]);
@@ -64,9 +66,10 @@ const Profiles = () => {
   const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [loadingFriendship, setLoadingFriendship] = useState<string | null>(null);
 
-  // Search and filter states
+  // Search, filter, and sort states
   const [searchQuery, setSearchQuery] = useState("");
   const [reputationFilter, setReputationFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("reputation_desc");
 
   useEffect(() => {
     fetchCurrentUser();
@@ -219,9 +222,9 @@ const Profiles = () => {
     }
   };
 
-  // Filter profiles based on search and reputation
-  const filterProfiles = (profiles: Profile[]) => {
-    return profiles.filter((profile) => {
+  // Filter and sort profiles
+  const filterAndSortProfiles = (profiles: Profile[]) => {
+    let filtered = profiles.filter((profile) => {
       // Search filter
       const matchesSearch =
         searchQuery === "" ||
@@ -247,6 +250,36 @@ const Profiles = () => {
 
       return matchesSearch && matchesReputation;
     });
+
+    // Sort profiles
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "reputation_desc":
+          return (b.reputation_score || 0) - (a.reputation_score || 0);
+        case "reputation_asc":
+          return (a.reputation_score || 0) - (b.reputation_score || 0);
+        case "date_desc":
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        case "date_asc":
+          return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+        case "name_asc":
+          return (a.full_name || "").localeCompare(b.full_name || "");
+        case "name_desc":
+          return (b.full_name || "").localeCompare(a.full_name || "");
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  };
+
+  const handleSendMessage = (profileUserId: string) => {
+    if (!currentUserId) {
+      toast.error("Vui lòng đăng nhập để nhắn tin");
+      return;
+    }
+    navigate(`/messages?user=${profileUserId}`);
   };
 
   const shortenAddress = (address: string | null) => {
@@ -437,11 +470,16 @@ const Profiles = () => {
               </Button>
             </Link>
           )}
-          <Link to={`/user/${profile.user_id}`}>
-            <Button variant="ghost" size="sm" className="gap-2">
+          {!isOwnProfile && currentUserId && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={() => handleSendMessage(profile.user_id)}
+            >
               <MessageCircle className="w-4 h-4" />
             </Button>
-          </Link>
+          )}
         </div>
       </motion.div>
     );
@@ -484,9 +522,9 @@ const Profiles = () => {
     </div>
   );
 
-  const filteredDonors = filterProfiles(donors);
-  const filteredVolunteers = filterProfiles(volunteers);
-  const filteredNgos = filterProfiles(ngos);
+  const filteredDonors = filterAndSortProfiles(donors);
+  const filteredVolunteers = filterAndSortProfiles(volunteers);
+  const filteredNgos = filterAndSortProfiles(ngos);
 
   return (
     <main className="min-h-screen bg-background">
@@ -508,8 +546,8 @@ const Profiles = () => {
             </p>
           </div>
 
-          {/* Search and Filter */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
+          {/* Search, Filter, and Sort */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-3xl mx-auto">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -520,15 +558,29 @@ const Profiles = () => {
               />
             </div>
             <Select value={reputationFilter} onValueChange={setReputationFilter}>
-              <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Lọc theo điểm uy tín" />
+                <SelectValue placeholder="Lọc điểm uy tín" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả điểm uy tín</SelectItem>
                 <SelectItem value="high">Cao (≥100 điểm)</SelectItem>
                 <SelectItem value="medium">Trung bình (50-99)</SelectItem>
                 <SelectItem value="low">Thấp (&lt;50 điểm)</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <ArrowUpDown className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Sắp xếp theo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="reputation_desc">Uy tín cao nhất</SelectItem>
+                <SelectItem value="reputation_asc">Uy tín thấp nhất</SelectItem>
+                <SelectItem value="date_desc">Mới tham gia</SelectItem>
+                <SelectItem value="date_asc">Tham gia lâu nhất</SelectItem>
+                <SelectItem value="name_asc">Tên A-Z</SelectItem>
+                <SelectItem value="name_desc">Tên Z-A</SelectItem>
               </SelectContent>
             </Select>
           </div>
