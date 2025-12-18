@@ -357,7 +357,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
             {mediaPreviews.map((preview, index) => (
               <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-muted border border-border">
                 {mediaFiles[index]?.type.startsWith("video/") ? (
-                  <video src={preview} className="w-full h-full object-cover" />
+                  <video src={preview} controls className="w-full h-full object-cover bg-black" />
                 ) : (
                   <img src={preview} alt="" className="w-full h-full object-cover" />
                 )}

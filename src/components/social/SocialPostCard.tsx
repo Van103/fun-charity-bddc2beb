@@ -298,7 +298,8 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                   {item.type === "video" ? (
                     <video
                       src={item.url}
-                      className={`w-full object-cover ${
+                      controls
+                      className={`w-full object-cover bg-black ${
                         mediaUrls.length === 3 && i === 0 
                           ? "h-full" 
                           : "aspect-square"
