@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { formatBytesToMB, MAX_IMAGE_BYTES, MAX_VIDEO_BYTES } from "@/lib/media";
-
+import { 
+  formatBytesToMB, 
+  MAX_IMAGE_BYTES, 
+  MAX_VIDEO_BYTES,
+  UploadProgress,
+  uploadFileWithProgress,
+  compressVideo,
+  shouldCompressVideo,
+} from "@/lib/media";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SortableMediaItem } from "./SortableMediaItem";
 
 interface CreatePostBoxProps {
   profile?: {
@@ -49,10 +59,19 @@ const imageStyleOptions = [
   { value: '3d', label: '3D Render', emoji: '🧊' },
 ];
 
+interface MediaItem {
+  id: string;
+  file: File;
+  preview: string;
+  isVideo: boolean;
+  uploadProgress?: UploadProgress | null;
+  isCompressing?: boolean;
+  compressionProgress?: number;
+}
+
 export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const [content, setContent] = useState("");
-  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
-  const [mediaPreviews, setMediaPreviews] = useState<string[]>([]);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
@@ -70,6 +89,12 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
   const createPost = useCreateFeedPost();
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const generateAiContent = async () => {
     setIsGenerating(true);
@@ -176,14 +201,26 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
     }
   };
 
-  const handleFileSelect = (
+  // Handle drag end for reordering
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setMediaItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }, []);
+
+  const handleFileSelect = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "image" | "video",
   ) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const validFiles = files.filter((file) => {
+    for (const file of files) {
       const isVideo = type === "video" || file.type.startsWith("video/");
       const limit = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
       const maxSizeLabel = formatBytesToMB(limit);
@@ -194,26 +231,101 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
           description: `${file.name} vượt quá ${maxSizeLabel}`,
           variant: "destructive",
         });
-        return false;
+        continue;
       }
-      return true;
-    });
 
-    setMediaFiles((prev) => [...prev, ...validFiles]);
+      const itemId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      let processedFile = file;
 
-    validFiles.forEach((file) => {
-      const url = URL.createObjectURL(file);
-      setMediaPreviews((prev) => [...prev, url]);
-    });
+      // Check if video needs compression
+      if (isVideo && shouldCompressVideo(file)) {
+        const newItem: MediaItem = {
+          id: itemId,
+          file,
+          preview: URL.createObjectURL(file),
+          isVideo: true,
+          isCompressing: true,
+          compressionProgress: 0,
+        };
+        setMediaItems((prev) => [...prev, newItem]);
+
+        toast({
+          title: "Đang nén video...",
+          description: `${file.name} đang được nén để tối ưu dung lượng`,
+        });
+
+        try {
+          processedFile = await compressVideo(file, {
+            maxWidth: 1280,
+            maxHeight: 720,
+            videoBitrate: 2_000_000,
+            onProgress: (progress) => {
+              setMediaItems((prev) =>
+                prev.map((item) =>
+                  item.id === itemId
+                    ? { ...item, compressionProgress: progress }
+                    : item
+                )
+              );
+            },
+          });
+
+          // Update item with compressed file
+          setMediaItems((prev) =>
+            prev.map((item) =>
+              item.id === itemId
+                ? {
+                    ...item,
+                    file: processedFile,
+                    isCompressing: false,
+                    compressionProgress: 100,
+                  }
+                : item
+            )
+          );
+
+          toast({
+            title: "Nén video thành công!",
+            description: `Giảm từ ${formatBytesToMB(file.size)} xuống ${formatBytesToMB(processedFile.size)}`,
+          });
+        } catch (error) {
+          console.error("Video compression failed:", error);
+          // Keep original file if compression fails
+          setMediaItems((prev) =>
+            prev.map((item) =>
+              item.id === itemId
+                ? { ...item, isCompressing: false, compressionProgress: undefined }
+                : item
+            )
+          );
+          toast({
+            title: "Không thể nén video",
+            description: "Sẽ sử dụng video gốc",
+            variant: "destructive",
+          });
+        }
+      } else {
+        // Add non-video or small video directly
+        const newItem: MediaItem = {
+          id: itemId,
+          file: processedFile,
+          preview: URL.createObjectURL(processedFile),
+          isVideo,
+        };
+        setMediaItems((prev) => [...prev, newItem]);
+      }
+    }
 
     e.target.value = "";
   };
 
-  const removeMedia = (index: number) => {
-    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
-    setMediaPreviews((prev) => {
-      revokePreviewUrl(prev[index]);
-      return prev.filter((_, i) => i !== index);
+  const removeMedia = (id: string) => {
+    setMediaItems((prev) => {
+      const item = prev.find((i) => i.id === id);
+      if (item) {
+        revokePreviewUrl(item.preview);
+      }
+      return prev.filter((i) => i.id !== id);
     });
   };
 
@@ -230,27 +342,44 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
       throw new Error("Bạn cần đăng nhập để đăng bài");
     }
 
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const uploadedUrls: string[] = [];
     
-    // Upload regular media files
-    for (const file of mediaFiles) {
-      const fileExt = file.name.split(".").pop();
+    // Upload regular media files with progress tracking
+    for (let i = 0; i < mediaItems.length; i++) {
+      const item = mediaItems[i];
+      const fileExt = item.file.name.split(".").pop() || "bin";
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `${user.id}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("post-images")
-        .upload(filePath, file);
+      try {
+        // Use XMLHttpRequest for progress tracking
+        await uploadFileWithProgress(
+          `${supabaseUrl}/storage/v1/object/post-images/${filePath}`,
+          item.file,
+          {
+            "Authorization": `Bearer ${supabaseKey}`,
+            "x-upsert": "true",
+          },
+          (progress) => {
+            setMediaItems((prev) =>
+              prev.map((m) =>
+                m.id === item.id ? { ...m, uploadProgress: progress } : m
+              )
+            );
+          }
+        );
 
-      if (uploadError) {
-        throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
+        const { data: urlData } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(filePath);
+
+        uploadedUrls.push(urlData.publicUrl);
+      } catch (error: any) {
+        console.error(`Failed to upload ${item.file.name}:`, error);
+        throw new Error(`Failed to upload ${item.file.name}: ${error.message}`);
       }
-
-      const { data: urlData } = supabase.storage
-        .from("post-images")
-        .getPublicUrl(filePath);
-
-      uploadedUrls.push(urlData.publicUrl);
     }
 
     // Upload AI-generated image if exists
@@ -278,10 +407,20 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   };
 
   const handleSubmit = async () => {
-    if (!content.trim() && mediaFiles.length === 0 && !aiGeneratedImage) {
+    if (!content.trim() && mediaItems.length === 0 && !aiGeneratedImage) {
       toast({
         title: "Nội dung trống",
         description: "Vui lòng nhập nội dung hoặc thêm hình ảnh / video",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if any item is still compressing
+    if (mediaItems.some((item) => item.isCompressing)) {
+      toast({
+        title: "Đang xử lý",
+        description: "Vui lòng đợi video nén xong",
         variant: "destructive",
       });
       return;
@@ -291,7 +430,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
 
     try {
       let mediaUrls: string[] = [];
-      if (mediaFiles.length > 0 || aiGeneratedImage) {
+      if (mediaItems.length > 0 || aiGeneratedImage) {
         mediaUrls = await uploadFiles();
       }
 
@@ -301,12 +440,11 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
         media_urls: mediaUrls,
       });
 
-      // Revoke blob preview URLs to avoid memory leaks (especially for large videos)
-      mediaPreviews.forEach((p) => revokePreviewUrl(p));
+      // Revoke blob preview URLs to avoid memory leaks
+      mediaItems.forEach((item) => revokePreviewUrl(item.preview));
 
       setContent("");
-      setMediaFiles([]);
-      setMediaPreviews([]);
+      setMediaItems([]);
       setAiGeneratedImage(null);
       onPostCreated?.();
     } catch (error) {
@@ -317,7 +455,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   };
 
   const isSubmitting = isUploading || createPost.isPending;
-  const canSubmit = content.trim() || mediaFiles.length > 0 || aiGeneratedImage;
+  const canSubmit = content.trim() || mediaItems.length > 0 || aiGeneratedImage;
 
   return (
     <>
@@ -349,47 +487,60 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
           </div>
         </div>
 
-        {/* Media Previews */}
-        {(mediaPreviews.length > 0 || aiGeneratedImage) && (
-          <div className="px-4 pb-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {/* AI Generated Image */}
-            {aiGeneratedImage && (
-              <div className="relative aspect-square rounded-xl overflow-hidden bg-muted border-2 border-primary/50">
-                <img src={aiGeneratedImage} alt="AI Generated" className="w-full h-full object-cover" />
-                <div className="absolute top-2 left-2 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  AI
+        {/* Media Previews with Drag & Drop */}
+        {(mediaItems.length > 0 || aiGeneratedImage) && (
+          <div className="px-4 pb-3">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={mediaItems.map((item) => item.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {/* AI Generated Image (not sortable) */}
+                  {aiGeneratedImage && (
+                    <div className="relative aspect-square rounded-xl overflow-hidden bg-muted border-2 border-primary/50">
+                      <img src={aiGeneratedImage} alt="AI Generated" className="w-full h-full object-cover" />
+                      <div className="absolute top-2 left-2 bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        AI
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-lg"
+                        onClick={removeAiImage}
+                        disabled={isSubmitting}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  )}
+                  {/* User uploaded media - Sortable */}
+                  {mediaItems.map((item) => (
+                    <SortableMediaItem
+                      key={item.id}
+                      id={item.id}
+                      preview={item.preview}
+                      isVideo={item.isVideo}
+                      onRemove={() => removeMedia(item.id)}
+                      disabled={isSubmitting}
+                      uploadProgress={item.uploadProgress}
+                      isCompressing={item.isCompressing}
+                      compressionProgress={item.compressionProgress}
+                    />
+                  ))}
                 </div>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-lg"
-                  onClick={removeAiImage}
-                  disabled={isSubmitting}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
+              </SortableContext>
+            </DndContext>
+            {mediaItems.length > 1 && (
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                💡 Kéo thả để sắp xếp thứ tự
+              </p>
             )}
-            {/* User uploaded media */}
-            {mediaPreviews.map((preview, index) => (
-              <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-muted border border-border">
-                {mediaFiles[index]?.type.startsWith("video/") ? (
-                  <video src={preview} controls className="w-full h-full object-cover bg-black" />
-                ) : (
-                  <img src={preview} alt="" className="w-full h-full object-cover" />
-                )}
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="absolute top-2 right-2 h-6 w-6 rounded-full shadow-lg"
-                  onClick={() => removeMedia(index)}
-                  disabled={isSubmitting}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-            ))}
           </div>
         )}
 
