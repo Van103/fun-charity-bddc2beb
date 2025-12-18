@@ -16,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatBytesToMB, MAX_IMAGE_BYTES, MAX_VIDEO_BYTES } from "@/lib/media";
+
 
 interface CreatePostBoxProps {
   profile?: {
@@ -168,15 +170,28 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
     setAiGeneratedImage(null);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "video") => {
+  const revokePreviewUrl = (url?: string | null) => {
+    if (url && url.startsWith("blob:")) {
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleFileSelect = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "video",
+  ) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const validFiles = files.filter(file => {
-      if (file.size > 20 * 1024 * 1024) {
+    const validFiles = files.filter((file) => {
+      const isVideo = type === "video" || file.type.startsWith("video/");
+      const limit = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+      const maxSizeLabel = formatBytesToMB(limit);
+
+      if (file.size > limit) {
         toast({
           title: "File quá lớn",
-          description: `${file.name} vượt quá 20MB`,
+          description: `${file.name} vượt quá ${maxSizeLabel}`,
           variant: "destructive",
         });
         return false;
@@ -184,22 +199,22 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
       return true;
     });
 
-    setMediaFiles(prev => [...prev, ...validFiles]);
-    
-    validFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMediaPreviews(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
+    setMediaFiles((prev) => [...prev, ...validFiles]);
+
+    validFiles.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      setMediaPreviews((prev) => [...prev, url]);
     });
 
     e.target.value = "";
   };
 
   const removeMedia = (index: number) => {
-    setMediaFiles(prev => prev.filter((_, i) => i !== index));
-    setMediaPreviews(prev => prev.filter((_, i) => i !== index));
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setMediaPreviews((prev) => {
+      revokePreviewUrl(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   // Convert base64 to File for upload
@@ -266,7 +281,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
     if (!content.trim() && mediaFiles.length === 0 && !aiGeneratedImage) {
       toast({
         title: "Nội dung trống",
-        description: "Vui lòng nhập nội dung hoặc thêm hình ảnh",
+        description: "Vui lòng nhập nội dung hoặc thêm hình ảnh / video",
         variant: "destructive",
       });
       return;
@@ -285,6 +300,9 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
         content: content.trim(),
         media_urls: mediaUrls,
       });
+
+      // Revoke blob preview URLs to avoid memory leaks (especially for large videos)
+      mediaPreviews.forEach((p) => revokePreviewUrl(p));
 
       setContent("");
       setMediaFiles([]);

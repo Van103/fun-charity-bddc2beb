@@ -24,6 +24,7 @@ import {
 import { useCreateFeedPost, FeedPostType, UrgencyLevel } from "@/hooks/useFeedPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { formatBytesToMB, MAX_IMAGE_BYTES, MAX_VIDEO_BYTES } from "@/lib/media";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CreatePostModalProps {
@@ -92,20 +93,30 @@ export function CreatePostModal({ open, onOpenChange, profile }: CreatePostModal
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [mediaPreviews, setMediaPreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const createPost = useCreateFeedPost();
+
+  const revokePreviewUrl = (url?: string | null) => {
+    if (url && url.startsWith("blob:")) {
+      URL.revokeObjectURL(url);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const validFiles = files.filter(file => {
-      if (file.size > 20 * 1024 * 1024) {
+    const validFiles = files.filter((file) => {
+      const isVideo = file.type.startsWith("video/");
+      const limit = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+      const maxSizeLabel = formatBytesToMB(limit);
+
+      if (file.size > limit) {
         toast({
           title: "File quá lớn",
-          description: `${file.name} vượt quá 20MB`,
+          description: `${file.name} vượt quá ${maxSizeLabel}`,
           variant: "destructive",
         });
         return false;
@@ -113,32 +124,34 @@ export function CreatePostModal({ open, onOpenChange, profile }: CreatePostModal
       return true;
     });
 
-    setMediaFiles(prev => [...prev, ...validFiles]);
-    
-    validFiles.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setMediaPreviews(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
+    setMediaFiles((prev) => [...prev, ...validFiles]);
+
+    validFiles.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      setMediaPreviews((prev) => [...prev, url]);
     });
 
     e.target.value = "";
   };
 
   const removeMedia = (index: number) => {
-    setMediaFiles(prev => prev.filter((_, i) => i !== index));
-    setMediaPreviews(prev => prev.filter((_, i) => i !== index));
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setMediaPreviews((prev) => {
+      revokePreviewUrl(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const uploadFiles = async (): Promise<string[]> => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       throw new Error("Bạn cần đăng nhập để đăng bài");
     }
 
     const uploadedUrls: string[] = [];
-    
+
     for (const file of mediaFiles) {
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
@@ -163,6 +176,9 @@ export function CreatePostModal({ open, onOpenChange, profile }: CreatePostModal
   };
 
   const resetForm = () => {
+    // Revoke blob preview URLs to avoid memory leaks (especially for large videos)
+    mediaPreviews.forEach((p) => revokePreviewUrl(p));
+
     setPostType("story");
     setTitle("");
     setContent("");
@@ -179,7 +195,7 @@ export function CreatePostModal({ open, onOpenChange, profile }: CreatePostModal
     if (!content.trim() && mediaFiles.length === 0) {
       toast({
         title: "Nội dung trống",
-        description: "Vui lòng nhập nội dung hoặc thêm hình ảnh",
+        description: "Vui lòng nhập nội dung hoặc thêm hình ảnh / video",
         variant: "destructive",
       });
       return;
@@ -444,7 +460,7 @@ export function CreatePostModal({ open, onOpenChange, profile }: CreatePostModal
                 {mediaPreviews.map((preview, index) => (
                   <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-muted">
                     {mediaFiles[index]?.type.startsWith("video/") ? (
-                      <video src={preview} className="w-full h-full object-cover" />
+                      <video src={preview} controls className="w-full h-full object-cover bg-black" />
                     ) : (
                       <img src={preview} alt="" className="w-full h-full object-cover" />
                     )}
