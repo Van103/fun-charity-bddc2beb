@@ -548,6 +548,12 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
                     placeholder="Bạn đang nghĩ gì? Chia sẻ câu chuyện, hình ảnh hoặc video của bạn..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && canSubmit && !isSubmitting) {
+                        e.preventDefault();
+                        handleSubmit();
+                      }
+                    }}
                     className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all resize-y min-h-[120px] max-h-[400px]"
                     disabled={isSubmitting}
                     rows={4}
