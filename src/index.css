@@ -463,6 +463,43 @@ label,
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Safe area for mobile bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Touch-friendly tap targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile-optimized text */
+  .mobile-readable {
+    @apply text-base leading-relaxed;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile {
+    @apply hidden md:block;
+  }
+
+  /* Show only on mobile */
+  .show-mobile {
+    @apply block md:hidden;
+  }
+
+  /* Bottom padding for mobile nav */
+  .pb-mobile-nav {
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 768px) {
+    .pb-mobile-nav {
+      padding-bottom: 0;
+    }
+  }
 }
 
 @keyframes float {
