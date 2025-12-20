@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { LeftSidebar } from "@/components/social/LeftSidebar";
 import { RightSidebar } from "@/components/social/RightSidebar";
 import { StoriesSection } from "@/components/social/StoriesSection";
@@ -101,9 +102,10 @@ export default function SocialFeed() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-20 flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary" />
+        <div className="pt-16 sm:pt-20 flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-secondary" />
         </div>
+        <MobileBottomNav />
       </div>
     );
   }
@@ -118,25 +120,25 @@ export default function SocialFeed() {
       <div className="min-h-screen bg-background">
         <Navbar />
 
-        <main className="pt-20 pb-12">
-          <div className="container mx-auto px-4">
-            <div className="flex gap-6">
-              {/* Left Sidebar - Hidden on mobile */}
+        <main className="pt-16 sm:pt-20 pb-24 md:pb-12">
+          <div className="container mx-auto px-2 sm:px-4">
+            <div className="flex gap-4 lg:gap-6">
+              {/* Left Sidebar - Hidden on mobile/tablet */}
               <div className="hidden lg:block">
                 <LeftSidebar profile={profile} />
               </div>
 
-              {/* Main Feed */}
-              <div className="flex-1 max-w-2xl mx-auto lg:mx-0">
+              {/* Main Feed - full width on mobile */}
+              <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
                 <PullToRefresh onRefresh={handleRefresh}>
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <StoriesSection />
                     <CreatePostBox profile={profile} />
                     
                     <FriendRequestsSection />
                     
                     {/* Posts Feed */}
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {postsLoading ? (
                         <PostCardSkeletonList count={3} />
                       ) : posts && posts.length > 0 ? (
@@ -162,8 +164,8 @@ export default function SocialFeed() {
                           </div>
                         </>
                       ) : (
-                        <div className="glass-card p-12 text-center">
-                          <p className="text-muted-foreground">
+                        <div className="glass-card p-8 sm:p-12 text-center">
+                          <p className="text-muted-foreground text-sm sm:text-base">
                             Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!
                           </p>
                         </div>
@@ -182,6 +184,7 @@ export default function SocialFeed() {
         </main>
 
         <Footer />
+        <MobileBottomNav />
       </div>
     </>
   );
