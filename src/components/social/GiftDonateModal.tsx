@@ -142,10 +142,13 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
   };
 
   const connectMetaMask = async () => {
+    console.log("Attempting to connect MetaMask...");
+    console.log("window.ethereum:", typeof window.ethereum);
+    
     if (typeof window.ethereum === "undefined") {
       toast({
         title: "MetaMask chưa được cài đặt",
-        description: "Vui lòng cài đặt MetaMask để tiếp tục",
+        description: "Vui lòng cài đặt MetaMask để tiếp tục. Click để mở trang download.",
         variant: "destructive",
       });
       window.open("https://metamask.io/download/", "_blank");
@@ -153,21 +156,54 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     }
 
     try {
+      toast({
+        title: "Đang kết nối...",
+        description: "Vui lòng xác nhận trong MetaMask",
+      });
+      
       const accounts = await window.ethereum.request({ 
         method: "eth_requestAccounts" 
       });
-      setWalletConnected(true);
-      setWalletAddress(accounts[0]);
-      toast({
-        title: "Đã kết nối ví",
-        description: `${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
-      });
+      
+      console.log("Connected accounts:", accounts);
+      
+      if (accounts && accounts.length > 0) {
+        setWalletConnected(true);
+        setWalletAddress(accounts[0]);
+        toast({
+          title: "✅ Đã kết nối ví thành công!",
+          description: `Địa chỉ: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
+        });
+      } else {
+        toast({
+          title: "Không có tài khoản",
+          description: "Vui lòng tạo hoặc mở khóa ví MetaMask",
+          variant: "destructive",
+        });
+      }
     } catch (error: any) {
-      toast({
-        title: "Lỗi kết nối",
-        description: error.message || "Không thể kết nối MetaMask",
-        variant: "destructive",
-      });
+      console.error("MetaMask connection error:", error);
+      
+      // Handle specific error codes
+      if (error.code === 4001) {
+        toast({
+          title: "Đã hủy kết nối",
+          description: "Bạn đã từ chối yêu cầu kết nối ví",
+          variant: "destructive",
+        });
+      } else if (error.code === -32002) {
+        toast({
+          title: "Yêu cầu đang chờ",
+          description: "Vui lòng mở MetaMask và xác nhận yêu cầu kết nối",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: error.message || "Không thể kết nối MetaMask. Vui lòng thử lại.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -535,11 +571,20 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={connectMetaMask}
-                          className="w-full gap-2 h-12 rounded-xl border-dashed border-2"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            connectMetaMask();
+                          }}
+                          className="w-full gap-2 h-12 rounded-xl border-dashed border-2 hover:border-[#84D9BA] hover:bg-[#84D9BA]/10 transition-all cursor-pointer"
                         >
-                          <Wallet className="w-5 h-5" />
-                          Kết nối MetaMask
+                          <Wallet className="w-5 h-5 text-orange-500" />
+                          <span className="font-medium">Kết nối MetaMask</span>
+                          <img 
+                            src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
+                            alt="MetaMask" 
+                            className="w-5 h-5"
+                          />
                         </Button>
                       ) : (
                         <div className="space-y-2">
