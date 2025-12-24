@@ -78,7 +78,8 @@ export function RightSidebar() {
     { labelKey: "honor.topProfile", value: stats?.topProfiles || 0 },
     { labelKey: "honor.earnings", value: stats?.totalEarnings || 0, isCurrency: true },
     { labelKey: "honor.posts", value: stats?.totalPosts || 0 },
-    { labelKey: "honor.friendsVideos", value: stats?.friendsVideos || 0 },
+    { labelKey: "honor.videos", value: stats?.videosCount || 0 },
+    { labelKey: "honor.friends", value: stats?.friendsCount || 0 },
     { labelKey: "honor.nftCount", value: stats?.nftCount || 0 },
   ];
 

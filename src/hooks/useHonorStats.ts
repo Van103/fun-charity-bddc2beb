@@ -5,7 +5,8 @@ export interface HonorStats {
   topProfiles: number;
   totalEarnings: number;
   totalPosts: number;
-  friendsVideos: number;
+  videosCount: number;
+  friendsCount: number;
   nftCount: number;
 }
 
@@ -36,12 +37,18 @@ export function useHonorStats() {
         .from("feed_posts")
         .select("media_urls");
 
-      const friendsVideos = mediaPosts?.filter(post => {
+      const videosCount = mediaPosts?.filter(post => {
         const urls = post.media_urls as string[] | null;
         return urls?.some(url => 
           url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
         );
       }).length || 0;
+
+      // Fetch friends/connections count
+      const { count: friendsCount } = await supabase
+        .from("friendships")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "accepted");
 
       // Fetch NFT badges count
       const { count: nftCount } = await supabase
@@ -52,7 +59,8 @@ export function useHonorStats() {
         topProfiles: profilesCount || 0,
         totalEarnings,
         totalPosts: postsCount || 0,
-        friendsVideos,
+        videosCount,
+        friendsCount: friendsCount || 0,
         nftCount: nftCount || 0,
       };
     },
