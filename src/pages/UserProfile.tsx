@@ -22,6 +22,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Camera, Edit, User as UserIcon, Plus, ChevronDown } from "lucide-react";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useFriendsCount, useFriendsPreview, formatFriendsCount } from "@/hooks/useFriendshipData";
 
 interface Profile {
   id: string;
@@ -45,6 +46,10 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch real friends data
+  const { count: friendsCount } = useFriendsCount(profile?.user_id || null);
+  const { friends: friendsPreview } = useFriendsPreview(profile?.user_id || null, 8);
 
   const { 
     posts, 
@@ -192,17 +197,24 @@ export default function UserProfile() {
                         <span className="ml-2 text-primary">✓</span>
                       )}
                     </h1>
-                    <p className="text-muted-foreground font-medium">4,7K người bạn</p>
+                    <p className="text-muted-foreground font-medium">{formatFriendsCount(friendsCount)}</p>
                     
-                    {/* Friends Avatars Preview */}
-                    <div className="flex -space-x-2 mt-2">
-                      {[1,2,3,4,5,6,7,8].map((i) => (
-                        <div 
-                          key={i} 
-                          className="w-8 h-8 rounded-full bg-gradient-to-br from-secondary/40 to-primary/40 border-2 border-card"
-                        />
-                      ))}
-                    </div>
+                    {/* Friends Avatars Preview - Real Data */}
+                    {friendsPreview.length > 0 && (
+                      <div className="flex -space-x-2 mt-2">
+                        {friendsPreview.map((friend) => (
+                          <Avatar 
+                            key={friend.user_id}
+                            className="w-8 h-8 border-2 border-card"
+                          >
+                            <AvatarImage src={friend.avatar_url || undefined} alt={friend.full_name || ""} />
+                            <AvatarFallback className="bg-gradient-to-br from-secondary/40 to-primary/40 text-xs">
+                              {friend.full_name?.charAt(0) || "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}

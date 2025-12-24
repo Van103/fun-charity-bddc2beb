@@ -3,6 +3,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useHonorStats, useTopRankers } from "@/hooks/useHonorStats";
 import { AnimatedStatItem } from "./AnimatedStatItem";
+import { useOnlineContacts, useGroupChats } from "@/hooks/useFriendshipData";
+import { Link } from "react-router-dom";
 import { 
   Users,
   Cake,
@@ -34,14 +36,6 @@ const getAvatarGradient = (name: string) => {
   return gradients[index];
 };
 
-const contacts = [
-  "Lê Minh Trí",
-  "Lê Huỳnh Như",
-  "Diệu Ngọc",
-  "Vinh Hào",
-  "Mỹ Phương",
-];
-
 // Format currency for display
 const formatCurrency = (amount: number): string => {
   if (amount >= 1000000000) {
@@ -60,6 +54,8 @@ export function RightSidebar() {
   const { t } = useLanguage();
   const { data: stats, isLoading: statsLoading } = useHonorStats();
   const { data: topRankers = [], isLoading: rankersLoading } = useTopRankers();
+  const { contacts, isLoading: contactsLoading } = useOnlineContacts();
+  const { groups, isLoading: groupsLoading } = useGroupChats();
 
   const honorStats = [
     { labelKey: "honor.topProfile", value: stats?.topProfiles || 0 },
@@ -158,63 +154,87 @@ export function RightSidebar() {
         </ScrollArea>
       </div>
 
-      {/* Birthdays */}
-      <div className="glass-card p-4 hover-luxury-glow">
-        <div className="flex items-center gap-2 mb-3">
-          <Cake className="w-4 h-4 text-gold-champagne" />
-          <h3 className="text-sm font-semibold text-foreground">{t("birthday.title")}</h3>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {t("birthday.today")} <span className="font-medium text-foreground">Nhật Thống</span> &{" "}
-          <span className="text-primary cursor-pointer hover:underline">6 {t("birthday.others")}</span>
-        </p>
-      </div>
-
-      {/* Contacts */}
+      {/* Contacts - Real Friends Data */}
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">{t("contacts.title")}</h3>
         </div>
         <div className="space-y-1">
-          {contacts.map((name, index) => (
-            <div 
-              key={name}
-              className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors"
-            >
-              <div className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne/30 to-transparent">
-                <Avatar className="w-8 h-8 border border-border">
-                  <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(name)} text-white text-xs`}>
-                    {name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <span className="text-sm text-foreground">{name}</span>
-              <div className="ml-auto w-2 h-2 rounded-full bg-success" />
+          {contactsLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
             </div>
-          ))}
+          ) : contacts.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-2">
+              Chưa có bạn bè
+            </p>
+          ) : (
+            contacts.map((contact) => (
+              <Link 
+                key={contact.user_id}
+                to={`/user/${contact.user_id}`}
+                className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors"
+              >
+                <div className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne/30 to-transparent">
+                  <Avatar className="w-8 h-8 border border-border">
+                    <AvatarImage src={contact.avatar_url || undefined} />
+                    <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(contact.full_name || "")} text-white text-xs`}>
+                      {contact.full_name?.charAt(0) || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <span className="text-sm text-foreground truncate">{contact.full_name || "Người dùng"}</span>
+                <div className="ml-auto w-2 h-2 rounded-full bg-success" />
+              </Link>
+            ))
+          )}
         </div>
       </div>
 
-      {/* Group Chats */}
+      {/* Group Chats - Real Data */}
       <div className="glass-card p-4 hover-luxury-glow">
         <div className="flex items-center gap-2 mb-3">
           <MessageCircle className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">{t("groups.title")}</h3>
         </div>
         <div className="space-y-1">
-          <div className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-gradient-to-br from-purple-soft to-purple-light text-white text-xs">M</AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-foreground">{t("groups.earth")}</span>
-          </div>
-          <button className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 w-full text-left transition-colors">
+          {groupsLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : groups.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-2">
+              Chưa có nhóm chat
+            </p>
+          ) : (
+            groups.map((group) => (
+              <Link 
+                key={group.id}
+                to={`/messages?conversation=${group.id}`}
+                className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors"
+              >
+                <Avatar className="w-8 h-8">
+                  <AvatarFallback className="bg-gradient-to-br from-purple-soft to-purple-light text-white text-xs">
+                    {group.name?.charAt(0) || "G"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm text-foreground truncate block">{group.name || "Nhóm chat"}</span>
+                  <span className="text-xs text-muted-foreground">{group.participant_count} thành viên</span>
+                </div>
+              </Link>
+            ))
+          )}
+          <Link 
+            to="/messages"
+            className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-muted/50 w-full text-left transition-colors"
+          >
             <div className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/50 flex items-center justify-center">
               <Plus className="w-4 h-4 text-muted-foreground" />
             </div>
             <span className="text-sm text-muted-foreground">{t("groups.add")}</span>
-          </button>
+          </Link>
         </div>
       </div>
     </aside>
