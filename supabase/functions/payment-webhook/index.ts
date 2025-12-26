@@ -3,7 +3,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, stripe-signature, x-webhook-signature',
 };
 
 // Stripe webhook event types we handle
@@ -20,17 +21,84 @@ const PAYPAL_EVENTS = {
   REFUND_COMPLETED: 'PAYMENT.CAPTURE.REFUNDED',
 };
 
-// In production, you would verify webhook signatures
-// For now, we use a simple secret token
-const WEBHOOK_SECRET = Deno.env.get('WEBHOOK_SECRET') || 'dev_webhook_secret';
+// Webhook authentication
+// - Stripe: verify Stripe-Signature header using STRIPE_WEBHOOK_SIGNING_SECRET (HMAC SHA256)
+// - Other providers/test: verify x-webhook-signature header using WEBHOOK_SIGNING_SECRET (HMAC SHA256)
+// IMPORTANT: No development-mode bypasses.
+const STRIPE_WEBHOOK_SIGNING_SECRET = Deno.env.get('STRIPE_WEBHOOK_SIGNING_SECRET') ?? '';
+const WEBHOOK_SIGNING_SECRET = Deno.env.get('WEBHOOK_SIGNING_SECRET') ?? '';
+const STRIPE_TOLERANCE_SECONDS = 5 * 60;
 
-function verifyWebhookToken(req: Request): boolean {
-  const token = req.headers.get('x-webhook-token');
-  // In dev mode, also accept requests without token for testing
-  if (Deno.env.get('DENO_ENV') !== 'production' && !token) {
-    return true;
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
+}
+
+function parseStripeSignatureHeader(
+  header: string
+): { timestamp: number; signatures: string[] } | null {
+  const parts = header.split(',').map((p) => p.trim());
+  let timestamp: number | null = null;
+  const signatures: string[] = [];
+
+  for (const p of parts) {
+    const [k, v] = p.split('=');
+    if (!k || !v) continue;
+    if (k === 't') {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return null;
+      timestamp = n;
+    }
+    if (k === 'v1') signatures.push(v);
   }
-  return token === WEBHOOK_SECRET;
+
+  if (!timestamp || signatures.length === 0) return null;
+  return { timestamp, signatures };
+}
+
+async function hmacSha256Hex(secret: string, data: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data));
+  return Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function verifyStripeSignature(
+  rawBody: string,
+  signatureHeader: string
+): Promise<boolean> {
+  if (!STRIPE_WEBHOOK_SIGNING_SECRET) return false;
+
+  const parsed = parseStripeSignatureHeader(signatureHeader);
+  if (!parsed) return false;
+
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - parsed.timestamp) > STRIPE_TOLERANCE_SECONDS) return false;
+
+  const signedPayload = `${parsed.timestamp}.${rawBody}`;
+  const expected = await hmacSha256Hex(STRIPE_WEBHOOK_SIGNING_SECRET, signedPayload);
+
+  return parsed.signatures.some((sig) => timingSafeEqual(sig, expected));
+}
+
+async function verifyGenericSignature(
+  rawBody: string,
+  signatureHeader: string
+): Promise<boolean> {
+  if (!WEBHOOK_SIGNING_SECRET) return false;
+  const expected = await hmacSha256Hex(WEBHOOK_SIGNING_SECRET, rawBody);
+  return timingSafeEqual(signatureHeader, expected);
 }
 
 serve(async (req) => {
@@ -53,19 +121,46 @@ serve(async (req) => {
 
     // POST /payment-webhook/stripe - Handle Stripe webhooks
     if (req.method === 'POST' && provider === 'stripe') {
-      // In production, verify Stripe signature
-      // const sig = req.headers.get('stripe-signature');
-      // const event = stripe.webhooks.constructEvent(body, sig, STRIPE_ENDPOINT_SECRET);
-      
-      if (!verifyWebhookToken(req)) {
-        console.log('[payment-webhook] Invalid webhook token');
-        return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+      const rawBody = await req.text();
+      const sigHeader = req.headers.get('stripe-signature');
+
+      if (!STRIPE_WEBHOOK_SIGNING_SECRET) {
+        console.error('[payment-webhook] STRIPE_WEBHOOK_SIGNING_SECRET is not configured');
+        return new Response(
+          JSON.stringify({ success: false, error: 'Webhook not configured' }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
+      if (!sigHeader) {
+        return new Response(JSON.stringify({ success: false, error: 'Missing stripe-signature' }), {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
-      const event = await req.json();
+      const isValid = await verifyStripeSignature(rawBody, sigHeader);
+      if (!isValid) {
+        console.log('[payment-webhook] Invalid Stripe signature');
+        return new Response(JSON.stringify({ success: false, error: 'Invalid signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      let event: any;
+      try {
+        event = JSON.parse(rawBody);
+      } catch {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       console.log(`[payment-webhook] Stripe event: ${event.type}`);
 
       switch (event.type) {
@@ -165,15 +260,43 @@ serve(async (req) => {
 
     // POST /payment-webhook/paypal - Handle PayPal webhooks
     if (req.method === 'POST' && provider === 'paypal') {
-      if (!verifyWebhookToken(req)) {
-        console.log('[payment-webhook] Invalid webhook token');
-        return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+      const rawBody = await req.text();
+      const sigHeader = req.headers.get('x-webhook-signature');
+
+      if (!WEBHOOK_SIGNING_SECRET) {
+        console.error('[payment-webhook] WEBHOOK_SIGNING_SECRET is not configured');
+        return new Response(JSON.stringify({ success: false, error: 'Webhook not configured' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (!sigHeader) {
+        return new Response(JSON.stringify({ success: false, error: 'Missing x-webhook-signature' }), {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
-      const event = await req.json();
+      const isValid = await verifyGenericSignature(rawBody, sigHeader);
+      if (!isValid) {
+        console.log('[payment-webhook] Invalid webhook signature');
+        return new Response(JSON.stringify({ success: false, error: 'Invalid signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      let event: any;
+      try {
+        event = JSON.parse(rawBody);
+      } catch {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       const eventType = event.event_type;
       console.log(`[payment-webhook] PayPal event: ${eventType}`);
 
@@ -297,18 +420,57 @@ serve(async (req) => {
       }
     }
 
-    // POST /payment-webhook/test - Test webhook endpoint
+    // POST /payment-webhook/test - Test webhook endpoint (requires signature)
     if (req.method === 'POST' && provider === 'test') {
-      const body = await req.json();
+      const rawBody = await req.text();
+      const sigHeader = req.headers.get('x-webhook-signature');
+
+      if (!WEBHOOK_SIGNING_SECRET) {
+        console.error('[payment-webhook] WEBHOOK_SIGNING_SECRET is not configured');
+        return new Response(JSON.stringify({ success: false, error: 'Webhook not configured' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (!sigHeader) {
+        return new Response(JSON.stringify({ success: false, error: 'Missing x-webhook-signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const isValid = await verifyGenericSignature(rawBody, sigHeader);
+      if (!isValid) {
+        console.log('[payment-webhook] Invalid webhook signature');
+        return new Response(JSON.stringify({ success: false, error: 'Invalid signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      let body: any;
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       console.log('[payment-webhook] Test webhook received:', body);
-      
-      return new Response(JSON.stringify({
-        success: true,
-        message: 'Test webhook received',
-        echo: body,
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Test webhook received',
+          echo: body,
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // GET /payment-webhook/health - Health check
