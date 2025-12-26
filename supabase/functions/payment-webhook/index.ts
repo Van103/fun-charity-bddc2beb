@@ -332,15 +332,43 @@ serve(async (req) => {
 
     // POST /payment-webhook/crypto - Handle crypto transaction confirmations
     if (req.method === 'POST' && provider === 'crypto') {
-      if (!verifyWebhookToken(req)) {
-        console.log('[payment-webhook] Invalid webhook token');
-        return new Response(JSON.stringify({ success: false, error: 'Invalid webhook token' }), {
+      const rawBody = await req.text();
+      const sigHeader = req.headers.get('x-webhook-signature');
+
+      if (!WEBHOOK_SIGNING_SECRET) {
+        console.error('[payment-webhook] WEBHOOK_SIGNING_SECRET is not configured');
+        return new Response(JSON.stringify({ success: false, error: 'Webhook not configured' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (!sigHeader) {
+        console.log('[payment-webhook] Missing x-webhook-signature header');
+        return new Response(JSON.stringify({ success: false, error: 'Missing x-webhook-signature' }), {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
-      const body = await req.json();
+      const isValid = await verifyGenericSignature(rawBody, sigHeader);
+      if (!isValid) {
+        console.log('[payment-webhook] Invalid webhook signature');
+        return new Response(JSON.stringify({ success: false, error: 'Invalid signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      let body: any;
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid JSON body' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
       
       // Validate required fields
       if (!body.donation_id || !body.tx_hash || !body.confirmations) {
