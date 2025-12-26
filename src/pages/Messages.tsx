@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,9 +28,11 @@ import { vi } from "date-fns/locale";
 import { usePresence, getOnlineStatus } from "@/hooks/usePresence";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 import { useTypingIndicator } from "@/hooks/useTypingIndicator";
+import { useMessageReactions } from "@/hooks/useMessageReactions";
 import { ChatStickerPicker } from "@/components/chat/ChatStickerPicker";
 import { VideoCallModal } from "@/components/chat/VideoCallModal";
 import { CreateGroupModal } from "@/components/chat/CreateGroupModal";
+import { MessageReactionPicker, MessageReactionsDisplay } from "@/components/chat/MessageReactionPicker";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -118,6 +120,16 @@ export default function Messages() {
     activeConversation?.id || null,
     currentUserId
   );
+
+  // Get message IDs for reactions
+  const messageIds = useMemo(() => messages.map(m => m.id), [messages]);
+
+  // Setup message reactions
+  const { 
+    toggleReaction, 
+    getMessageReactions, 
+    getUserReaction 
+  } = useMessageReactions(messageIds, currentUserId);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -993,28 +1005,42 @@ export default function Messages() {
                           </div>
                         )}
                         
-                        {/* Recall button for own messages */}
+                        {/* Reaction picker + Recall button for own messages */}
                         {isCurrentUser && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-                              >
-                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-card border-border">
-                              <DropdownMenuItem 
-                                onClick={() => recallMessage(msg.id)}
-                                className="text-destructive focus:text-destructive cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Thu hồi tin nhắn
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <div className="flex items-center gap-1">
+                            <MessageReactionPicker
+                              onSelect={(emoji) => toggleReaction(msg.id, emoji)}
+                              currentReaction={getUserReaction(msg.id)}
+                            />
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                                >
+                                  <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-card border-border">
+                                <DropdownMenuItem 
+                                  onClick={() => recallMessage(msg.id)}
+                                  className="text-destructive focus:text-destructive cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Thu hồi tin nhắn
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        )}
+
+                        {/* Reaction picker for other user's messages */}
+                        {!isCurrentUser && (
+                          <MessageReactionPicker
+                            onSelect={(emoji) => toggleReaction(msg.id, emoji)}
+                            currentReaction={getUserReaction(msg.id)}
+                          />
                         )}
                         
                         <div className={`flex flex-col max-w-[70%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
@@ -1025,26 +1051,34 @@ export default function Messages() {
                             </span>
                           )}
                           
-                          <div
-                            className={`rounded-2xl overflow-hidden ${
-                              isCurrentUser
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            {msg.image_url && (
-                              <img 
-                                src={msg.image_url} 
-                                alt="Shared image" 
-                                className="max-w-full max-h-72 object-cover cursor-pointer"
-                                onClick={() => window.open(msg.image_url!, '_blank')}
-                              />
-                            )}
-                            {msg.content && (
-                              <div className={`px-4 py-2 ${msg.content === '👍' ? 'text-4xl py-1' : ''}`}>
-                                <p className="text-[15px] whitespace-pre-wrap break-words">{msg.content}</p>
-                              </div>
-                            )}
+                          <div className="relative">
+                            <div
+                              className={`rounded-2xl overflow-hidden ${
+                                isCurrentUser
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-muted'
+                              }`}
+                            >
+                              {msg.image_url && (
+                                <img 
+                                  src={msg.image_url} 
+                                  alt="Shared image" 
+                                  className="max-w-full max-h-72 object-cover cursor-pointer"
+                                  onClick={() => window.open(msg.image_url!, '_blank')}
+                                />
+                              )}
+                              {msg.content && (
+                                <div className={`px-4 py-2 ${msg.content === '👍' ? 'text-4xl py-1' : ''}`}>
+                                  <p className="text-[15px] whitespace-pre-wrap break-words">{msg.content}</p>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Reactions display */}
+                            <MessageReactionsDisplay
+                              reactions={getMessageReactions(msg.id)}
+                              onReactionClick={(emoji) => toggleReaction(msg.id, emoji)}
+                            />
                           </div>
                         </div>
                       </motion.div>
