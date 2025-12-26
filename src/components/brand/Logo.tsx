@@ -72,7 +72,7 @@ export function Logo({ size = "md", showText = true, className = "" }: LogoProps
       </div>
 
       {showText && (
-        <span className={`font-display font-bold ${s.text} bg-gradient-to-r from-purple-dark via-primary to-secondary bg-clip-text text-transparent tracking-tight`}>
+        <span className={`font-display font-bold ${s.text} text-gold tracking-tight`}>
           FUNCHARITY
         </span>
       )}
