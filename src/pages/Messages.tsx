@@ -9,8 +9,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Loader2, Send, ArrowLeft, Search, Image as ImageIcon, X, 
-  Phone, Video, Users, Plus, ThumbsUp, Circle
+  Phone, Video, Users, Plus, ThumbsUp, Circle, MoreVertical, Trash2
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { usePresence, getOnlineStatus } from "@/hooks/usePresence";
@@ -487,6 +493,38 @@ export default function Messages() {
     }
   };
 
+  const recallMessage = async (messageId: string) => {
+    if (!currentUserId) return;
+    
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", messageId)
+        .eq("sender_id", currentUserId);
+
+      if (error) throw error;
+
+      setMessages(prev => prev.filter(m => m.id !== messageId));
+      
+      toast({
+        title: "Đã thu hồi",
+        description: "Tin nhắn đã được thu hồi thành công",
+      });
+
+      // Refresh conversation list
+      if (currentUserId) {
+        await loadConversations(currentUserId);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể thu hồi tin nhắn",
+        variant: "destructive"
+      });
+    }
+  };
+
   const startCall = (type: "video" | "audio") => {
     setCallType(type);
     setShowVideoCall(true);
@@ -871,7 +909,7 @@ export default function Messages() {
                             key={msg.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className={`flex items-end gap-2 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+                            className={`flex items-end gap-2 group ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                           >
                             {/* Avatar for other user's messages */}
                             {!isCurrentUser && (
@@ -885,6 +923,30 @@ export default function Messages() {
                                   </Avatar>
                                 )}
                               </div>
+                            )}
+                            
+                            {/* Recall button for own messages - shown on left side */}
+                            {isCurrentUser && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                                  >
+                                    <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem 
+                                    onClick={() => recallMessage(msg.id)}
+                                    className="text-destructive focus:text-destructive cursor-pointer"
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Thu hồi tin nhắn
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             )}
                             
                             <div className={`flex flex-col max-w-[75%] sm:max-w-[70%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
