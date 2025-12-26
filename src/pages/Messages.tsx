@@ -354,6 +354,8 @@ export default function Messages() {
   const selectConversation = async (convo: Conversation) => {
     // Clear messages immediately to prevent showing old chat
     setMessages([]);
+    // Update ref BEFORE loading messages so the check passes
+    activeConversationRef.current = convo.id;
     setActiveConversation(convo);
     await loadMessages(convo.id);
   };
