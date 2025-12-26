@@ -36,6 +36,7 @@ import {
   Home,
   ChevronDown,
   Layers,
+  MessageCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -61,6 +62,7 @@ export function Navbar() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -68,6 +70,61 @@ export function Navbar() {
   // Enable realtime notifications
   useFriendRequestNotifications(user?.id || null);
   usePostNotifications(user?.id || null);
+
+  // Fetch unread message count
+  useEffect(() => {
+    if (!user?.id) {
+      setUnreadMessageCount(0);
+      return;
+    }
+
+    const fetchUnreadCount = async () => {
+      // Get all conversations for this user
+      const { data: convos } = await supabase
+        .from("conversations")
+        .select("id")
+        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`);
+
+      if (!convos || convos.length === 0) {
+        setUnreadMessageCount(0);
+        return;
+      }
+
+      const convoIds = convos.map(c => c.id);
+      
+      // Count unread messages
+      const { count } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .in("conversation_id", convoIds)
+        .eq("is_read", false)
+        .neq("sender_id", user.id);
+
+      setUnreadMessageCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    // Subscribe to new messages
+    const channel = supabase
+      .channel("navbar-messages")
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'messages'
+        },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -195,6 +252,25 @@ export function Navbar() {
               <CursorSettings />
             </div>
             
+            {/* Messages - always visible */}
+            {user && (
+              <Link to="/messages">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="relative text-foreground hover:text-primary hover:bg-primary/10"
+                  title={t("nav.messages") || "Messages"}
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  {unreadMessageCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-destructive rounded-full px-1">
+                      {unreadMessageCount > 99 ? "99+" : unreadMessageCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
+
             {/* Notifications - always visible but smaller on mobile */}
             <NotificationDropdown />
 
