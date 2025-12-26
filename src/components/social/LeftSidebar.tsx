@@ -43,8 +43,8 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
   const { t } = useLanguage();
 
   return (
-    <aside className="w-64 shrink-0 h-[calc(100vh-6rem)] overflow-y-auto scrollbar-purple pr-1">
-      <div className="space-y-4">
+    <aside className="w-64 shrink-0 h-[calc(100vh-6rem)] overflow-y-auto scrollbar-purple scrollbar-left pl-1">
+      <div className="space-y-4 w-full">
         {/* Platform Ecosystem */}
         <div className="glass-card p-4 hover-luxury-glow">
           <h3 className="font-semibold mb-1 text-[#4C1D95]" style={{ fontSize: '20px' }}>
