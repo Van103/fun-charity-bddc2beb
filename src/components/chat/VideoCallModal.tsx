@@ -165,19 +165,61 @@ export function VideoCallModal({
     return pc;
   }, []);
 
+  // Cleanup function
+  const cleanup = useCallback(() => {
+    localStream?.getTracks().forEach(track => track.stop());
+    remoteStream?.getTracks().forEach(track => track.stop());
+    peerConnectionRef.current?.close();
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+    if (callTimerRef.current) {
+      clearInterval(callTimerRef.current);
+    }
+    setLocalStream(null);
+    setRemoteStream(null);
+    setCallStatus("ended");
+    setCallDuration(0);
+  }, [localStream, remoteStream]);
+
+  // End call
+  const endCall = useCallback(async () => {
+    if (sessionIdRef.current) {
+      await supabase
+        .from("call_sessions")
+        .update({ status: "ended", ended_at: new Date().toISOString() })
+        .eq("id", sessionIdRef.current);
+
+      channelRef.current?.send({
+        type: "broadcast",
+        event: "call-ended",
+        payload: {}
+      });
+    }
+    cleanup();
+    onClose();
+  }, [onClose, cleanup]);
+
   // Start outgoing call
   const startCall = useCallback(async () => {
     const stream = await initializeMedia();
     if (!stream) return;
 
-    // Create call session in database
+    const pc = createPeerConnection(stream);
+    
+    // Create offer first
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // Create call session in database with offer stored
     const { data: session, error } = await supabase
       .from("call_sessions")
       .insert({
         conversation_id: conversationId,
         caller_id: currentUserId,
         call_type: callType,
-        status: "pending"
+        status: "pending",
+        signaling_data: { offer: { type: offer.type, sdp: offer.sdp } }
       })
       .select()
       .single();
@@ -189,13 +231,13 @@ export function VideoCallModal({
         description: "Không thể bắt đầu cuộc gọi",
         variant: "destructive"
       });
+      stream.getTracks().forEach(track => track.stop());
       return;
     }
 
     sessionIdRef.current = session.id;
+    peerConnectionRef.current = pc;
     setCallStatus("ringing");
-
-    const pc = createPeerConnection(stream);
     
     // Setup signaling channel
     const channel = supabase.channel(`call-${session.id}`);
@@ -204,13 +246,17 @@ export function VideoCallModal({
     channel.on("broadcast", { event: "answer" }, async (msg) => {
       console.log("Received answer");
       const answer = msg.payload.answer;
-      await pc.setRemoteDescription(new RTCSessionDescription(answer));
+      if (peerConnectionRef.current) {
+        await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+      }
     });
 
     channel.on("broadcast", { event: "ice-candidate" }, async (msg) => {
       console.log("Received ICE candidate");
       try {
-        await pc.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
+        if (peerConnectionRef.current) {
+          await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
+        }
       } catch (e) {
         console.error("Error adding ICE candidate:", e);
       }
@@ -229,53 +275,45 @@ export function VideoCallModal({
     });
 
     await channel.subscribe();
+    console.log("Call started, session:", session.id);
+  }, [conversationId, currentUserId, callType, initializeMedia, createPeerConnection, otherUser, toast, endCall]);
 
-    // Create and send offer
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    channel.send({
-      type: "broadcast",
-      event: "offer",
-      payload: { 
-        offer,
-        caller_id: currentUserId,
-        call_type: callType
-      }
-    });
-  }, [conversationId, currentUserId, callType, initializeMedia, createPeerConnection, otherUser, toast]);
-
-  // Answer incoming call
+  // Answer incoming call - now retrieves offer from database
   const answerCall = useCallback(async () => {
     if (!callSessionId) return;
+
+    // First, get the offer from the database
+    const { data: callSession, error: fetchError } = await supabase
+      .from("call_sessions")
+      .select("signaling_data")
+      .eq("id", callSessionId)
+      .single();
+
+    if (fetchError || !callSession) {
+      console.error("Error fetching call session:", fetchError);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tham gia cuộc gọi",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const stream = await initializeMedia();
     if (!stream) return;
 
     const pc = createPeerConnection(stream);
+    peerConnectionRef.current = pc;
     
     const channel = supabase.channel(`call-${callSessionId}`);
     channelRef.current = channel;
 
-    channel.on("broadcast", { event: "offer" }, async (msg) => {
-      console.log("Received offer");
-      const offer = msg.payload.offer;
-      await pc.setRemoteDescription(new RTCSessionDescription(offer));
-      
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      channel.send({
-        type: "broadcast",
-        event: "answer",
-        payload: { answer }
-      });
-    });
-
     channel.on("broadcast", { event: "ice-candidate" }, async (msg) => {
       console.log("Received ICE candidate");
       try {
-        await pc.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
+        if (peerConnectionRef.current) {
+          await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
+        }
       } catch (e) {
         console.error("Error adding ICE candidate:", e);
       }
@@ -287,6 +325,30 @@ export function VideoCallModal({
 
     await channel.subscribe();
 
+    // Set remote description from stored offer
+    const signalingData = callSession.signaling_data as { offer?: RTCSessionDescriptionInit };
+    if (signalingData?.offer) {
+      console.log("Setting remote description from stored offer");
+      await pc.setRemoteDescription(new RTCSessionDescription(signalingData.offer));
+      
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      channel.send({
+        type: "broadcast",
+        event: "answer",
+        payload: { answer: { type: answer.type, sdp: answer.sdp } }
+      });
+    } else {
+      console.error("No offer found in call session");
+      toast({
+        title: "Lỗi",
+        description: "Không tìm thấy dữ liệu cuộc gọi",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Update call status
     await supabase
       .from("call_sessions")
@@ -294,7 +356,7 @@ export function VideoCallModal({
       .eq("id", callSessionId);
 
     setCallStatus("active");
-  }, [callSessionId, initializeMedia, createPeerConnection]);
+  }, [callSessionId, initializeMedia, createPeerConnection, endCall, toast]);
 
   // Decline incoming call
   const declineCall = useCallback(async () => {
@@ -312,42 +374,7 @@ export function VideoCallModal({
     }
     cleanup();
     onClose();
-  }, [callSessionId, onClose]);
-
-  // End call
-  const endCall = useCallback(async () => {
-    if (sessionIdRef.current) {
-      await supabase
-        .from("call_sessions")
-        .update({ status: "ended", ended_at: new Date().toISOString() })
-        .eq("id", sessionIdRef.current);
-
-      channelRef.current?.send({
-        type: "broadcast",
-        event: "call-ended",
-        payload: {}
-      });
-    }
-    cleanup();
-    onClose();
-  }, [onClose]);
-
-  // Cleanup
-  const cleanup = useCallback(() => {
-    localStream?.getTracks().forEach(track => track.stop());
-    remoteStream?.getTracks().forEach(track => track.stop());
-    peerConnectionRef.current?.close();
-    if (channelRef.current) {
-      supabase.removeChannel(channelRef.current);
-    }
-    if (callTimerRef.current) {
-      clearInterval(callTimerRef.current);
-    }
-    setLocalStream(null);
-    setRemoteStream(null);
-    setCallStatus("ended");
-    setCallDuration(0);
-  }, [localStream, remoteStream]);
+  }, [callSessionId, onClose, cleanup]);
 
   // Toggle mute
   const toggleMute = () => {
