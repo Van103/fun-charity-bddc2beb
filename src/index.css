@@ -865,7 +865,7 @@ label,
   box-shadow: 0 0 12px rgba(168, 85, 247, 0.7), 0 0 24px rgba(192, 132, 252, 0.5);
 }
 
-/* Scrollbar on left side */
+/* Scrollbar positioned on left side - uses RTL trick */
 .scrollbar-left {
   direction: rtl;
 }
