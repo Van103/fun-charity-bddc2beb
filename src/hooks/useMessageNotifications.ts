@@ -30,10 +30,10 @@ export function useMessageNotifications(
       description: messagePreview,
     });
 
-    // Play notification sound (optional)
+    // Play notification sound
     try {
-      const audio = new Audio("/notification.mp3");
-      audio.volume = 0.3;
+      const audio = new Audio("/sounds/notification.mp3");
+      audio.volume = 0.5;
       audio.play().catch(() => {});
     } catch {}
   }, [currentUserId, activeConversationId, toast]);

@@ -10,7 +10,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MessageCircle, Search, User as UserIcon, Circle, ExternalLink, X, Send, ThumbsUp, Image as ImageIcon } from "lucide-react";
+import { MessageCircle, Search, User as UserIcon, Circle, ExternalLink, X, Send, ThumbsUp, Smile } from "lucide-react";
+import { ChatStickerPicker } from "@/components/chat/ChatStickerPicker";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -360,6 +361,7 @@ export function MessageDropdown({ userId, unreadCount }: MessageDropdownProps) {
               {/* Input */}
               <div className="p-2 border-t border-border/50 bg-muted/20">
                 <div className="flex items-center gap-2">
+                  <ChatStickerPicker onSelect={(sticker) => setNewMessage(prev => prev + sticker)} />
                   <Input
                     placeholder="Aa"
                     value={newMessage}
