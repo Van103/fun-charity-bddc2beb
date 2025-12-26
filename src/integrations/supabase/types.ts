@@ -1380,9 +1380,75 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          cover_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string | null
+          is_verified: boolean | null
+          reputation_score: number | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          reputation_score?: number | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          reputation_score?: number | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      get_campaign_donations: {
+        Args: { _campaign_id: string }
+        Returns: {
+          amount: number
+          amount_usd: number
+          block_number: number
+          campaign_id: string
+          chain: string
+          completed_at: string
+          created_at: string
+          currency: string
+          donor_id: string
+          id: string
+          is_anonymous: boolean
+          is_recurring: boolean
+          message: string
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          status: Database["public"]["Enums"]["donation_status"]
+          stripe_payment_id: string
+          stripe_receipt_url: string
+          tx_hash: string
+          wallet_from: string
+          wallet_to: string
+        }[]
+      }
       get_total_friendship_count: { Args: never; Returns: number }
       has_role: {
         Args: {
