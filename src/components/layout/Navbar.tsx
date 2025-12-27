@@ -228,13 +228,15 @@ export function Navbar() {
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className={`relative w-24 h-12 rounded-xl transition-all duration-300 ${
+                      className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
                         location.pathname === "/social" 
                           ? "bg-primary text-white" 
-                          : "text-primary hover:bg-primary/10"
+                          : "text-muted-foreground hover:bg-primary/10"
                       }`}
                     >
-                      <Home className="w-7 h-7" strokeWidth={2} />
+                      <Home className={`w-7 h-7 transition-colors duration-200 ${
+                        location.pathname === "/social" ? "" : "group-hover:text-primary"
+                      }`} strokeWidth={2} />
                     </Button>
                   </motion.div>
                 </Link>
@@ -257,10 +259,10 @@ export function Navbar() {
                       <Button 
                         variant="ghost" 
                         size="default" 
-                        className="w-24 h-12 px-4 gap-1 rounded-xl text-primary hover:bg-primary/10 transition-all duration-300"
+                        className="w-24 h-12 px-4 gap-1 rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 group"
                       >
-                        <Layers className="w-7 h-7" strokeWidth={2} />
-                        <ChevronDown className="w-4 h-4" strokeWidth={2} />
+                        <Layers className="w-7 h-7 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
+                        <ChevronDown className="w-4 h-4 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
                       </Button>
                     </motion.div>
                   </DropdownMenuTrigger>
@@ -309,13 +311,15 @@ export function Navbar() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className={`relative w-24 h-12 rounded-xl transition-all duration-300 ${
+                          className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
                             isActive 
                               ? "bg-primary text-white" 
-                              : "text-primary hover:bg-primary/10"
+                              : "text-muted-foreground hover:bg-primary/10"
                           }`}
                         >
-                          <Icon className="w-7 h-7" strokeWidth={2} />
+                          <Icon className={`w-7 h-7 transition-colors duration-200 ${
+                            isActive ? "" : "group-hover:text-primary"
+                          }`} strokeWidth={2} />
                         </Button>
                       </motion.div>
                     </Link>
