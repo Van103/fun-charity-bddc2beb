@@ -13,10 +13,17 @@ import {
   X,
   RotateCcw,
   Monitor,
-  MonitorOff
+  MonitorOff,
+  PhoneIncoming,
+  PhoneMissed
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Audio URLs for call sounds
+const RINGTONE_URL = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQcLXrTy2bZ6FQIfktPwvJtLGQo2n+j0yrqBNxkAL5bm98zChjkdAyOS4/jLv4Y6HAQgkOL4ysGHOh0EH43f98nBhzofBR2K3PbIwIg7IAYbhdj1x8CIPCIGGYLVtcfAiD0jBxd/0rTHwIg+JAcVfM+zx8CIPCQIFTDJSMI7IgYXfc+zx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6y";
+
+const CALL_END_URL = "data:audio/wav;base64,UklGRkYDAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YSIDAACAf39/f4CAgH9/f4B/gICAgH9/f39/gICAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4CAf4B/gIB/gH+AgICAgH9/f39/gICAf39/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gIB/f39/f4CAgICAgH9/f39/f4CAgIB/f39/f4CAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAf39/f3+AgICAgH9/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgH9/f39/gICAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/gICAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgH9/f39/gICAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAf39/f3+AgICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gIB/f39/f4CAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgICAf39/f39/gA==";
 
 interface VideoCallModalProps {
   open: boolean;
@@ -44,13 +51,14 @@ export function VideoCallModal({
   callSessionId
 }: VideoCallModalProps) {
   const { toast } = useToast();
-  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended">("idle");
+  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended" | "no_answer" | "busy">("idle");
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(callType === "audio");
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [callDuration, setCallDuration] = useState(0);
+  const [ringCount, setRingCount] = useState(0);
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -58,6 +66,9 @@ export function VideoCallModal({
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const sessionIdRef = useRef<string | null>(callSessionId || null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const ringTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
+  const callEndSoundRef = useRef<HTMLAudioElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
@@ -79,20 +90,35 @@ export function VideoCallModal({
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Start call timer
-  useEffect(() => {
-    if (callStatus === "active") {
-      callTimerRef.current = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
+  // Play ringtone for outgoing calls
+  const playRingtone = useCallback(() => {
+    console.log("Playing ringtone...");
+    if (!ringtoneRef.current) {
+      ringtoneRef.current = new Audio(RINGTONE_URL);
+      ringtoneRef.current.loop = true;
+      ringtoneRef.current.volume = 0.5;
     }
-    return () => {
-      if (callTimerRef.current) {
-        clearInterval(callTimerRef.current);
-        callTimerRef.current = null;
-      }
-    };
-  }, [callStatus]);
+    ringtoneRef.current.play().catch(console.error);
+  }, []);
+
+  // Stop ringtone
+  const stopRingtone = useCallback(() => {
+    console.log("Stopping ringtone...");
+    if (ringtoneRef.current) {
+      ringtoneRef.current.pause();
+      ringtoneRef.current.currentTime = 0;
+    }
+  }, []);
+
+  // Play call end sound
+  const playCallEndSound = useCallback(() => {
+    console.log("Playing call end sound...");
+    if (!callEndSoundRef.current) {
+      callEndSoundRef.current = new Audio(CALL_END_URL);
+      callEndSoundRef.current.volume = 0.5;
+    }
+    callEndSoundRef.current.play().catch(console.error);
+  }, []);
 
   // Cleanup function - uses refs to avoid stale closures
   const cleanup = useCallback(() => {
@@ -100,6 +126,15 @@ export function VideoCallModal({
     isCleanedUpRef.current = true;
     
     console.log("Cleaning up video call resources...");
+    
+    // Stop ringtone
+    stopRingtone();
+    
+    // Clear ring timer
+    if (ringTimerRef.current) {
+      clearInterval(ringTimerRef.current);
+      ringTimerRef.current = null;
+    }
     
     // Stop screen share stream
     if (screenStreamRef.current) {
@@ -144,7 +179,71 @@ export function VideoCallModal({
     setRemoteStream(null);
     setCallDuration(0);
     setIsScreenSharing(false);
-  }, []);
+    setRingCount(0);
+  }, [stopRingtone]);
+
+  // Start call timer
+  useEffect(() => {
+    if (callStatus === "active") {
+      stopRingtone();
+      callTimerRef.current = setInterval(() => {
+        setCallDuration(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (callTimerRef.current) {
+        clearInterval(callTimerRef.current);
+        callTimerRef.current = null;
+      }
+    };
+  }, [callStatus, stopRingtone]);
+
+  // Play ringtone when ringing (outgoing call)
+  useEffect(() => {
+    if (callStatus === "ringing" && !isIncoming) {
+      playRingtone();
+      // Start ring count timer - auto end after 30 seconds (6 rings of ~5 sec each)
+      setRingCount(0);
+      ringTimerRef.current = setInterval(() => {
+        setRingCount(prev => {
+          if (prev >= 6) {
+            // No answer after 30 seconds
+            stopRingtone();
+            playCallEndSound();
+            if (ringTimerRef.current) {
+              clearInterval(ringTimerRef.current);
+            }
+            setCallStatus("no_answer");
+            toast({
+              title: "Không có phản hồi",
+              description: `${otherUser.full_name || "Người dùng"} không trả lời cuộc gọi`,
+            });
+            // Auto close after 2 seconds
+            setTimeout(() => {
+              cleanup();
+              onClose();
+            }, 2000);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 5000);
+    } else {
+      stopRingtone();
+      if (ringTimerRef.current) {
+        clearInterval(ringTimerRef.current);
+        ringTimerRef.current = null;
+      }
+    }
+    
+    return () => {
+      stopRingtone();
+      if (ringTimerRef.current) {
+        clearInterval(ringTimerRef.current);
+        ringTimerRef.current = null;
+      }
+    };
+  }, [callStatus, isIncoming, playRingtone, stopRingtone, playCallEndSound, otherUser.full_name, toast, cleanup, onClose]);
 
   // End call
   const endCall = useCallback(async () => {
@@ -356,13 +455,17 @@ export function VideoCallModal({
       });
 
       channel.on("broadcast", { event: "call-declined" }, () => {
+        stopRingtone();
+        playCallEndSound();
         toast({
           title: "Cuộc gọi bị từ chối",
           description: `${otherUser.full_name || "Người dùng"} đã từ chối cuộc gọi`
         });
-        cleanup();
-        setCallStatus("ended");
-        onClose();
+        setCallStatus("busy");
+        setTimeout(() => {
+          cleanup();
+          onClose();
+        }, 2000);
       });
 
       channel.on("broadcast", { event: "call-ended" }, () => {
@@ -748,9 +851,11 @@ export function VideoCallModal({
                 <p className="text-white/60 text-sm">
                   {callStatus === "idle" && "Chuẩn bị..."}
                   {callStatus === "connecting" && "Đang kết nối..."}
-                  {callStatus === "ringing" && (isIncoming ? "Cuộc gọi đến..." : "Đang đổ chuông...")}
+                  {callStatus === "ringing" && (isIncoming ? "Cuộc gọi đến..." : `Đang đổ chuông... (${ringCount * 5}s)`)}
                   {callStatus === "active" && formatDuration(callDuration)}
                   {callStatus === "ended" && "Đã kết thúc"}
+                  {callStatus === "no_answer" && "Không trả lời"}
+                  {callStatus === "busy" && "Đã từ chối"}
                 </p>
               </div>
             </div>
@@ -813,18 +918,46 @@ export function VideoCallModal({
                 </div>
               )}
               {callStatus === "ringing" && !isIncoming && (
-                <p className="text-white/60 mt-2 animate-pulse">Đang đổ chuông...</p>
+                <div className="mt-4 flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Phone className="w-5 h-5 text-primary animate-bounce" />
+                    <span className="text-white/80">Đang đổ chuông...</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(6)].map((_, i) => (
+                      <div 
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${i < ringCount ? 'bg-primary' : 'bg-white/30'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
               {callStatus === "ringing" && isIncoming && (
-                <p className="text-primary mt-2 animate-pulse text-lg">
-                  Cuộc gọi {callType === "video" ? "video" : "thoại"} đến
-                </p>
+                <div className="mt-4 flex flex-col items-center">
+                  <PhoneIncoming className="w-8 h-8 text-green-400 animate-bounce mb-2" />
+                  <p className="text-green-400 animate-pulse text-lg">
+                    Cuộc gọi {callType === "video" ? "video" : "thoại"} đến
+                  </p>
+                </div>
               )}
               {callStatus === "active" && callType === "audio" && (
-                <p className="text-green-400 mt-2 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <p className="text-green-400 mt-4 flex items-center gap-2">
+                  <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
                   Đang trong cuộc gọi
                 </p>
+              )}
+              {callStatus === "no_answer" && (
+                <div className="mt-4 flex flex-col items-center text-red-400">
+                  <PhoneMissed className="w-10 h-10 mb-2" />
+                  <p className="text-lg">Không có phản hồi</p>
+                </div>
+              )}
+              {callStatus === "busy" && (
+                <div className="mt-4 flex flex-col items-center text-orange-400">
+                  <PhoneOff className="w-10 h-10 mb-2" />
+                  <p className="text-lg">Cuộc gọi bị từ chối</p>
+                </div>
               )}
             </div>
           )}
