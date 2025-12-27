@@ -64,7 +64,7 @@ const platformItems = [
 ];
 
 const navItems = [
-  { nameKey: "nav.communityProfiles", path: "/profiles", icon: Users },
+  { nameKey: "nav.community", path: "/profiles", icon: Users },
 ];
 
 export function Navbar() {
@@ -188,8 +188,8 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border/50 shadow-sm">
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Left Section: Logo + Search + Home */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Left Section: Logo + Search */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Logo - Circular, text shows on hover */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -208,12 +208,15 @@ export function Navbar() {
               </TooltipContent>
             </Tooltip>
             
-            {/* Search - next to logo, compact */}
+            {/* Search - next to logo */}
             <div className="hidden md:block w-44 lg:w-52">
               <SearchBar />
             </div>
+          </div>
 
-            {/* Home Button - right of search */}
+          {/* Center Navigation - Home, Platform, Community */}
+          <div className="hidden lg:flex items-center justify-center gap-2 flex-1">
+            {/* Home Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link to="/social">
@@ -225,17 +228,17 @@ export function Navbar() {
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className={`relative w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ${
+                      className={`relative w-20 h-12 rounded-xl transition-all duration-300 ${
                         location.pathname === "/social" 
                           ? "bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30 hover:shadow-primary/50" 
                           : "text-primary hover:bg-primary/15 hover:text-primary hover:shadow-md"
                       }`}
                     >
-                      <Home className="w-7 h-7 sm:w-8 sm:h-8" strokeWidth={2.5} />
+                      <Home className="w-7 h-7" strokeWidth={2.5} />
                       {location.pathname === "/social" && (
                         <motion.div
                           layoutId="nav-indicator"
-                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-primary rounded-full"
+                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary rounded-full"
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -249,11 +252,8 @@ export function Navbar() {
                 {t("nav.home")}
               </TooltipContent>
             </Tooltip>
-          </div>
 
-          {/* Center Navigation - Larger icon buttons */}
-          <div className="hidden lg:flex items-center gap-2">
-            {/* Platform Dropdown - With arrow indicator */}
+            {/* Platform Dropdown */}
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -266,7 +266,7 @@ export function Navbar() {
                       <Button 
                         variant="ghost" 
                         size="default" 
-                        className="w-auto h-12 px-4 gap-1 rounded-full text-primary hover:bg-primary/15 hover:shadow-md transition-all duration-300"
+                        className="w-20 h-12 px-4 gap-1 rounded-xl text-primary hover:bg-primary/15 hover:shadow-md transition-all duration-300"
                       >
                         <Layers className="w-7 h-7" strokeWidth={2.5} />
                         <ChevronDown className="w-5 h-5" strokeWidth={2.5} />
@@ -302,7 +302,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Community - Larger icon */}
+            {/* Community */}
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -318,7 +318,7 @@ export function Navbar() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className={`relative w-12 h-12 rounded-full transition-all duration-300 ${
+                          className={`relative w-20 h-12 rounded-xl transition-all duration-300 ${
                             isActive 
                               ? "bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30 hover:shadow-primary/50" 
                               : "text-primary hover:bg-primary/15 hover:shadow-md"
@@ -328,7 +328,7 @@ export function Navbar() {
                           {isActive && (
                             <motion.div
                               layoutId="nav-indicator-community"
-                              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-primary rounded-full"
+                              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-1 bg-primary rounded-full"
                               initial={{ opacity: 0, scale: 0 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -347,29 +347,8 @@ export function Navbar() {
           </div>
 
 
-          {/* Right Actions - Larger icons, no cursor settings button outside */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Sparkles/Activity - Larger icon */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.92 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="hidden md:flex w-12 h-12 rounded-full text-primary hover:bg-primary/15 hover:shadow-md transition-all duration-300"
-                  >
-                    <Sparkles className="w-7 h-7" strokeWidth={2.5} />
-                  </Button>
-                </motion.div>
-              </TooltipTrigger>
-              <TooltipContent className="bg-foreground text-background font-semibold">
-                {t("nav.activity") || "Hoạt động"}
-              </TooltipContent>
-            </Tooltip>
+          {/* Right Actions */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             
             {/* Messages Dropdown */}
             {user && (

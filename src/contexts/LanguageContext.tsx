@@ -23,6 +23,11 @@ export const translations: Translations = {
   "nav.communityProfiles": { en: "Community Profiles", vi: "Hồ sơ cộng đồng" },
   "nav.messages": { en: "Messages", vi: "Tin nhắn" },
   "nav.search": { en: "Search on FUN Charity", vi: "Tìm kiếm trên FUN Charity" },
+  "nav.community": { en: "Community", vi: "Cộng đồng" },
+  "nav.activity": { en: "Activity", vi: "Hoạt động" },
+  "user.viewProfile": { en: "View Profile", vi: "Xem hồ sơ" },
+  "settings.language": { en: "Language", vi: "Ngôn ngữ" },
+  "settings.cursor": { en: "Cursor", vi: "Con trỏ" },
   
   // Left Sidebar
   "sidebar.ecosystem": { en: "F.U. Ecosystem Platforms", vi: "Các Platform F.U. Ecosystem" },
