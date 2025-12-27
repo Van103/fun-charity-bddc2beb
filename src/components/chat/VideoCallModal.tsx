@@ -20,10 +20,136 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Audio URLs for call sounds
-const RINGTONE_URL = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQcLXrTy2bZ6FQIfktPwvJtLGQo2n+j0yrqBNxkAL5bm98zChjkdAyOS4/jLv4Y6HAQgkOL4ysGHOh0EH43f98nBhzofBR2K3PbIwIg7IAYbhdj1x8CIPCIGGYLVtcfAiD0jBxd/0rTHwIg+JAcVfM+zx8CIPCQIFTDJSMI7IgYXfc+zx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6yx8CIPSMHFn3OssfAiD0jBxZ9zrLHwIg9IwcWfc6y";
+// Messenger-like ringtone generator using Web Audio API
+class MessengerRingtone {
+  private audioContext: AudioContext | null = null;
+  private oscillators: OscillatorNode[] = [];
+  private gainNodes: GainNode[] = [];
+  private isPlaying = false;
+  private intervalId: NodeJS.Timeout | null = null;
 
-const CALL_END_URL = "data:audio/wav;base64,UklGRkYDAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YSIDAACAf39/f4CAgH9/f4B/gICAgH9/f39/gICAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4B/gH+AgIB/gH+Af4CAgH+Af4B/gICAf4CAf4B/gIB/gH+AgICAgH9/f39/gICAf39/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gICAgH9/f39/gICAf4B/f39/gICAf4B/f39/gIB/f39/f4CAgICAgH9/f39/f4CAgIB/f39/f4CAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAf39/f3+AgICAgH9/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgIB/f39/f4CAgH9/f39/gICAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/gICAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgH9/f39/gICAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAgH9/f39/f4CAf39/f3+AgICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gICAf39/f39/gIB/f39/f4CAgIB/f39/f3+AgIB/f39/f3+AgIB/f39/f3+AgICAf39/f39/gA==";
+  private playTone() {
+    if (!this.audioContext) {
+      this.audioContext = new AudioContext();
+    }
+
+    // Stop any existing oscillators
+    this.stopTone();
+
+    // Messenger ringtone frequencies (characteristic dual-tone pattern)
+    const frequencies = [784, 880]; // G5 and A5
+    
+    frequencies.forEach((freq, index) => {
+      const oscillator = this.audioContext!.createOscillator();
+      const gainNode = this.audioContext!.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, this.audioContext!.currentTime);
+      
+      gainNode.gain.setValueAtTime(0, this.audioContext!.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.15, this.audioContext!.currentTime + 0.05);
+      gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext!.currentTime + 0.15);
+      gainNode.gain.linearRampToValueAtTime(0, this.audioContext!.currentTime + 0.3);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext!.destination);
+      
+      oscillator.start(this.audioContext!.currentTime);
+      oscillator.stop(this.audioContext!.currentTime + 0.3);
+      
+      this.oscillators.push(oscillator);
+      this.gainNodes.push(gainNode);
+    });
+
+    // Second tone after short delay (the "ding-dong" effect)
+    setTimeout(() => {
+      if (!this.isPlaying || !this.audioContext) return;
+      
+      const frequencies2 = [659, 784]; // E5 and G5
+      
+      frequencies2.forEach((freq) => {
+        const oscillator = this.audioContext!.createOscillator();
+        const gainNode = this.audioContext!.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, this.audioContext!.currentTime);
+        
+        gainNode.gain.setValueAtTime(0, this.audioContext!.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.12, this.audioContext!.currentTime + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0.08, this.audioContext!.currentTime + 0.2);
+        gainNode.gain.linearRampToValueAtTime(0, this.audioContext!.currentTime + 0.4);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext!.destination);
+        
+        oscillator.start(this.audioContext!.currentTime);
+        oscillator.stop(this.audioContext!.currentTime + 0.4);
+        
+        this.oscillators.push(oscillator);
+        this.gainNodes.push(gainNode);
+      });
+    }, 350);
+  }
+
+  private stopTone() {
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); } catch (e) {}
+    });
+    this.oscillators = [];
+    this.gainNodes = [];
+  }
+
+  start() {
+    if (this.isPlaying) return;
+    this.isPlaying = true;
+    
+    // Play immediately
+    this.playTone();
+    
+    // Repeat every 3 seconds (like Messenger)
+    this.intervalId = setInterval(() => {
+      if (this.isPlaying) {
+        this.playTone();
+      }
+    }, 3000);
+  }
+
+  stop() {
+    this.isPlaying = false;
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+    this.stopTone();
+  }
+}
+
+// Call end sound generator
+class CallEndSound {
+  play() {
+    const audioContext = new AudioContext();
+    
+    // Low tone for "call ended" (like Messenger)
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+    oscillator.frequency.linearRampToValueAtTime(330, audioContext.currentTime + 0.3); // E4
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.4);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.4);
+  }
+}
+
+const messengerRingtone = new MessengerRingtone();
+const callEndSound = new CallEndSound();
 
 interface VideoCallModalProps {
   open: boolean;
@@ -67,8 +193,6 @@ export function VideoCallModal({
   const sessionIdRef = useRef<string | null>(callSessionId || null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
   const ringTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const ringtoneRef = useRef<HTMLAudioElement | null>(null);
-  const callEndSoundRef = useRef<HTMLAudioElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
@@ -90,34 +214,22 @@ export function VideoCallModal({
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Play ringtone for outgoing calls
+  // Play ringtone for outgoing calls (Messenger-like)
   const playRingtone = useCallback(() => {
-    console.log("Playing ringtone...");
-    if (!ringtoneRef.current) {
-      ringtoneRef.current = new Audio(RINGTONE_URL);
-      ringtoneRef.current.loop = true;
-      ringtoneRef.current.volume = 0.5;
-    }
-    ringtoneRef.current.play().catch(console.error);
+    console.log("Playing Messenger-like ringtone...");
+    messengerRingtone.start();
   }, []);
 
   // Stop ringtone
   const stopRingtone = useCallback(() => {
     console.log("Stopping ringtone...");
-    if (ringtoneRef.current) {
-      ringtoneRef.current.pause();
-      ringtoneRef.current.currentTime = 0;
-    }
+    messengerRingtone.stop();
   }, []);
 
   // Play call end sound
   const playCallEndSound = useCallback(() => {
     console.log("Playing call end sound...");
-    if (!callEndSoundRef.current) {
-      callEndSoundRef.current = new Audio(CALL_END_URL);
-      callEndSoundRef.current.volume = 0.5;
-    }
-    callEndSoundRef.current.play().catch(console.error);
+    callEndSound.play();
   }, []);
 
   // Cleanup function - uses refs to avoid stale closures
