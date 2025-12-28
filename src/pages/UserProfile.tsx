@@ -24,6 +24,7 @@ import { Camera, Edit, User as UserIcon, Plus, ChevronDown } from "lucide-react"
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useFriendsCount, useFriendsPreview, formatFriendsCount } from "@/hooks/useFriendshipData";
+import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 
 interface Profile {
   id: string;
@@ -297,6 +298,9 @@ export default function UserProfile() {
 
                 {/* Friends Preview Card */}
                 <FriendsPreviewCard userId={profile?.user_id || ""} />
+
+                {/* Friend Requests & Suggestions */}
+                <FriendRequestsSection />
 
                 {/* Donation History Card */}
                 <DonationHistoryCard userId={profile?.user_id || null} limit={5} />
