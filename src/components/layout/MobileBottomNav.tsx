@@ -8,7 +8,8 @@ import {
   MessageCircle,
   Menu,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -58,6 +59,39 @@ export function MobileBottomNav() {
   const location = useLocation();
   const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread message count
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    // Subscribe to new messages
+    const channel = supabase
+      .channel('unread-messages-mobile')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'messages' },
+        () => fetchUnreadCount()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border md:hidden safe-area-bottom">
@@ -65,6 +99,8 @@ export function MobileBottomNav() {
         {mainNavItems.map((item) => {
           const isActive = location.pathname === item.href;
           const Icon = item.icon;
+          const isChat = item.labelKey === "menu.chat";
+          
           return (
             <Link
               key={item.href}
@@ -86,11 +122,31 @@ export function MobileBottomNav() {
               
               <motion.div
                 whileTap={{ scale: 0.9 }}
-                className="p-1.5 rounded-xl transition-colors"
+                className="p-1.5 rounded-xl transition-colors relative"
               >
-                <Icon className={`w-6 h-6 transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                {/* Glow effect for active icon */}
+                {isActive && (
+                  <motion.div
+                    className="absolute inset-0 rounded-xl bg-primary/20 blur-md"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1.2 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+                <Icon className={`w-6 h-6 transition-colors relative z-10 ${
+                  isActive ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" : "text-muted-foreground"
                 }`} />
+                
+                {/* Unread badge for Chat icon */}
+                {isChat && unreadCount > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center px-1 z-20"
+                  >
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </motion.span>
+                )}
               </motion.div>
               <span className={`text-[10px] mt-0.5 font-medium truncate max-w-[56px] transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
