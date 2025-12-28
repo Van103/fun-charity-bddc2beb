@@ -95,16 +95,28 @@ export function RightSidebar() {
   return (
     <aside className="w-80 shrink-0 space-y-4">
       {/* Honor Board */}
-      <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-purple-200 via-purple-100 to-pink-100 border-2 border-yellow-400/60 shadow-lg">
-        <div className="border-b border-yellow-400/40 bg-gradient-to-r from-purple-300/80 via-purple-200/90 to-purple-300/80">
-          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#7C3AED', fontSize: '20px' }}>
+      <div className="rounded-2xl overflow-hidden border-2 border-yellow-400/60 shadow-lg relative">
+        {/* Video Background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/sidebar-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-purple-900/30" />
+        
+        <div className="relative border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60">
+          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#FFD700', fontSize: '20px' }}>
             <span className="animate-sparkle inline-block">✨</span> {t("honor.title")} <span className="animate-sparkle-delay inline-block">✨</span>
           </h3>
         </div>
-        <div className="p-3 space-y-2">
+        <div className="relative p-3 space-y-2">
           {statsLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
             </div>
           ) : (
             honorStats.map((stat) => (
@@ -120,16 +132,28 @@ export function RightSidebar() {
       </div>
 
       {/* Top Ranking */}
-      <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-purple-200 via-purple-100 to-pink-100 border-2 border-yellow-400/60 shadow-lg">
-        <div className="border-b border-yellow-400/40 bg-gradient-to-r from-purple-300/80 via-purple-200/90 to-purple-300/80">
-          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#7C3AED', fontSize: '20px' }}>
+      <div className="rounded-2xl overflow-hidden border-2 border-yellow-400/60 shadow-lg relative">
+        {/* Video Background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/videos/sidebar-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-purple-900/30" />
+        
+        <div className="relative border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60">
+          <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#FFD700', fontSize: '20px' }}>
             <span className="animate-sparkle inline-block">👑</span> {t("ranking.title")} <span className="animate-sparkle-delay inline-block">👑</span>
           </h3>
         </div>
-        <div className="ranking-scroll-container h-[500px] overflow-y-auto p-3 space-y-2.5">
+        <div className="ranking-scroll-container h-[500px] overflow-y-auto relative p-3 space-y-2.5">
           {rankersLoading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
             </div>
           ) : (
             displayRankers.map((ranker) => (
