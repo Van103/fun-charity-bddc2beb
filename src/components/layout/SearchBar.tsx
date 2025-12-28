@@ -481,7 +481,7 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsFocused(true)}
           placeholder="Tìm kiếm trên FUN Charity"
-          className="w-[300px] h-10 pl-10 pr-9 bg-muted/50 rounded-full text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-background transition-all border-0"
+          className="w-[220px] h-9 pl-9 pr-8 bg-muted/50 rounded-full text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-background transition-all border-0"
         />
         {query && (
           <button
