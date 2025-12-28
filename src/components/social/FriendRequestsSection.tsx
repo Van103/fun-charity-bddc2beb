@@ -111,9 +111,22 @@ export function FriendRequestsSection() {
         .from("profiles")
         .select("user_id, full_name, avatar_url, is_verified")
         .neq("user_id", user.id)
-        .limit(20);
+        .not("avatar_url", "is", null) // Prioritize users with avatars
+        .order("created_at", { ascending: false })
+        .limit(30);
 
-      if (allProfiles && allProfiles.length > 0) {
+      // Also fetch users without avatars as backup
+      const { data: profilesWithoutAvatar } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, avatar_url, is_verified")
+        .neq("user_id", user.id)
+        .is("avatar_url", null)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      const combinedProfiles = [...(allProfiles || []), ...(profilesWithoutAvatar || [])];
+
+      if (combinedProfiles.length > 0) {
         // Get existing friendships
         const { data: existingFriendships } = await supabase
           .from("friendships")
@@ -127,15 +140,15 @@ export function FriendRequestsSection() {
         });
 
         // Filter out already connected users
-        const nonConnectedProfiles = allProfiles.filter(
+        const nonConnectedProfiles = combinedProfiles.filter(
           p => !connectedUserIds.has(p.user_id)
         );
 
         // Batch fetch mutual friends data for all suggestions at once
-        const suggestionUserIds = nonConnectedProfiles.slice(0, 8).map(p => p.user_id);
+        const suggestionUserIds = nonConnectedProfiles.slice(0, 12).map(p => p.user_id);
         const mutualDataMap = await getBatchMutualFriendsData(user.id, suggestionUserIds);
 
-        const suggestionsWithMutual = nonConnectedProfiles.slice(0, 8).map((profile) => {
+        const suggestionsWithMutual = nonConnectedProfiles.slice(0, 12).map((profile) => {
           const mutualData = mutualDataMap.get(profile.user_id) || { count: 0, friends: [] };
           return {
             userId: profile.user_id,
@@ -147,7 +160,18 @@ export function FriendRequestsSection() {
           };
         });
 
-        setSuggestions(suggestionsWithMutual);
+        // Sort by mutual friends count (descending), then by having avatar
+        suggestionsWithMutual.sort((a, b) => {
+          if (b.mutualFriends !== a.mutualFriends) {
+            return b.mutualFriends - a.mutualFriends;
+          }
+          // Prefer users with avatars
+          if (a.avatar && !b.avatar) return -1;
+          if (!a.avatar && b.avatar) return 1;
+          return 0;
+        });
+
+        setSuggestions(suggestionsWithMutual.slice(0, 8));
       }
     } catch (error) {
       console.error("Error fetching friend data:", error);
