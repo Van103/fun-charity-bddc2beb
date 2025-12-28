@@ -8,7 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock } from "lucide-react";
+import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock, UserMinus, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
 import { useInfiniteFeedPosts, useIntersectionObserver } from "@/hooks/useFeedPosts";
@@ -47,6 +63,7 @@ export default function PublicProfile() {
   const [mutualFriendsCount, setMutualFriendsCount] = useState(0);
   const [friendsCount, setFriendsCount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showUnfriendDialog, setShowUnfriendDialog] = useState(false);
 
   // Fetch posts for this user
   const { 
@@ -215,6 +232,27 @@ export default function PublicProfile() {
     setIsProcessing(false);
   };
 
+  const unfriend = async () => {
+    if (!friendshipId) return;
+    setIsProcessing(true);
+    setShowUnfriendDialog(false);
+
+    const { error } = await supabase
+      .from("friendships")
+      .delete()
+      .eq("id", friendshipId);
+
+    if (!error) {
+      setFriendshipStatus('none');
+      setFriendshipId(null);
+      setFriendsCount(prev => Math.max(0, prev - 1));
+      toast({ title: "Đã hủy kết bạn" });
+    } else {
+      toast({ title: "Có lỗi xảy ra", variant: "destructive" });
+    }
+    setIsProcessing(false);
+  };
+
   const startConversation = async () => {
     if (!currentUserId || !userId) return;
     navigate(`/messages?user=${userId}`);
@@ -310,10 +348,24 @@ export default function PublicProfile() {
                   </>
                 )}
                 {friendshipStatus === 'friends' && (
-                  <Button variant="outline" className="gap-2">
-                    <UserCheck className="w-4 h-4" />
-                    Bạn bè
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="gap-2" disabled={isProcessing}>
+                        <UserCheck className="w-4 h-4" />
+                        Bạn bè
+                        <ChevronDown className="w-3 h-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem 
+                        onClick={() => setShowUnfriendDialog(true)}
+                        className="text-destructive focus:text-destructive cursor-pointer"
+                      >
+                        <UserMinus className="w-4 h-4 mr-2" />
+                        Hủy kết bạn
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
                 <Button variant="outline" onClick={startConversation} className="gap-2">
                   <MessageCircle className="w-4 h-4" />
@@ -448,6 +500,28 @@ export default function PublicProfile() {
       </main>
 
       <Footer />
+
+      {/* Unfriend Confirmation Dialog */}
+      <AlertDialog open={showUnfriendDialog} onOpenChange={setShowUnfriendDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hủy kết bạn?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn hủy kết bạn với {profile?.full_name || "người dùng này"}? 
+              Người này sẽ không còn trong danh sách bạn bè của bạn.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={unfriend}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Xác nhận hủy kết bạn
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
