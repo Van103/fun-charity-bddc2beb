@@ -6,6 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MutualFriend {
   user_id: string;
@@ -80,22 +86,22 @@ export function FriendRequestsSection() {
 
         const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        // Get mutual friends data for each sender
-        const requestsWithMutual = await Promise.all(
-          requests.map(async (req) => {
-            const mutualData = await getMutualFriendsData(user.id, req.user_id);
-            const profile = profileMap.get(req.user_id);
-            return {
-              id: req.id,
-              senderId: req.user_id,
-              userName: profile?.full_name || "Người dùng",
-              avatar: profile?.avatar_url || undefined,
-              mutualFriends: mutualData.count,
-              mutualFriendsList: mutualData.friends,
-              verified: profile?.is_verified || false,
-            };
-          })
-        );
+        // Batch fetch mutual friends data for all senders at once
+        const mutualDataMap = await getBatchMutualFriendsData(user.id, senderIds);
+
+        const requestsWithMutual = requests.map((req) => {
+          const mutualData = mutualDataMap.get(req.user_id) || { count: 0, friends: [] };
+          const profile = profileMap.get(req.user_id);
+          return {
+            id: req.id,
+            senderId: req.user_id,
+            userName: profile?.full_name || "Người dùng",
+            avatar: profile?.avatar_url || undefined,
+            mutualFriends: mutualData.count,
+            mutualFriendsList: mutualData.friends,
+            verified: profile?.is_verified || false,
+          };
+        });
 
         setFriendRequests(requestsWithMutual);
       }
@@ -125,20 +131,21 @@ export function FriendRequestsSection() {
           p => !connectedUserIds.has(p.user_id)
         );
 
-        // Get mutual friends data for suggestions
-        const suggestionsWithMutual = await Promise.all(
-          nonConnectedProfiles.slice(0, 8).map(async (profile) => {
-            const mutualData = await getMutualFriendsData(user.id, profile.user_id);
-            return {
-              userId: profile.user_id,
-              userName: profile.full_name || "Người dùng",
-              avatar: profile.avatar_url || undefined,
-              mutualFriends: mutualData.count,
-              mutualFriendsList: mutualData.friends,
-              verified: profile.is_verified || false,
-            };
-          })
-        );
+        // Batch fetch mutual friends data for all suggestions at once
+        const suggestionUserIds = nonConnectedProfiles.slice(0, 8).map(p => p.user_id);
+        const mutualDataMap = await getBatchMutualFriendsData(user.id, suggestionUserIds);
+
+        const suggestionsWithMutual = nonConnectedProfiles.slice(0, 8).map((profile) => {
+          const mutualData = mutualDataMap.get(profile.user_id) || { count: 0, friends: [] };
+          return {
+            userId: profile.user_id,
+            userName: profile.full_name || "Người dùng",
+            avatar: profile.avatar_url || undefined,
+            mutualFriends: mutualData.count,
+            mutualFriendsList: mutualData.friends,
+            verified: profile.is_verified || false,
+          };
+        });
 
         setSuggestions(suggestionsWithMutual);
       }
@@ -149,48 +156,100 @@ export function FriendRequestsSection() {
     }
   };
 
-  const getMutualFriendsData = async (userId1: string, userId2: string): Promise<{ count: number; friends: MutualFriend[] }> => {
+  // Batch fetch mutual friends for multiple target users at once
+  const getBatchMutualFriendsData = async (
+    currentUserId: string, 
+    targetUserIds: string[]
+  ): Promise<Map<string, { count: number; friends: MutualFriend[] }>> => {
+    const result = new Map<string, { count: number; friends: MutualFriend[] }>();
+    
+    if (targetUserIds.length === 0) return result;
+    
     try {
-      // Get friends of user1
-      const { data: friends1 } = await supabase
+      // Single query: Get ALL friendships for current user
+      const { data: currentUserFriendships } = await supabase
         .from("friendships")
         .select("user_id, friend_id")
         .eq("status", "accepted")
-        .or(`user_id.eq.${userId1},friend_id.eq.${userId1}`);
+        .or(`user_id.eq.${currentUserId},friend_id.eq.${currentUserId}`);
 
-      const user1Friends = new Set<string>();
-      friends1?.forEach(f => {
-        if (f.user_id === userId1) user1Friends.add(f.friend_id);
-        else user1Friends.add(f.user_id);
+      const currentUserFriendIds = new Set<string>();
+      currentUserFriendships?.forEach(f => {
+        if (f.user_id === currentUserId) currentUserFriendIds.add(f.friend_id);
+        else currentUserFriendIds.add(f.user_id);
       });
 
-      // Get friends of user2
-      const { data: friends2 } = await supabase
+      // Single query: Get ALL friendships for target users
+      const orConditions = targetUserIds.map(id => `user_id.eq.${id},friend_id.eq.${id}`).join(",");
+      const { data: targetFriendships } = await supabase
         .from("friendships")
         .select("user_id, friend_id")
         .eq("status", "accepted")
-        .or(`user_id.eq.${userId2},friend_id.eq.${userId2}`);
+        .or(orConditions);
 
-      const mutualFriendIds: string[] = [];
-      friends2?.forEach(f => {
-        const friendId = f.user_id === userId2 ? f.friend_id : f.user_id;
-        if (user1Friends.has(friendId)) mutualFriendIds.push(friendId);
+      // Build a map of each target user's friends
+      const targetUserFriendsMap = new Map<string, Set<string>>();
+      targetUserIds.forEach(id => targetUserFriendsMap.set(id, new Set()));
+      
+      targetFriendships?.forEach(f => {
+        targetUserIds.forEach(targetId => {
+          if (f.user_id === targetId) {
+            targetUserFriendsMap.get(targetId)?.add(f.friend_id);
+          } else if (f.friend_id === targetId) {
+            targetUserFriendsMap.get(targetId)?.add(f.user_id);
+          }
+        });
       });
 
-      // Fetch profiles of mutual friends (limit to 3 for display)
-      let mutualFriendsList: MutualFriend[] = [];
-      if (mutualFriendIds.length > 0) {
-        const { data: mutualProfiles } = await supabase
+      // Find mutual friends for each target
+      const allMutualFriendIds = new Set<string>();
+      const mutualFriendsPerTarget = new Map<string, string[]>();
+      
+      targetUserIds.forEach(targetId => {
+        const targetFriends = targetUserFriendsMap.get(targetId) || new Set();
+        const mutualIds: string[] = [];
+        targetFriends.forEach(friendId => {
+          if (currentUserFriendIds.has(friendId)) {
+            mutualIds.push(friendId);
+            allMutualFriendIds.add(friendId);
+          }
+        });
+        mutualFriendsPerTarget.set(targetId, mutualIds);
+      });
+
+      // Single query: Fetch profiles for ALL mutual friends
+      let profilesMap = new Map<string, MutualFriend>();
+      if (allMutualFriendIds.size > 0) {
+        const { data: profiles } = await supabase
           .from("profiles")
           .select("user_id, avatar_url, full_name")
-          .in("user_id", mutualFriendIds.slice(0, 3));
+          .in("user_id", Array.from(allMutualFriendIds));
         
-        mutualFriendsList = mutualProfiles || [];
+        profiles?.forEach(p => {
+          profilesMap.set(p.user_id, {
+            user_id: p.user_id,
+            avatar_url: p.avatar_url || undefined,
+            full_name: p.full_name || undefined,
+          });
+        });
       }
 
-      return { count: mutualFriendIds.length, friends: mutualFriendsList };
-    } catch {
-      return { count: 0, friends: [] };
+      // Build final result
+      targetUserIds.forEach(targetId => {
+        const mutualIds = mutualFriendsPerTarget.get(targetId) || [];
+        const friends = mutualIds
+          .slice(0, 3)
+          .map(id => profilesMap.get(id))
+          .filter((f): f is MutualFriend => f !== undefined);
+        
+        result.set(targetId, { count: mutualIds.length, friends });
+      });
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching batch mutual friends:", error);
+      targetUserIds.forEach(id => result.set(id, { count: 0, friends: [] }));
+      return result;
     }
   };
 
@@ -296,6 +355,7 @@ export function FriendRequestsSection() {
   }
 
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="space-y-6">
       {/* Friend Requests */}
       {friendRequests.length > 0 && (
@@ -344,13 +404,23 @@ export function FriendRequestsSection() {
                     {request.mutualFriends > 0 && (
                       <div className="flex items-center gap-1 mb-3">
                         <div className="flex -space-x-1">
-                          {request.mutualFriendsList.slice(0, 3).map((friend, idx) => (
-                            <Avatar key={friend.user_id} className="w-4 h-4 border border-background">
-                              <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
-                              <AvatarFallback className="text-[6px] bg-primary/20">
-                                {friend.full_name?.charAt(0) || "?"}
-                              </AvatarFallback>
-                            </Avatar>
+                          {request.mutualFriendsList.slice(0, 3).map((friend) => (
+                            <Tooltip key={friend.user_id}>
+                              <TooltipTrigger asChild>
+                                <Avatar className="w-4 h-4 border border-background cursor-pointer hover:z-10 hover:scale-110 transition-transform">
+                                  <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
+                                  <AvatarFallback className="text-[6px] bg-primary/20">
+                                    {friend.full_name?.charAt(0) || "?"}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                side="top" 
+                                className="bg-primary text-secondary font-medium text-xs px-2 py-1"
+                              >
+                                {friend.full_name || "Người dùng"}
+                              </TooltipContent>
+                            </Tooltip>
                           ))}
                         </div>
                         <span className="text-xs text-muted-foreground">
@@ -453,13 +523,23 @@ export function FriendRequestsSection() {
                     {suggestion.mutualFriends > 0 && (
                       <div className="flex items-center gap-1 mb-3">
                         <div className="flex -space-x-1">
-                          {suggestion.mutualFriendsList.slice(0, 3).map((friend, idx) => (
-                            <Avatar key={friend.user_id} className="w-4 h-4 border border-background">
-                              <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
-                              <AvatarFallback className="text-[6px] bg-primary/20">
-                                {friend.full_name?.charAt(0) || "?"}
-                              </AvatarFallback>
-                            </Avatar>
+                          {suggestion.mutualFriendsList.slice(0, 3).map((friend) => (
+                            <Tooltip key={friend.user_id}>
+                              <TooltipTrigger asChild>
+                                <Avatar className="w-4 h-4 border border-background cursor-pointer hover:z-10 hover:scale-110 transition-transform">
+                                  <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
+                                  <AvatarFallback className="text-[6px] bg-primary/20">
+                                    {friend.full_name?.charAt(0) || "?"}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </TooltipTrigger>
+                              <TooltipContent 
+                                side="top" 
+                                className="bg-primary text-secondary font-medium text-xs px-2 py-1"
+                              >
+                                {friend.full_name || "Người dùng"}
+                              </TooltipContent>
+                            </Tooltip>
                           ))}
                         </div>
                         <span className="text-xs text-muted-foreground">
@@ -500,5 +580,6 @@ export function FriendRequestsSection() {
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 }
