@@ -58,7 +58,7 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
               const linkClasses = `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ${
                 isActive 
                   ? "glossy-btn glossy-btn-gradient shadow-lg font-semibold" 
-                  : "text-muted-foreground hover:bg-muted/50 hover:scale-[1.02] font-medium active:scale-[0.98]"
+                  : "text-muted-foreground hover:bg-primary hover:text-secondary font-medium hover:scale-[1.02] active:scale-[0.98]"
               }`;
               
               if (item.external) {
