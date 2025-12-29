@@ -224,19 +224,33 @@ export function Navbar() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="relative"
                   >
+                    {/* Active indicator line - like Facebook */}
+                    {location.pathname === "/social" && (
+                      <motion.div 
+                        className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-1 rounded-t-full bg-primary"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        layoutId="navActiveIndicator"
+                      />
+                    )}
                     <Button 
                       variant="ghost" 
                       size="icon"
                       className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
                         location.pathname === "/social" 
-                          ? "bg-primary text-white" 
+                          ? "hover:bg-primary/10" 
                           : "text-muted-foreground hover:bg-primary/10"
                       }`}
                     >
-                      <Home className={`w-7 h-7 transition-colors duration-200 ${
-                        location.pathname === "/social" ? "" : "group-hover:text-primary"
-                      }`} strokeWidth={2} />
+                      <Home 
+                        className={`w-7 h-7 transition-colors duration-200 ${
+                          location.pathname === "/social" ? "text-primary" : "group-hover:text-primary"
+                        }`} 
+                        fill={location.pathname === "/social" ? "hsl(var(--primary))" : "none"}
+                        strokeWidth={location.pathname === "/social" ? 0 : 2} 
+                      />
                     </Button>
                   </motion.div>
                 </Link>
@@ -307,19 +321,33 @@ export function Navbar() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        className="relative"
                       >
+                        {/* Active indicator line - like Facebook */}
+                        {isActive && (
+                          <motion.div 
+                            className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-16 h-1 rounded-t-full bg-primary"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            layoutId="navActiveIndicator"
+                          />
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
                           className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
                             isActive 
-                              ? "bg-primary text-white" 
+                              ? "hover:bg-primary/10" 
                               : "text-muted-foreground hover:bg-primary/10"
                           }`}
                         >
-                          <Icon className={`w-7 h-7 transition-colors duration-200 ${
-                            isActive ? "" : "group-hover:text-primary"
-                          }`} strokeWidth={2} />
+                          <Icon 
+                            className={`w-7 h-7 transition-colors duration-200 ${
+                              isActive ? "text-primary" : "group-hover:text-primary"
+                            }`} 
+                            fill={isActive ? "hsl(var(--primary))" : "none"}
+                            strokeWidth={isActive ? 0 : 2} 
+                          />
                         </Button>
                       </motion.div>
                     </Link>

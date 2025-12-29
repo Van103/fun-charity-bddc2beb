@@ -124,18 +124,13 @@ export function MobileBottomNav() {
                 whileTap={{ scale: 0.9 }}
                 className="p-1.5 rounded-xl transition-colors relative"
               >
-                {/* Glow effect for active icon */}
-                {isActive && (
-                  <motion.div
-                    className="absolute inset-0 rounded-xl bg-primary/20 blur-md"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1.2 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-                <Icon className={`w-6 h-6 transition-colors relative z-10 ${
-                  isActive ? "text-primary drop-shadow-[0_0_8px_hsl(var(--primary)/0.6)]" : "text-muted-foreground"
-                }`} />
+                <Icon 
+                  className={`w-6 h-6 transition-colors relative z-10 ${
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  }`}
+                  fill={isActive ? "hsl(var(--primary))" : "none"}
+                  strokeWidth={isActive ? 0 : 2}
+                />
                 
                 {/* Unread badge for Chat icon */}
                 {isChat && unreadCount > 0 && (
