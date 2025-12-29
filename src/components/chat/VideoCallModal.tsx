@@ -1280,7 +1280,7 @@ export function VideoCallModal({
               ref={remoteVideoRef}
               autoPlay
               playsInline
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-contain bg-black"
             />
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
