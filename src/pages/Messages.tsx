@@ -671,21 +671,7 @@ export default function Messages() {
   };
 
   const startCall = async (type: "video" | "audio") => {
-    // Check if other user is online before starting call
-    if (activeConversation?.otherUser) {
-      const onlineStatusMap = await getOnlineStatus([activeConversation.otherUser.user_id]);
-      const isOnline = onlineStatusMap.get(activeConversation.otherUser.user_id) || false;
-      
-      if (!isOnline) {
-        toast({
-          title: "Không kết nối được",
-          description: `${activeConversation.otherUser.full_name || "Người dùng"} hiện không trực tuyến. Vui lòng thử lại sau.`,
-          variant: "destructive"
-        });
-        return;
-      }
-    }
-    
+    // Allow calling even if the other user is offline; if they don't answer, we'll mark it as missed.
     setIsIncomingCall(false);
     setIncomingCallSessionId(null);
     setIncomingCallConversationId(null);
