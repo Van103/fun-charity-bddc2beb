@@ -117,6 +117,9 @@ export function useFriendRequestNotifications(currentUserId: string | null) {
             const friend = await fetchSenderProfile(friendship.friend_id);
             const friendName = friend?.full_name || "Ai đó";
             
+            // Play notification sound
+            playNotificationSound();
+            
             // Show toast notification
             toast({
               title: "Kết bạn thành công!",
@@ -128,7 +131,48 @@ export function useFriendRequestNotifications(currentUserId: string | null) {
               currentUserId,
               "Đã chấp nhận kết bạn",
               `${friendName} đã chấp nhận lời mời kết bạn của bạn`,
-              "friend_request"
+              "friend_request",
+              friendship.friend_id,
+              friend?.avatar_url
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Listen for declined/deleted friend requests (DELETE)
+    const friendDeclineChannel = supabase
+      .channel('friend-declines')
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'friendships',
+        },
+        async (payload) => {
+          const oldFriendship = payload.old as FriendshipPayload;
+          
+          // Only notify if it was a pending request that the current user sent
+          if (oldFriendship.status === 'pending' && oldFriendship.user_id === currentUserId) {
+            const friend = await fetchSenderProfile(oldFriendship.friend_id);
+            const friendName = friend?.full_name || "Ai đó";
+            
+            // Show toast notification
+            toast({
+              title: "Lời mời bị từ chối",
+              description: `${friendName} đã từ chối lời mời kết bạn của bạn`,
+              variant: "destructive",
+            });
+
+            // Create persistent notification
+            await createNotification(
+              currentUserId,
+              "Lời mời bị từ chối",
+              `${friendName} đã từ chối lời mời kết bạn của bạn`,
+              "friend_request",
+              oldFriendship.friend_id,
+              friend?.avatar_url
             );
           }
         }
@@ -138,6 +182,7 @@ export function useFriendRequestNotifications(currentUserId: string | null) {
     return () => {
       supabase.removeChannel(friendRequestChannel);
       supabase.removeChannel(friendAcceptChannel);
+      supabase.removeChannel(friendDeclineChannel);
     };
   }, [currentUserId, toast, fetchSenderProfile, createNotification, playNotificationSound]);
 }

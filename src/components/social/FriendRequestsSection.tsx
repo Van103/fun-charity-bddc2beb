@@ -38,6 +38,14 @@ interface UserSuggestion {
   verified?: boolean;
 }
 
+interface SentRequest {
+  id: string;
+  friendId: string;
+  userName: string;
+  avatar?: string;
+  createdAt: string;
+}
+
 // Helper to get cover image style
 const getCoverStyle = (index: number) => {
   const gradients = [
@@ -51,6 +59,7 @@ const getCoverStyle = (index: number) => {
 
 export function FriendRequestsSection() {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [sentRequests, setSentRequests] = useState<SentRequest[]>([]);
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -106,7 +115,36 @@ export function FriendRequestsSection() {
         setFriendRequests(requestsWithMutual);
       }
 
-      // Fetch suggestions - users who are not friends and haven't sent/received requests
+      // Fetch sent friend requests (current user is the sender, status = pending)
+      const { data: sentRequestsData } = await supabase
+        .from("friendships")
+        .select("id, friend_id, created_at")
+        .eq("user_id", user.id)
+        .eq("status", "pending");
+
+      if (sentRequestsData && sentRequestsData.length > 0) {
+        const friendIds = sentRequestsData.map(r => r.friend_id);
+        const { data: friendProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name, avatar_url")
+          .in("user_id", friendIds);
+
+        const profileMap = new Map(friendProfiles?.map(p => [p.user_id, p]) || []);
+
+        const sentWithProfiles = sentRequestsData.map((req) => {
+          const profile = profileMap.get(req.friend_id);
+          return {
+            id: req.id,
+            friendId: req.friend_id,
+            userName: profile?.full_name || "Người dùng",
+            avatar: profile?.avatar_url || undefined,
+            createdAt: req.created_at,
+          };
+        });
+
+        setSentRequests(sentWithProfiles);
+      }
+
       const { data: allProfiles } = await supabase
         .from("profiles")
         .select("user_id, full_name, avatar_url, is_verified")
@@ -357,8 +395,47 @@ export function FriendRequestsSection() {
     }
   };
 
+  const handleCancelRequest = async (requestId: string) => {
+    setProcessingIds(prev => new Set(prev).add(requestId));
+    try {
+      const { error } = await supabase
+        .from("friendships")
+        .delete()
+        .eq("id", requestId);
+
+      if (error) throw error;
+
+      setSentRequests(prev => prev.filter(r => r.id !== requestId));
+      toast.success("Đã hủy lời mời kết bạn");
+    } catch (error) {
+      console.error("Error canceling friend request:", error);
+      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+    } finally {
+      setProcessingIds(prev => {
+        const next = new Set(prev);
+        next.delete(requestId);
+        return next;
+      });
+    }
+  };
+
   const handleRemoveSuggestion = (userId: string) => {
     setSuggestions(prev => prev.filter(s => s.userId !== userId));
+  };
+
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return "Vừa xong";
+    if (diffMins < 60) return `${diffMins} phút trước`;
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+    if (diffDays < 7) return `${diffDays} ngày trước`;
+    return date.toLocaleDateString("vi-VN");
   };
 
   if (loading) {
@@ -374,7 +451,7 @@ export function FriendRequestsSection() {
   }
 
   // Don't show section if no data
-  if (friendRequests.length === 0 && suggestions.length === 0) {
+  if (friendRequests.length === 0 && sentRequests.length === 0 && suggestions.length === 0) {
     return null;
   }
 
@@ -489,6 +566,82 @@ export function FriendRequestsSection() {
           <Link to="/friends" className="text-sm text-primary hover:underline mt-3 mx-auto block text-center font-medium">
             Xem tất cả
           </Link>
+        </div>
+      )}
+
+      {/* Sent Friend Requests (Pending) */}
+      {sentRequests.length > 0 && (
+        <div className="glass-card p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-foreground">Lời mời đã gửi</h3>
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+              {sentRequests.length} đang chờ
+            </span>
+          </div>
+
+          <div className="relative">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {sentRequests.map((request, index) => (
+                <motion.div
+                  key={request.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="shrink-0 w-36 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm"
+                >
+                  {/* Photo area */}
+                  <div className="relative h-36 overflow-hidden">
+                    {request.avatar ? (
+                      <img 
+                        src={request.avatar} 
+                        alt={request.userName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className={`w-full h-full ${getCoverStyle(index)} flex items-center justify-center`}>
+                        <span className="text-4xl font-bold text-white/80">
+                          {request.userName.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    {/* Pending badge */}
+                    <div className="absolute top-2 left-2 bg-amber-500/90 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">
+                      Đang chờ
+                    </div>
+                  </div>
+                  
+                  <div className="p-3 flex flex-col">
+                    <Link to={`/user/${request.friendId}`} className="flex items-center gap-1 mb-1 hover:underline">
+                      <span className="font-semibold text-sm truncate text-foreground">
+                        {request.userName}
+                      </span>
+                    </Link>
+                    <span className="text-xs text-muted-foreground mb-3">
+                      {formatTimeAgo(request.createdAt)}
+                    </span>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="w-full h-8 text-xs rounded-lg border-destructive/50 text-destructive hover:bg-destructive/10"
+                      onClick={() => handleCancelRequest(request.id)}
+                      disabled={processingIds.has(request.id)}
+                    >
+                      {processingIds.has(request.id) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Hủy lời mời"
+                      )}
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+              
+              {/* Navigation arrow */}
+              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                <ChevronRight className="w-4 h-4 text-foreground" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
