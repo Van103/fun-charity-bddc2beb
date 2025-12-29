@@ -82,8 +82,11 @@ interface SearchUser {
 }
 
 export default function Messages() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const targetUserId = searchParams.get("user");
+  const answerCallId = searchParams.get("answer");
+  const answerConversationId = searchParams.get("conversation");
+  const answerCallType = searchParams.get("type") as "video" | "audio" | null;
   const { toast } = useToast();
   
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -107,6 +110,7 @@ export default function Messages() {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [isIncomingCall, setIsIncomingCall] = useState(false);
+  const [autoAnswerCall, setAutoAnswerCall] = useState(false);
   const [incomingCallSessionId, setIncomingCallSessionId] = useState<string | null>(null);
   const [incomingCallConversationId, setIncomingCallConversationId] = useState<string | null>(null);
   const [incomingCallOtherUser, setIncomingCallOtherUser] = useState<{
@@ -197,6 +201,71 @@ export default function Messages() {
     
     init();
   }, [targetUserId]);
+
+  // Handle incoming call from URL params (when user clicks answer from notification)
+  useEffect(() => {
+    if (!answerCallId || !answerConversationId || !currentUserId || isLoading) return;
+    
+    const handleIncomingCallFromUrl = async () => {
+      console.log("Handling incoming call from URL params:", answerCallId, answerConversationId, answerCallType);
+      
+      // Fetch call session to get caller info
+      const { data: callSession, error: callError } = await supabase
+        .from("call_sessions")
+        .select("*")
+        .eq("id", answerCallId)
+        .single();
+      
+      if (callError || !callSession) {
+        console.error("Error fetching call session:", callError);
+        toast({
+          title: "Lỗi",
+          description: "Không tìm thấy cuộc gọi",
+          variant: "destructive"
+        });
+        // Clear URL params
+        setSearchParams({});
+        return;
+      }
+      
+      // Check if call is still pending
+      if (callSession.status !== "pending") {
+        console.log("Call is no longer pending:", callSession.status);
+        toast({
+          title: "Cuộc gọi đã kết thúc",
+          description: "Cuộc gọi này không còn khả dụng",
+        });
+        // Clear URL params
+        setSearchParams({});
+        return;
+      }
+      
+      // Fetch caller profile
+      const { data: callerProfile } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, avatar_url")
+        .eq("user_id", callSession.caller_id)
+        .single();
+      
+      // Set up incoming call state
+      setCallType((answerCallType || callSession.call_type) as "video" | "audio");
+      setIsIncomingCall(true);
+      setAutoAnswerCall(true); // Auto answer since user clicked from notification
+      setIncomingCallSessionId(answerCallId);
+      setIncomingCallConversationId(answerConversationId);
+      setIncomingCallOtherUser({
+        user_id: callSession.caller_id,
+        full_name: callerProfile?.full_name || "Người dùng",
+        avatar_url: callerProfile?.avatar_url || null
+      });
+      setShowVideoCall(true);
+      
+      // Clear URL params after processing
+      setSearchParams({});
+    };
+    
+    handleIncomingCallFromUrl();
+  }, [answerCallId, answerConversationId, answerCallType, currentUserId, isLoading, toast, setSearchParams]);
 
   // Search users
   useEffect(() => {
@@ -1445,6 +1514,7 @@ export default function Messages() {
           onClose={() => {
             setShowVideoCall(false);
             setIsIncomingCall(false);
+            setAutoAnswerCall(false);
             setIncomingCallSessionId(null);
             setIncomingCallConversationId(null);
             setIncomingCallOtherUser(null);
@@ -1455,6 +1525,7 @@ export default function Messages() {
           callType={callType}
           isIncoming={isIncomingCall}
           callSessionId={incomingCallSessionId || undefined}
+          autoAnswer={autoAnswerCall}
         />
       )}
 

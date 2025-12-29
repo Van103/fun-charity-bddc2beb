@@ -200,6 +200,7 @@ interface VideoCallModalProps {
   callType: "video" | "audio";
   isIncoming?: boolean;
   callSessionId?: string;
+  autoAnswer?: boolean; // Auto answer when opened from notification
 }
 
 export function VideoCallModal({
@@ -210,7 +211,8 @@ export function VideoCallModal({
   otherUser,
   callType,
   isIncoming = false,
-  callSessionId
+  callSessionId,
+  autoAnswer = false
 }: VideoCallModalProps) {
   const { toast } = useToast();
   const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended" | "no_answer" | "busy">("idle");
@@ -329,6 +331,22 @@ export function VideoCallModal({
     setIsScreenSharing(false);
     setRingCount(0);
   }, [stopRingtone]);
+
+  // Sync local video ref with stream
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      console.log("Setting local video srcObject");
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
+  // Sync remote video ref with stream
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStream) {
+      console.log("Setting remote video srcObject");
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
 
   // Start call timer
   useEffect(() => {
@@ -949,12 +967,18 @@ export function VideoCallModal({
       isCleanedUpRef.current = false;
       
       if (isIncoming) {
-        setCallStatus("ringing");
+        if (autoAnswer) {
+          // Auto answer when opened from notification/URL params
+          console.log("Auto answering incoming call...");
+          answerCall();
+        } else {
+          setCallStatus("ringing");
+        }
       } else {
         startCall();
       }
     }
-  }, [open, isIncoming, startCall]);
+  }, [open, isIncoming, startCall, autoAnswer, answerCall]);
 
   // Cleanup on unmount or when modal closes
   useEffect(() => {
