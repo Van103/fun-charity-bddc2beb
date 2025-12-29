@@ -21,14 +21,31 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
   const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const dismissTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const ringtoneAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const stopLegacyRingtone = useCallback(() => {
+    // We now play the Messenger-style ringtone in IncomingCallNotification.
+    // This stops any leftover HTMLAudioElement ringtone so it won't keep ringing after accept.
+    const audio = ringtoneAudioRef.current;
+    if (audio) {
+      try {
+        audio.pause();
+        audio.currentTime = 0;
+      } catch {
+        // ignore
+      }
+      ringtoneAudioRef.current = null;
+    }
+  }, []);
 
   const dismissCall = useCallback(() => {
     setIncomingCall(null);
+    stopLegacyRingtone();
     if (dismissTimeoutRef.current) {
       clearTimeout(dismissTimeoutRef.current);
       dismissTimeoutRef.current = null;
     }
-  }, []);
+  }, [stopLegacyRingtone]);
 
   const answerCall = useCallback(() => {
     if (incomingCall && onAnswerCall) {
@@ -124,24 +141,13 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
           console.log("Incoming call from:", incomingCallData.callerName);
           setIncomingCall(incomingCallData);
 
-          // Play notification sound
-          try {
-            const audio = new Audio("/sounds/notification.mp3");
-            audio.loop = true;
-            audio.play().catch(console.error);
-            
-            // Stop sound after 30 seconds
-            setTimeout(() => {
-              audio.pause();
-              audio.currentTime = 0;
-            }, 30000);
-          } catch (error) {
-            console.error("Error playing notification sound:", error);
-          }
+          // NOTE: Messenger-style ringtone is handled inside <IncomingCallNotification />.
+          // We intentionally don't play an extra audio file here to avoid double-ringing.
 
           // Auto dismiss after 30 seconds
           dismissTimeoutRef.current = setTimeout(() => {
             setIncomingCall(null);
+            stopLegacyRingtone();
           }, 30000);
         }
       )

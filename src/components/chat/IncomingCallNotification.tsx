@@ -18,76 +18,72 @@ class MessengerIncomingRingtone {
   private timeoutIds: NodeJS.Timeout[] = [];
   private oscillators: OscillatorNode[] = [];
 
-  private createRingBurst(startTime: number) {
+  private createRingSound(startTime: number, duration: number) {
     if (!this.audioContext) return;
-    
-    // Create the characteristic "brrring" trill sound
-    const baseFreq = 523.25; // C5 - slightly higher for incoming
-    const trillFreq = 659.25; // E5
-    
-    // Main trill oscillator
-    const osc1 = this.audioContext.createOscillator();
-    const gain1 = this.audioContext.createGain();
-    osc1.type = 'sine';
-    
-    // Rapid frequency alternation for trill effect
-    const trillSpeed = 12; // alternations per second
-    const duration = 0.5;
-    
-    for (let i = 0; i < duration * trillSpeed * 2; i++) {
-      const t = startTime + (i / (trillSpeed * 2));
-      osc1.frequency.setValueAtTime(i % 2 === 0 ? baseFreq : trillFreq, t);
+
+    // Match the same Messenger-like pattern used for outgoing calls
+    const baseFreq = 440; // A4
+    const trillSpeed = 15;
+    const trillDepth = 50;
+
+    const osc = this.audioContext.createOscillator();
+    const gain = this.audioContext.createGain();
+    osc.type = "sine";
+
+    for (let i = 0; i < duration * trillSpeed; i++) {
+      const t = startTime + i / trillSpeed;
+      const freq = baseFreq + (i % 2 === 0 ? trillDepth : -trillDepth);
+      osc.frequency.setValueAtTime(freq, t);
     }
-    
-    gain1.gain.setValueAtTime(0, startTime);
-    gain1.gain.linearRampToValueAtTime(0.2, startTime + 0.03);
-    gain1.gain.setValueAtTime(0.2, startTime + duration - 0.03);
-    gain1.gain.linearRampToValueAtTime(0, startTime + duration);
-    
-    osc1.connect(gain1);
-    gain1.connect(this.audioContext.destination);
-    osc1.start(startTime);
-    osc1.stop(startTime + duration);
-    
-    this.oscillators.push(osc1);
-    
-    // Add harmonic overtone for richer sound
-    const osc2 = this.audioContext.createOscillator();
-    const gain2 = this.audioContext.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(baseFreq * 2, startTime); // Octave higher
-    
-    gain2.gain.setValueAtTime(0, startTime);
-    gain2.gain.linearRampToValueAtTime(0.05, startTime + 0.03);
-    gain2.gain.setValueAtTime(0.05, startTime + duration - 0.03);
-    gain2.gain.linearRampToValueAtTime(0, startTime + duration);
-    
-    osc2.connect(gain2);
-    gain2.connect(this.audioContext.destination);
-    osc2.start(startTime);
-    osc2.stop(startTime + duration);
-    
-    this.oscillators.push(osc2);
+
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+    gain.gain.setValueAtTime(0.25, startTime + duration - 0.02);
+    gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    osc.connect(gain);
+    gain.connect(this.audioContext.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+    this.oscillators.push(osc);
+
+    // High octave layer (same as outgoing)
+    const highOsc = this.audioContext.createOscillator();
+    const highGain = this.audioContext.createGain();
+    highOsc.type = "sine";
+    highOsc.frequency.setValueAtTime(880, startTime);
+
+    highGain.gain.setValueAtTime(0, startTime);
+    highGain.gain.linearRampToValueAtTime(0.08, startTime + 0.02);
+    highGain.gain.setValueAtTime(0.08, startTime + duration - 0.02);
+    highGain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+    highOsc.connect(highGain);
+    highGain.connect(this.audioContext.destination);
+
+    highOsc.start(startTime);
+    highOsc.stop(startTime + duration);
+    this.oscillators.push(highOsc);
   }
 
   private playPattern() {
     if (!this.isPlaying) return;
-    
+
     if (!this.audioContext) {
       this.audioContext = new AudioContext();
     }
-    
-    if (this.audioContext.state === 'suspended') {
+
+    if (this.audioContext.state === "suspended") {
       this.audioContext.resume();
     }
-    
+
     const now = this.audioContext.currentTime;
-    
-    // Pattern: ring - short pause - ring - long pause (repeat)
-    this.createRingBurst(now);
-    this.createRingBurst(now + 0.7);
-    
-    // Schedule next pattern
+
+    // Pattern: ring (0.4s) - pause (0.2s) - ring (0.4s) - long pause
+    this.createRingSound(now, 0.4);
+    this.createRingSound(now + 0.6, 0.4);
+
     if (this.isPlaying) {
       const timeoutId = setTimeout(() => {
         this.playPattern();
