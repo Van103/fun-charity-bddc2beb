@@ -459,6 +459,21 @@ export function VideoCallModal({
                     .update({ status: "no_answer", ended_at: new Date().toISOString() })
                     .eq("id", sessionId)
                     .eq("status", "pending");
+
+                  // Create missed call notification for the caller
+                  await supabase.from("notifications").insert({
+                    user_id: currentUserId,
+                    type: "missed_call" as any,
+                    title: "Cuộc gọi nhỡ",
+                    message: `${otherUser.full_name || "Người dùng"} không trả lời cuộc gọi của bạn`,
+                    data: {
+                      conversation_id: conversationId,
+                      callee_id: otherUser.user_id,
+                      callee_name: otherUser.full_name,
+                      callee_avatar: otherUser.avatar_url,
+                      call_type: callType
+                    }
+                  });
                 } catch (e) {
                   console.error("Error marking call as no_answer:", e);
                 }

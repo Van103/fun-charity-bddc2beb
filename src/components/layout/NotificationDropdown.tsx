@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Bell, Check, Gift, MessageCircle, Users, Award, Heart, AlertCircle, UserCheck, UserX, Loader2, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Bell, Check, Gift, MessageCircle, Users, Award, Heart, AlertCircle, UserCheck, UserX, Loader2, User, PhoneMissed, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -30,10 +31,12 @@ const notificationIcons: Record<string, React.ReactNode> = {
   comment_reply: <MessageCircle className="w-4 h-4 text-purple-500" />,
   badge_earned: <Award className="w-4 h-4 text-yellow-500" />,
   campaign_update: <AlertCircle className="w-4 h-4 text-orange-500" />,
+  missed_call: <PhoneMissed className="w-4 h-4 text-red-500" />,
   system: <Bell className="w-4 h-4 text-muted-foreground" />,
 };
 
 export function NotificationDropdown() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -362,6 +365,29 @@ export function NotificationDropdown() {
                                 Từ chối
                               </>
                             )}
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Missed call action button */}
+                      {notification.type === "missed_call" && (
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              markAsRead(notification.id);
+                              setIsOpen(false);
+                              const calleeId = notification.data?.callee_id;
+                              const callType = notification.data?.call_type || "video";
+                              if (calleeId) {
+                                navigate(`/messages?user=${calleeId}&startCall=${callType}`);
+                              }
+                            }}
+                          >
+                            <Phone className="w-3 h-3 mr-1" />
+                            Gọi lại
                           </Button>
                         </div>
                       )}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 interface IncomingCall {
   id: string;
@@ -17,7 +16,6 @@ interface UseIncomingCallListenerProps {
 }
 
 export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCallListenerProps) {
-  const { toast } = useToast();
   const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const dismissTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,12 +59,79 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
           .from("call_sessions")
           .update({ status: "declined", ended_at: new Date().toISOString() })
           .eq("id", incomingCall.id);
+
+        // Create notification for the caller about declined call
+        const { data: conversation } = await supabase
+          .from("conversations")
+          .select("participant1_id, participant2_id")
+          .eq("id", incomingCall.conversationId)
+          .single();
+
+        if (conversation) {
+          // Get current user's profile to show in notification
+          const { data: userProfile } = await supabase
+            .from("profiles")
+            .select("full_name, avatar_url")
+            .eq("user_id", userId)
+            .single();
+
+          await supabase.from("notifications").insert({
+            user_id: incomingCall.callerId,
+            type: "missed_call" as any,
+            title: "Cuộc gọi bị từ chối",
+            message: `${userProfile?.full_name || "Người dùng"} đã từ chối cuộc gọi của bạn`,
+            data: {
+              conversation_id: incomingCall.conversationId,
+              callee_id: userId,
+              callee_name: userProfile?.full_name,
+              callee_avatar: userProfile?.avatar_url,
+              call_type: incomingCall.callType
+            }
+          });
+        }
       } catch (error) {
         console.error("Error declining call:", error);
       }
     }
     dismissCall();
-  }, [incomingCall, dismissCall]);
+  }, [incomingCall, dismissCall, userId]);
+
+  // Function to send push notification
+  const sendPushNotification = useCallback(async (
+    targetUserId: string,
+    callerName: string,
+    callerAvatar: string | null,
+    callId: string,
+    conversationId: string,
+    callType: "video" | "audio"
+  ) => {
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const response = await fetch(`${supabaseUrl}/functions/v1/send-push-notification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: targetUserId,
+          title: `Cuộc gọi ${callType === "video" ? "video" : "thoại"} đến`,
+          body: `${callerName} đang gọi cho bạn`,
+          url: `/messages?answer=${callId}&conversation=${conversationId}&type=${callType}`,
+          callId,
+          conversationId,
+          callType,
+          callerName,
+          callerAvatar,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log("Push notification response:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error sending push notification:", error);
+    }
+  }, []);
 
   useEffect(() => {
     if (!userId) return;
@@ -141,8 +206,15 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
           console.log("Incoming call from:", incomingCallData.callerName);
           setIncomingCall(incomingCallData);
 
-          // NOTE: Messenger-style ringtone is handled inside <IncomingCallNotification />.
-          // We intentionally don't play an extra audio file here to avoid double-ringing.
+          // Send push notification (for when app is in background or closed)
+          sendPushNotification(
+            userId,
+            incomingCallData.callerName,
+            incomingCallData.callerAvatar,
+            incomingCallData.id,
+            incomingCallData.conversationId,
+            incomingCallData.callType
+          );
 
           // Auto dismiss after 30 seconds
           dismissTimeoutRef.current = setTimeout(() => {
@@ -166,7 +238,7 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
         dismissTimeoutRef.current = null;
       }
     };
-  }, [userId]);
+  }, [userId, sendPushNotification, stopLegacyRingtone]);
 
   return {
     incomingCall,

@@ -11,6 +11,7 @@ import { EnergyBokeh } from "@/components/background/EnergyBokeh";
 import CustomCursor from "@/components/cursor/CustomCursor";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
+import { usePushNotification } from "@/hooks/usePushNotification";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import Index from "./pages/Index";
@@ -37,6 +38,7 @@ import Friends from "./pages/Friends";
 import MyCampaigns from "./pages/MyCampaigns";
 import AdminVerify from "./pages/AdminVerify";
 import Volunteer from "./pages/Volunteer";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,10 +63,18 @@ function IncomingCallListener() {
   const location = useLocation();
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Initialize push notifications
+  const { subscribe, isSupported, permission } = usePushNotification();
+
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUserId(user?.id || null);
+      
+      // Auto-subscribe to push notifications if permission is granted
+      if (user && isSupported && permission === "granted") {
+        subscribe();
+      }
     };
     getUser();
 
@@ -73,7 +83,7 @@ function IncomingCallListener() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [isSupported, permission, subscribe]);
 
   const { incomingCall, answerCall, declineCall } = useIncomingCallListener({
     userId,
@@ -140,6 +150,7 @@ const App = () => (
                 <Route path="/my-campaigns" element={<MyCampaigns />} />
                 <Route path="/admin/verify" element={<AdminVerify />} />
                 <Route path="/volunteer" element={<Volunteer />} />
+                <Route path="/install" element={<Install />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
