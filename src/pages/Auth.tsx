@@ -394,8 +394,18 @@ const Auth = () => {
               </div>
             </div>
 
+            {/* Continue without login */}
+            <Button 
+              variant="outline" 
+              className="w-full border-secondary/50 text-secondary hover:bg-secondary/10"
+              onClick={() => navigate("/")}
+            >
+              Tiếp Tục Không Đăng Nhập
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+
             {/* Wallet Connect */}
-            <Button variant="wallet" className="w-full">
+            <Button variant="wallet" className="w-full mt-3">
               <Wallet className="w-4 h-4" />
               Kết Nối Ví
             </Button>
