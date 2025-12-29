@@ -197,15 +197,13 @@ export function CallsTab({ userId, onCallUser }: CallsTabProps) {
     return `${minutes}:${String(seconds % 60).padStart(2, '0')}`;
   };
 
-  const formatCallDate = (dateStr: string) => {
+  const formatCallTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    if (isToday(date)) {
-      return format(date, "HH:mm");
-    }
-    if (isYesterday(date)) {
-      return "Hôm qua " + format(date, "HH:mm");
-    }
-    return format(date, "dd/MM/yyyy HH:mm");
+    return format(date, "HH:mm");
+  };
+
+  const formatRelativeTime = (dateStr: string) => {
+    return formatDistanceToNow(new Date(dateStr), { addSuffix: true, locale: vi });
   };
 
   const handleCallback = (call: CallSession) => {
@@ -306,25 +304,40 @@ export function CallsTab({ userId, onCallUser }: CallsTabProps) {
                     <span className={`font-semibold truncate ${isMissed ? 'text-destructive' : ''}`}>
                       {displayProfile?.full_name || "Người dùng"}
                     </span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatRelativeTime(call.started_at)}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  
+                  <div className="flex items-center gap-2 text-sm mt-0.5">
                     {getCallIcon(call)}
                     <span className={`${isMissed ? 'text-destructive' : 'text-muted-foreground'}`}>
                       {getCallStatusText(call)}
                     </span>
+                  </div>
+
+                  {/* Detailed time info */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-1">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      Bắt đầu: {formatCallTime(call.started_at)}
+                    </span>
+                    {call.ended_at && (
+                      <span className="flex items-center gap-1">
+                        Kết thúc: {formatCallTime(call.ended_at)}
+                      </span>
+                    )}
                     {duration && (
-                      <>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="text-muted-foreground flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {duration}
-                        </span>
-                      </>
+                      <span className="font-medium text-primary">
+                        Thời lượng: {duration}
+                      </span>
+                    )}
+                    {!duration && isMissed && (
+                      <span className="font-medium text-destructive">
+                        {call.status === "no_answer" ? "Không có phản hồi" : "Bị từ chối"}
+                      </span>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {formatCallDate(call.started_at)}
-                  </span>
                 </div>
 
                 {/* Callback buttons */}
