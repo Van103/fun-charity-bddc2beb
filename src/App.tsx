@@ -95,8 +95,8 @@ function IncomingCallListener() {
     }
   });
 
-  // Don't show notification on messages page (it has its own handling)
-  if (location.pathname === "/messages" || !incomingCall) {
+  // Show notification on ALL pages including /messages (global singleton)
+  if (!incomingCall) {
     return null;
   }
 

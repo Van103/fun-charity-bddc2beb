@@ -36,7 +36,7 @@ import { MessageReactionPicker, MessageReactionsDisplay } from "@/components/cha
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
-import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
+// IncomingCallNotification import removed - now handled globally in App.tsx
 import { CallsTab } from "@/components/chat/CallsTab";
 import { CallMessageBubble, isCallMessage } from "@/components/chat/CallMessageBubble";
 
@@ -172,7 +172,8 @@ export default function Messages() {
     setShowVideoCall(true);
   }, []);
 
-  // Setup incoming call listener
+  // Setup incoming call listener - REMOVED local notification, using global in App.tsx
+  // Note: We don't use onCallEnded here since useIncomingCallListener already handles refreshing
   const { incomingCall, answerCall, declineCall, dismissCall } = useIncomingCallListener({
     userId: currentUserId,
     onAnswerCall: handleAnswerIncomingCall
@@ -1568,18 +1569,7 @@ export default function Messages() {
         )}
       </AnimatePresence>
 
-      {/* Incoming Call Notification */}
-      <AnimatePresence>
-        {incomingCall && (
-          <IncomingCallNotification
-            callerName={incomingCall.callerName}
-            callerAvatar={incomingCall.callerAvatar}
-            callType={incomingCall.callType}
-            onAnswer={answerCall}
-            onDecline={declineCall}
-          />
-        )}
-      </AnimatePresence>
+      {/* Incoming Call Notification - REMOVED, now handled globally in App.tsx */}
 
       {/* Video/Audio Call Modal - Outgoing or Incoming */}
       {showVideoCall && currentUserId && (
@@ -1600,6 +1590,15 @@ export default function Messages() {
           isIncoming={isIncomingCall}
           callSessionId={incomingCallSessionId || undefined}
           autoAnswer={autoAnswerCall}
+          onCallEnded={() => {
+            // Refresh conversations and messages after call ends
+            if (currentUserId) {
+              loadConversations(currentUserId);
+              if (activeConversation?.id) {
+                loadMessages(activeConversation.id);
+              }
+            }
+          }}
         />
       )}
 

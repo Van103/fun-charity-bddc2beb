@@ -192,7 +192,7 @@ export function IncomingCallNotification({
         initial={{ opacity: 0, y: -100, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -100, scale: 0.9 }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-[90%] max-w-md"
       >
         <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden">
           {/* Header with gradient */}

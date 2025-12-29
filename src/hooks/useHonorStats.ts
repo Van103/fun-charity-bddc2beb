@@ -41,7 +41,7 @@ async function fetchHonorStats(): Promise<HonorStats> {
     const videosCount = mediaPosts?.filter(post => {
       const urls = post.media_urls as string[] | null;
       return urls?.some(url => 
-        url.includes('.mp4') || url.includes('.webm') || url.includes('.mov')
+        typeof url === 'string' && (url.includes('.mp4') || url.includes('.webm') || url.includes('.mov'))
       );
     }).length || 0;
 

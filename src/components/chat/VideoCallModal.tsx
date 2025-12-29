@@ -201,6 +201,7 @@ interface VideoCallModalProps {
   isIncoming?: boolean;
   callSessionId?: string;
   autoAnswer?: boolean; // Auto answer when opened from notification
+  onCallEnded?: () => void; // Callback to refresh UI after call ends
 }
 
 export function VideoCallModal({
@@ -212,7 +213,8 @@ export function VideoCallModal({
   callType,
   isIncoming = false,
   callSessionId,
-  autoAnswer = false
+  autoAnswer = false,
+  onCallEnded
 }: VideoCallModalProps) {
   const { toast } = useToast();
   const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended" | "no_answer" | "busy" | "failed">("idle");
@@ -312,6 +314,7 @@ export function VideoCallModal({
         content = `📵 Cuộc gọi ${callTypeLabel.toLowerCase()} không trả lời`;
       }
 
+      // Use currentUserId as sender - RLS requires auth.uid() = sender_id
       await supabase.from('messages').insert({
         conversation_id: conversationId,
         sender_id: currentUserId,
@@ -326,10 +329,13 @@ export function VideoCallModal({
         .eq('id', conversationId);
 
       console.log('Call message saved:', content);
+      
+      // Trigger refresh callback
+      onCallEnded?.();
     } catch (error) {
       console.error('Error saving call message:', error);
     }
-  }, [conversationId, currentUserId, callType]);
+  }, [conversationId, currentUserId, callType, onCallEnded]);
 
   // Subscribe to signaling channel with promise
   const subscribeToChannel = useCallback((ch: ReturnType<typeof supabase.channel>) => {
