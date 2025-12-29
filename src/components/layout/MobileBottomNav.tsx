@@ -27,6 +27,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import funProfileLogo from "@/assets/fun-profile-logo.webp";
+import funPlayLogo from "@/assets/fun-play-logo.png";
 
 const mainNavItems = [
   { icon: Home, labelKey: "nav.home", href: "/social" },
@@ -47,7 +48,7 @@ const menuItems: MenuItem[] = [
   { image: funProfileLogo, labelKey: "menu.profile", href: "https://fun.rich/", external: true },
   { icon: Sprout, labelKey: "menu.farm", href: "https://funfarm.life/feed", external: true },
   { icon: Globe, labelKey: "menu.planet", href: "https://planet.fun.rich/", external: true },
-  { icon: Gamepad2, labelKey: "menu.play", href: "https://play.fun.rich/", external: true },
+  { image: funPlayLogo, labelKey: "menu.play", href: "https://play.fun.rich/", external: true },
   { icon: MessageCircle, labelKey: "menu.chat", href: "/messages", external: false },
   { icon: GraduationCap, labelKey: "menu.academy", href: "/academy", external: false },
   { icon: TrendingUp, labelKey: "menu.trading", href: "/trading", external: false },
