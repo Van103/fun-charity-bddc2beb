@@ -37,6 +37,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
+import { CallsTab } from "@/components/chat/CallsTab";
 
 interface Conversation {
   id: string;
@@ -107,7 +108,7 @@ export default function Messages() {
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "groups">("all");
+  const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "groups" | "calls">("all");
   const [mediaOpen, setMediaOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [isIncomingCall, setIsIncomingCall] = useState(false);
@@ -933,68 +934,91 @@ export default function Messages() {
             >
               Nhóm
             </Button>
+            <Button
+              variant={activeFilter === "calls" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setActiveFilter("calls")}
+              className="rounded-full h-8 px-4 gap-1"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              Cuộc gọi
+            </Button>
           </div>
         </div>
         
-        {/* Conversations List */}
-        <ScrollArea className="flex-1">
-          {filteredConversations.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground text-sm">
-              Chưa có cuộc trò chuyện nào
-            </div>
-          ) : (
-            filteredConversations.map(convo => (
-              <motion.div
-                key={convo.id}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => selectConversation(convo)}
-                className={`flex items-center gap-3 p-3 mx-2 my-1 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors ${
-                  activeConversation?.id === convo.id ? 'bg-primary/10' : ''
-                }`}
-              >
-                <div className="relative flex-shrink-0">
-                  {convo.is_group ? (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center">
-                      <Users className="w-7 h-7 text-white" />
-                    </div>
-                  ) : (
-                    <Avatar className="w-14 h-14">
-                      <AvatarImage src={getConversationAvatar(convo) || ""} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium text-lg">
-                        {getConversationName(convo).charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  {!convo.is_group && (
-                    <span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-card ${
-                      convo.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                    }`} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className={`font-semibold truncate ${convo.unreadCount ? 'text-foreground' : ''}`}>
-                      {getConversationName(convo)}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <p className={`text-sm truncate flex-1 ${
-                      convo.unreadCount ? 'text-foreground font-medium' : 'text-muted-foreground'
-                    }`}>
-                      {convo.lastMessage || "Bắt đầu trò chuyện"}
-                    </p>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      · {formatDistanceToNow(new Date(convo.last_message_at), { locale: vi, addSuffix: false })}
-                    </span>
-                    {!!convo.unreadCount && convo.unreadCount > 0 && (
-                      <span className="flex-shrink-0 w-3 h-3 rounded-full bg-primary" />
+        {/* Conversations List or Calls Tab */}
+        {activeFilter === "calls" ? (
+          <CallsTab 
+            userId={currentUserId} 
+            onCallUser={async (userId, callType) => {
+              if (!currentUserId) return;
+              await openConversationWithUser(currentUserId, userId);
+              setCallType(callType);
+              setIsIncomingCall(false);
+              setAutoAnswerCall(false);
+              setShowVideoCall(true);
+            }}
+          />
+        ) : (
+          <ScrollArea className="flex-1">
+            {filteredConversations.length === 0 ? (
+              <div className="p-4 text-center text-muted-foreground text-sm">
+                Chưa có cuộc trò chuyện nào
+              </div>
+            ) : (
+              filteredConversations.map(convo => (
+                <motion.div
+                  key={convo.id}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => selectConversation(convo)}
+                  className={`flex items-center gap-3 p-3 mx-2 my-1 rounded-xl hover:bg-muted/50 cursor-pointer transition-colors ${
+                    activeConversation?.id === convo.id ? 'bg-primary/10' : ''
+                  }`}
+                >
+                  <div className="relative flex-shrink-0">
+                    {convo.is_group ? (
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center">
+                        <Users className="w-7 h-7 text-white" />
+                      </div>
+                    ) : (
+                      <Avatar className="w-14 h-14">
+                        <AvatarImage src={getConversationAvatar(convo) || ""} />
+                        <AvatarFallback className="bg-primary/10 text-primary font-medium text-lg">
+                          {getConversationName(convo).charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    {!convo.is_group && (
+                      <span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-card ${
+                        convo.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                      }`} />
                     )}
                   </div>
-                </div>
-              </motion.div>
-            ))
-          )}
-        </ScrollArea>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className={`font-semibold truncate ${convo.unreadCount ? 'text-foreground' : ''}`}>
+                        {getConversationName(convo)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className={`text-sm truncate flex-1 ${
+                        convo.unreadCount ? 'text-foreground font-medium' : 'text-muted-foreground'
+                      }`}>
+                        {convo.lastMessage || "Bắt đầu trò chuyện"}
+                      </p>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        · {formatDistanceToNow(new Date(convo.last_message_at), { locale: vi, addSuffix: false })}
+                      </span>
+                      {!!convo.unreadCount && convo.unreadCount > 0 && (
+                        <span className="flex-shrink-0 w-3 h-3 rounded-full bg-primary" />
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </ScrollArea>
+        )}
       </div>
 
       {/* Center - Messages Area */}
