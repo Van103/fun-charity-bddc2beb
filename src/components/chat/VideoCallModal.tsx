@@ -448,6 +448,23 @@ export function VideoCallModal({
             if (ringTimerRef.current) {
               clearInterval(ringTimerRef.current);
             }
+
+            // Persist missed call so it shows in call history
+            const sessionId = sessionIdRef.current;
+            if (sessionId) {
+              (async () => {
+                try {
+                  await supabase
+                    .from("call_sessions")
+                    .update({ status: "no_answer", ended_at: new Date().toISOString() })
+                    .eq("id", sessionId)
+                    .eq("status", "pending");
+                } catch (e) {
+                  console.error("Error marking call as no_answer:", e);
+                }
+              })();
+            }
+
             setCallStatus("no_answer");
             toast({
               title: "Không có phản hồi",
