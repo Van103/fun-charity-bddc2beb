@@ -701,16 +701,61 @@ export function VideoCallModal({
     });
 
     pc.ontrack = (event) => {
-      console.log("Received remote track:", event.track.kind);
-      const streamFromEvent = event.streams?.[0];
+      console.log("Received remote track:", event.track.kind, event.track.id, "streams:", event.streams?.length);
+      
+      // Get the stream from event or create new one
+      let incomingStream = event.streams?.[0];
+      
+      if (!incomingStream) {
+        // If no stream in event, create new MediaStream and add the track
+        incomingStream = new MediaStream();
+        incomingStream.addTrack(event.track);
+        console.log("Created new MediaStream for track:", event.track.kind);
+      }
 
       setRemoteStream((prev) => {
-        if (streamFromEvent) return streamFromEvent;
-        const next = prev ?? new MediaStream();
-        if (!next.getTracks().some((t) => t.id === event.track.id)) {
-          next.addTrack(event.track);
+        // If we already have a stream with all tracks, keep it
+        if (prev && incomingStream) {
+          // Add new track to existing stream if not present
+          const trackExists = prev.getTracks().some((t) => t.id === event.track.id);
+          if (!trackExists) {
+            prev.addTrack(event.track);
+            console.log("Added track to existing stream:", event.track.kind);
+          }
+          
+          // Force update video element immediately
+          if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = prev;
+            remoteVideoRef.current.play?.().catch((e) => console.log("Play error:", e));
+          }
+          if (remoteAudioRef.current && event.track.kind === 'audio') {
+            remoteAudioRef.current.srcObject = prev;
+            remoteAudioRef.current.play?.().catch((e) => console.log("Audio play error:", e));
+          }
+          
+          return prev;
         }
-        return next;
+        
+        // Use incoming stream
+        const finalStream = incomingStream || prev || new MediaStream();
+        
+        // Ensure track is in the stream
+        if (!finalStream.getTracks().some((t) => t.id === event.track.id)) {
+          finalStream.addTrack(event.track);
+        }
+        
+        // Force update video element immediately
+        if (remoteVideoRef.current && finalStream) {
+          console.log("Force setting remote video srcObject");
+          remoteVideoRef.current.srcObject = finalStream;
+          remoteVideoRef.current.play?.().catch((e) => console.log("Play error:", e));
+        }
+        if (remoteAudioRef.current && event.track.kind === 'audio' && finalStream) {
+          remoteAudioRef.current.srcObject = finalStream;
+          remoteAudioRef.current.play?.().catch((e) => console.log("Audio play error:", e));
+        }
+        
+        return finalStream;
       });
     };
 

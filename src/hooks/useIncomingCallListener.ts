@@ -89,6 +89,21 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
             }
           });
         }
+
+        // Save declined call message to chat history
+        const callTypeLabel = incomingCall.callType === 'video' ? 'video' : 'thoại';
+        await supabase.from('messages').insert({
+          conversation_id: incomingCall.conversationId,
+          sender_id: incomingCall.callerId, // Message shows caller initiated
+          content: `❌ Cuộc gọi ${callTypeLabel} bị từ chối`,
+          is_read: false
+        });
+
+        // Update conversation's last_message_at
+        await supabase
+          .from('conversations')
+          .update({ last_message_at: new Date().toISOString() })
+          .eq('id', incomingCall.conversationId);
       } catch (error) {
         console.error("Error declining call:", error);
       }
@@ -216,8 +231,36 @@ export function useIncomingCallListener({ userId, onAnswerCall }: UseIncomingCal
             incomingCallData.callType
           );
 
-          // Auto dismiss after 30 seconds
-          dismissTimeoutRef.current = setTimeout(() => {
+          // Auto dismiss after 30 seconds and save as missed call
+          dismissTimeoutRef.current = setTimeout(async () => {
+            // Save missed call message to chat history
+            try {
+              const callTypeLabel = incomingCallData.callType === 'video' ? 'video' : 'thoại';
+              await supabase.from('messages').insert({
+                conversation_id: incomingCallData.conversationId,
+                sender_id: incomingCallData.callerId, // Message shows caller initiated
+                content: `📵 Cuộc gọi ${callTypeLabel} nhỡ`,
+                is_read: false
+              });
+
+              // Update conversation's last_message_at
+              await supabase
+                .from('conversations')
+                .update({ last_message_at: new Date().toISOString() })
+                .eq('id', incomingCallData.conversationId);
+
+              // Update call session status to missed
+              await supabase
+                .from('call_sessions')
+                .update({ status: 'no_answer', ended_at: new Date().toISOString() })
+                .eq('id', incomingCallData.id)
+                .eq('status', 'pending');
+                
+              console.log('Missed call message saved');
+            } catch (error) {
+              console.error('Error saving missed call message:', error);
+            }
+            
             setIncomingCall(null);
             stopLegacyRingtone();
           }, 30000);
