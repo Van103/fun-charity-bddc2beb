@@ -226,6 +226,7 @@ export function VideoCallModal({
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const sessionIdRef = useRef<string | null>(callSessionId || null);
@@ -237,6 +238,10 @@ export function VideoCallModal({
   const originalVideoTrackRef = useRef<MediaStreamTrack | null>(null);
   const isCleanedUpRef = useRef(false);
   const hasInitializedRef = useRef(false);
+
+  const isChannelSubscribedRef = useRef(false);
+  const pendingLocalIceRef = useRef<RTCIceCandidateInit[]>([]);
+  const pendingRemoteIceRef = useRef<RTCIceCandidateInit[]>([]);
 
   const configuration: RTCConfiguration = {
     iceServers: [
@@ -340,13 +345,24 @@ export function VideoCallModal({
     }
   }, [localStream]);
 
-  // Sync remote video ref with stream
+  // Sync remote video/audio refs with stream
   useEffect(() => {
-    if (remoteVideoRef.current && remoteStream) {
+    if (!remoteStream) return;
+
+    if (callType === "audio") {
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.srcObject = remoteStream;
+        remoteAudioRef.current.play?.().catch(() => {});
+      }
+      return;
+    }
+
+    if (remoteVideoRef.current) {
       console.log("Setting remote video srcObject");
       remoteVideoRef.current.srcObject = remoteStream;
+      remoteVideoRef.current.play?.().catch(() => {});
     }
-  }, [remoteStream]);
+  }, [remoteStream, callType]);
 
   // Start call timer
   useEffect(() => {
@@ -507,21 +523,34 @@ export function VideoCallModal({
 
     pc.ontrack = (event) => {
       console.log("Received remote track:", event.track.kind);
-      setRemoteStream(event.streams[0]);
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      }
+      const streamFromEvent = event.streams?.[0];
+
+      setRemoteStream((prev) => {
+        if (streamFromEvent) return streamFromEvent;
+        const next = prev ?? new MediaStream();
+        if (!next.getTracks().some((t) => t.id === event.track.id)) {
+          next.addTrack(event.track);
+        }
+        return next;
+      });
     };
 
     pc.onicecandidate = (event) => {
-      if (event.candidate && channelRef.current) {
-        console.log("Sending ICE candidate");
-        channelRef.current.send({
-          type: "broadcast",
-          event: "ice-candidate",
-          payload: { candidate: event.candidate }
-        });
+      if (!event.candidate) return;
+
+      const candidate = serializeIceCandidate(event.candidate);
+
+      if (!channelRef.current || !isChannelSubscribedRef.current) {
+        pendingLocalIceRef.current.push(candidate);
+        return;
       }
+
+      console.log("Sending ICE candidate");
+      channelRef.current.send({
+        type: "broadcast",
+        event: "ice-candidate",
+        payload: { candidate, from: currentUserId }
+      });
     };
 
     pc.onconnectionstatechange = () => {
@@ -599,10 +628,14 @@ export function VideoCallModal({
 
       channel.on("broadcast", { event: "answer" }, async (msg) => {
         console.log("Received answer");
+        stopRingtone();
+        setCallStatus("connecting");
+
         const answer = msg.payload.answer;
         if (peerConnectionRef.current && peerConnectionRef.current.signalingState !== "closed") {
           try {
             await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+            await flushPendingRemoteIce();
           } catch (e) {
             console.error("Error setting remote description:", e);
           }
@@ -610,11 +643,24 @@ export function VideoCallModal({
       });
 
       channel.on("broadcast", { event: "ice-candidate" }, async (msg) => {
+        const from = msg.payload?.from as string | undefined;
+        if (from && from === currentUserId) return;
+
         console.log("Received ICE candidate");
+        const candidate = msg.payload?.candidate as RTCIceCandidateInit | undefined;
+        if (!candidate) return;
+
+        const pc = peerConnectionRef.current;
+        if (!pc || pc.signalingState === "closed") return;
+
+        // Buffer candidates until we have a remote description
+        if (!pc.remoteDescription) {
+          pendingRemoteIceRef.current.push(candidate);
+          return;
+        }
+
         try {
-          if (peerConnectionRef.current && peerConnectionRef.current.signalingState !== "closed") {
-            await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
-          }
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
         } catch (e) {
           console.error("Error adding ICE candidate:", e);
         }
@@ -641,9 +687,10 @@ export function VideoCallModal({
         onClose();
       });
 
-      await channel.subscribe();
+      await subscribeToChannel(channel);
+      isChannelSubscribedRef.current = true;
+      flushPendingLocalIce();
       console.log("Subscribed to signaling channel");
-      
     } catch (error) {
       console.error("Error starting call:", error);
       toast({
@@ -692,16 +739,28 @@ export function VideoCallModal({
     const channel = supabase.channel(`call-${callSessionId}`);
     channelRef.current = channel;
 
-    channel.on("broadcast", { event: "ice-candidate" }, async (msg) => {
-      console.log("Received ICE candidate");
-      try {
-        if (peerConnectionRef.current && peerConnectionRef.current.signalingState !== "closed") {
-          await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(msg.payload.candidate));
-        }
-      } catch (e) {
-        console.error("Error adding ICE candidate:", e);
-      }
-    });
+     channel.on("broadcast", { event: "ice-candidate" }, async (msg) => {
+       const from = msg.payload?.from as string | undefined;
+       if (from && from === currentUserId) return;
+
+       console.log("Received ICE candidate");
+       const candidate = msg.payload?.candidate as RTCIceCandidateInit | undefined;
+       if (!candidate) return;
+
+       const pcNow = peerConnectionRef.current;
+       if (!pcNow || pcNow.signalingState === "closed") return;
+
+       if (!pcNow.remoteDescription) {
+         pendingRemoteIceRef.current.push(candidate);
+         return;
+       }
+
+       try {
+         await pcNow.addIceCandidate(new RTCIceCandidate(candidate));
+       } catch (e) {
+         console.error("Error adding ICE candidate:", e);
+       }
+     });
 
     channel.on("broadcast", { event: "call-ended" }, () => {
       console.log("Call ended by remote");
@@ -710,19 +769,21 @@ export function VideoCallModal({
       onClose();
     });
 
-    await channel.subscribe();
-    console.log("Subscribed to signaling channel");
-
+     await subscribeToChannel(channel);
+     isChannelSubscribedRef.current = true;
+     flushPendingLocalIce();
+     console.log("Subscribed to signaling channel");
     try {
       // Set remote description from stored offer
       const signalingData = callSession.signaling_data as { offer?: RTCSessionDescriptionInit };
       if (signalingData?.offer) {
-        console.log("Setting remote description from stored offer");
-        await pc.setRemoteDescription(new RTCSessionDescription(signalingData.offer));
-        
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        console.log("Created answer");
+         console.log("Setting remote description from stored offer");
+         await pc.setRemoteDescription(new RTCSessionDescription(signalingData.offer));
+         await flushPendingRemoteIce();
+         
+         const answer = await pc.createAnswer();
+         await pc.setLocalDescription(answer);
+         console.log("Created answer");
 
         channel.send({
           type: "broadcast",
