@@ -28,7 +28,15 @@ import {
   UserCheck,
   Loader2,
   Clock,
-  Eye
+  Eye,
+  Zap,
+  ZapOff,
+  Type,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  UserMinus,
+  ChevronLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,7 +67,7 @@ interface LiveReaction {
   x: number;
 }
 
-type AudienceType = 'public' | 'friends' | 'only_me';
+type AudienceType = 'public' | 'friends' | 'friends_except' | 'only_me';
 
 // Available filters including beauty filters
 const FILTERS = [
@@ -95,6 +103,7 @@ const STICKERS = [
 const AUDIENCE_OPTIONS = [
   { value: 'public' as AudienceType, label: 'Công khai', icon: Globe, description: 'Mọi người đều có thể xem' },
   { value: 'friends' as AudienceType, label: 'Bạn bè', icon: UserCheck, description: 'Chỉ bạn bè mới xem được' },
+  { value: 'friends_except' as AudienceType, label: 'Bạn bè trừ...', icon: UserMinus, description: 'Ẩn với một số người bạn bè' },
   { value: 'only_me' as AudienceType, label: 'Chỉ mình tôi', icon: Lock, description: 'Chỉ bạn có thể xem' },
 ];
 
@@ -127,6 +136,13 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [activeStickers, setActiveStickers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [showStickers, setShowStickers] = useState(false);
+  const [showAudienceDropdown, setShowAudienceDropdown] = useState(false);
+  const [showRightToolbar, setShowRightToolbar] = useState(true);
+  const [flashEnabled, setFlashEnabled] = useState(false);
+  const [enhancementEnabled, setEnhancementEnabled] = useState(true);
+  const [showTextOverlay, setShowTextOverlay] = useState(false);
+  const [textOverlay, setTextOverlay] = useState("");
+  const [shareToStory, setShareToStory] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -507,365 +523,638 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl h-[90vh] p-0 overflow-hidden bg-black">
+      <DialogContent className="max-w-[100vw] md:max-w-4xl h-[100vh] md:h-[90vh] p-0 overflow-hidden bg-black border-0 rounded-none md:rounded-lg">
         <div className="relative w-full h-full flex flex-col">
-          {/* Header */}
-          <div className="absolute top-0 left-0 right-0 z-20 p-4 bg-gradient-to-b from-black/80 to-transparent">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-11 h-11 border-2 border-white/50 ring-2 ring-primary/50">
-                  <AvatarImage src={profile?.avatar_url || ""} />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {profile?.full_name?.charAt(0) || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-white font-semibold text-sm">{profile?.full_name || "Bạn"}</p>
-                  {phase === 'live' && (
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className="bg-red-500 text-white text-xs animate-pulse px-2">
-                        🔴 LIVE
-                      </Badge>
-                      <span className="text-white/80 text-xs flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {viewerCount}
-                      </span>
-                      <span className="text-white/80 text-xs flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {formatDuration(streamDuration)}
-                      </span>
-                      {isRecording && (
-                        <span className="text-red-400 text-xs flex items-center gap-1">
-                          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                          REC
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {phase === 'setup' && (
-                    <span className="text-white/60 text-xs">Thiết lập video trực tiếp</span>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20 rounded-full"
-                onClick={handleClose}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Video Preview with Filter */}
-          <div className="flex-1 relative bg-black overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-              style={{ 
-                transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
-                filter: getCurrentFilter()
-              }}
-            />
-            
-            {/* Active Stickers */}
-            {activeStickers.map(stickerId => {
-              const sticker = STICKERS.find(s => s.id === stickerId);
-              if (!sticker) return null;
-              return (
-                <motion.div 
-                  key={stickerId}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className={`absolute ${getStickerPosition(sticker.position)} text-5xl md:text-6xl pointer-events-none`}
-                  style={{ 
-                    animation: 'bounce 2s infinite',
-                    textShadow: '0 4px 8px rgba(0,0,0,0.3)'
-                  }}
-                >
-                  {sticker.emoji}
-                </motion.div>
-              );
-            })}
-
-            {/* Floating Reactions */}
-            <AnimatePresence>
-              {reactions.map(reaction => (
-                <motion.div
-                  key={reaction.id}
-                  initial={{ bottom: 150, opacity: 1, scale: 1 }}
-                  animate={{ bottom: 500, opacity: 0, scale: 1.5 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 2.5, ease: 'easeOut' }}
-                  className="absolute text-4xl pointer-events-none z-30"
-                  style={{ left: `${reaction.x}%` }}
-                >
-                  {reaction.emoji}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            
-            {!isVideoEnabled && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                <div className="text-center text-white">
-                  <VideoOff className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm opacity-70">Camera đã tắt</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Setup Phase Content */}
+          
+          {/* Setup Phase - Facebook-like UI */}
           {phase === 'setup' && (
-            <div className="absolute bottom-24 left-4 right-4 z-20 space-y-3">
-              <Input
-                value={streamTitle}
-                onChange={(e) => setStreamTitle(e.target.value)}
-                placeholder="Tiêu đề video trực tiếp..."
-                className="bg-black/60 border-white/30 text-white placeholder:text-white/60 focus:border-primary text-base"
-              />
-              <Textarea
-                value={streamDescription}
-                onChange={(e) => setStreamDescription(e.target.value)}
-                placeholder="Mô tả thêm (tùy chọn)..."
-                className="bg-black/60 border-white/30 text-white placeholder:text-white/60 focus:border-primary resize-none h-16 text-sm"
-              />
-              <div className="flex gap-2">
-                {AUDIENCE_OPTIONS.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => setAudience(option.value)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs transition-all ${
-                      audience === option.value
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
+            <>
+              {/* Header */}
+              <div className="absolute top-0 left-0 right-0 z-30 p-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/20 rounded-full w-10 h-10"
+                    onClick={handleClose}
                   >
-                    <option.icon className="w-3.5 h-3.5" />
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Filter Panel */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="absolute bottom-28 left-0 right-0 bg-black/90 p-4 backdrop-blur-sm z-30"
-              >
-                <p className="text-white text-sm mb-3 font-medium flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
-                  Bộ lọc & Làm đẹp
-                </p>
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                  {FILTERS.map(filter => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setSelectedFilter(filter.id)}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm transition-all ${
-                        selectedFilter === filter.id
-                          ? 'bg-primary text-primary-foreground ring-2 ring-primary-foreground'
-                          : 'bg-white/20 text-white hover:bg-white/30'
-                      }`}
-                    >
-                      {filter.name}
-                    </button>
-                  ))}
+                    <ChevronLeft className="w-6 h-6" />
+                  </Button>
+                  <Avatar className="w-11 h-11 border-2 border-white/50">
+                    <AvatarImage src={profile?.avatar_url || ""} />
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {profile?.full_name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{profile?.full_name || "Bạn"}</p>
+                    {/* Audience dropdown */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowAudienceDropdown(!showAudienceDropdown)}
+                        className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full text-white text-xs transition-all"
+                      >
+                        {(() => {
+                          const option = AUDIENCE_OPTIONS.find(o => o.value === audience);
+                          const Icon = option?.icon || Globe;
+                          return <Icon className="w-3.5 h-3.5" />;
+                        })()}
+                        <span>{AUDIENCE_OPTIONS.find(o => o.value === audience)?.label}</span>
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                      
+                      {/* Dropdown menu */}
+                      <AnimatePresence>
+                        {showAudienceDropdown && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="absolute top-full left-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden"
+                          >
+                            {AUDIENCE_OPTIONS.map(option => (
+                              <button
+                                key={option.value}
+                                onClick={() => {
+                                  setAudience(option.value);
+                                  setShowAudienceDropdown(false);
+                                }}
+                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors ${
+                                  audience === option.value ? 'bg-primary/10' : ''
+                                }`}
+                              >
+                                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                                  audience === option.value ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                                }`}>
+                                  <option.icon className="w-4 h-4" />
+                                </div>
+                                <div className="text-left flex-1">
+                                  <p className={`text-sm font-medium ${audience === option.value ? 'text-primary' : 'text-foreground'}`}>
+                                    {option.label}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">{option.description}</p>
+                                </div>
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-white/20 rounded-full w-10 h-10"
+                  onClick={() => toast.info('Trung tâm trợ giúp đang được phát triển')}
+                >
+                  <HelpCircle className="w-5 h-5" />
+                </Button>
+              </div>
 
-          {/* Sticker Panel */}
-          <AnimatePresence>
-            {showStickers && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="absolute bottom-28 left-0 right-0 bg-black/90 p-4 backdrop-blur-sm z-30"
-              >
-                <p className="text-white text-sm mb-3 font-medium flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Sticker
-                </p>
-                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                  {STICKERS.map(sticker => (
-                    <button
-                      key={sticker.id}
-                      onClick={() => toggleSticker(sticker.id)}
-                      className={`flex-shrink-0 w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
-                        activeStickers.includes(sticker.id)
-                          ? 'bg-primary ring-2 ring-primary-foreground scale-110'
-                          : 'bg-white/20 hover:bg-white/30 hover:scale-105'
-                      }`}
+              {/* Video Preview */}
+              <div className="flex-1 relative bg-black overflow-hidden">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  style={{ 
+                    transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+                    filter: getCurrentFilter()
+                  }}
+                />
+                
+                {/* Active Stickers */}
+                {activeStickers.map(stickerId => {
+                  const sticker = STICKERS.find(s => s.id === stickerId);
+                  if (!sticker) return null;
+                  return (
+                    <motion.div 
+                      key={stickerId}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={`absolute ${getStickerPosition(sticker.position)} text-5xl md:text-6xl pointer-events-none`}
+                      style={{ 
+                        animation: 'bounce 2s infinite',
+                        textShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                      }}
                     >
                       {sticker.emoji}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Live Chat (during streaming) */}
-          {phase === 'live' && (
-            <div className="absolute bottom-24 left-4 right-20 z-20">
-              <ScrollArea className="h-36 mb-2">
-                <div className="space-y-2">
-                  {messages.slice(-15).map((msg) => (
-                    <motion.div 
-                      key={msg.id} 
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-start gap-2 bg-black/60 rounded-2xl px-3 py-2 backdrop-blur-sm"
-                    >
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage src={msg.avatar} />
-                        <AvatarFallback className="text-xs bg-primary/50">
-                          {msg.user.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-primary text-xs font-semibold">{msg.user}</span>
-                        <p className="text-white text-sm break-words">{msg.text}</p>
-                      </div>
                     </motion.div>
-                  ))}
+                  );
+                })}
+
+                {/* Text Overlay on video */}
+                {textOverlay && (
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl font-bold text-center px-4 drop-shadow-lg">
+                    {textOverlay}
+                  </div>
+                )}
+                
+                {!isVideoEnabled && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <div className="text-center text-white">
+                      <VideoOff className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm opacity-70">Camera đã tắt</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right side toolbar - Facebook style */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 z-30">
+                <AnimatePresence>
+                  {showRightToolbar && (
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      className="flex flex-col gap-4"
+                    >
+                      {/* Flash */}
+                      <button
+                        onClick={() => {
+                          setFlashEnabled(!flashEnabled);
+                          toast.info(flashEnabled ? 'Đã tắt Flash' : 'Đã bật Flash');
+                        }}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          {flashEnabled ? 'Flash đang bật' : 'Flash đang tắt'}
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          flashEnabled ? 'bg-yellow-500' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          {flashEnabled ? <Zap className="w-5 h-5 text-black" /> : <ZapOff className="w-5 h-5 text-white" />}
+                        </div>
+                      </button>
+
+                      {/* Mic */}
+                      <button
+                        onClick={toggleAudio}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          {isAudioEnabled ? 'Tắt tiếng micrô' : 'Bật tiếng micrô'}
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          !isAudioEnabled ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          {isAudioEnabled ? <Mic className="w-5 h-5 text-white" /> : <MicOff className="w-5 h-5 text-white" />}
+                        </div>
+                      </button>
+
+                      {/* Rotate camera */}
+                      <button
+                        onClick={switchCamera}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          Xoay
+                        </span>
+                        <div className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all">
+                          <RotateCcw className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+
+                      {/* Stickers */}
+                      <button
+                        onClick={() => { setShowStickers(!showStickers); setShowFilters(false); }}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          Nhãn dán
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          showStickers ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+
+                      {/* Enhancement/Filter */}
+                      <button
+                        onClick={() => { setShowFilters(!showFilters); setShowStickers(false); }}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          {showFilters ? 'Ẩn bộ lọc' : 'Tính năng cải thiện'}
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          showFilters || selectedFilter !== 'none' ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          <Palette className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+
+                      {/* Text overlay */}
+                      <button
+                        onClick={() => setShowTextOverlay(!showTextOverlay)}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          Văn bản
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          showTextOverlay || textOverlay ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          <Type className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+
+                      {/* Collapse button */}
+                      <button
+                        onClick={() => setShowRightToolbar(false)}
+                        className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                      >
+                        <ChevronUp className="w-5 h-5 text-white" />
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Show toolbar button when collapsed */}
+                {!showRightToolbar && (
+                  <button
+                    onClick={() => setShowRightToolbar(true)}
+                    className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                  >
+                    <ChevronDown className="w-5 h-5 text-white" />
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Panel */}
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute bottom-44 left-0 right-16 bg-black/90 p-4 backdrop-blur-sm z-30 rounded-r-xl"
+                  >
+                    <p className="text-white text-sm mb-3 font-medium flex items-center gap-2">
+                      <Palette className="w-4 h-4" />
+                      Bộ lọc & Làm đẹp
+                    </p>
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                      {FILTERS.map(filter => (
+                        <button
+                          key={filter.id}
+                          onClick={() => setSelectedFilter(filter.id)}
+                          className={`flex-shrink-0 px-4 py-2 rounded-full text-sm transition-all ${
+                            selectedFilter === filter.id
+                              ? 'bg-primary text-primary-foreground ring-2 ring-primary-foreground'
+                              : 'bg-white/20 text-white hover:bg-white/30'
+                          }`}
+                        >
+                          {filter.name}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Sticker Panel */}
+              <AnimatePresence>
+                {showStickers && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute bottom-44 left-0 right-16 bg-black/90 p-4 backdrop-blur-sm z-30 rounded-r-xl"
+                  >
+                    <p className="text-white text-sm mb-3 font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Sticker
+                    </p>
+                    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                      {STICKERS.map(sticker => (
+                        <button
+                          key={sticker.id}
+                          onClick={() => toggleSticker(sticker.id)}
+                          className={`flex-shrink-0 w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
+                            activeStickers.includes(sticker.id)
+                              ? 'bg-primary ring-2 ring-primary-foreground scale-110'
+                              : 'bg-white/20 hover:bg-white/30 hover:scale-105'
+                          }`}
+                        >
+                          {sticker.emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Text overlay input */}
+              <AnimatePresence>
+                {showTextOverlay && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute bottom-44 left-0 right-16 bg-black/90 p-4 backdrop-blur-sm z-30 rounded-r-xl"
+                  >
+                    <p className="text-white text-sm mb-3 font-medium flex items-center gap-2">
+                      <Type className="w-4 h-4" />
+                      Thêm văn bản
+                    </p>
+                    <Input
+                      value={textOverlay}
+                      onChange={(e) => setTextOverlay(e.target.value)}
+                      placeholder="Nhập văn bản hiển thị trên video..."
+                      className="bg-white/20 border-white/30 text-white placeholder:text-white/60"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Bottom section */}
+              <div className="absolute bottom-0 left-0 right-0 z-30 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
+                {/* Description input */}
+                <div className="mb-3">
+                  <Input
+                    value={streamDescription}
+                    onChange={(e) => setStreamDescription(e.target.value)}
+                    placeholder="Nhấn để thêm mô tả..."
+                    className="bg-transparent border-0 text-white placeholder:text-white/60 text-base p-0 h-auto focus-visible:ring-0"
+                  />
                 </div>
-              </ScrollArea>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  placeholder="Viết bình luận..."
-                  className="flex-1 bg-black/60 border-white/30 text-white placeholder:text-white/60 text-sm rounded-full"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20 rounded-full"
-                  onClick={sendMessage}
-                >
-                  <Send className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          )}
 
-          {/* Reaction buttons when streaming */}
-          {phase === 'live' && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-20">
-              {['❤️', '😂', '😮', '😢', '👏', '🔥'].map(emoji => (
-                <motion.button
-                  key={emoji}
-                  whileTap={{ scale: 1.3 }}
-                  onClick={() => addReaction(emoji)}
-                  className="w-11 h-11 bg-black/50 rounded-full flex items-center justify-center text-xl hover:scale-110 hover:bg-black/70 transition-all backdrop-blur-sm"
-                >
-                  {emoji}
-                </motion.button>
-              ))}
-            </div>
-          )}
+                {/* Share to story option */}
+                <div className="flex items-center justify-between mb-4 py-3 border-t border-white/10">
+                  <div className="flex items-center gap-3">
+                    <Share2 className="w-5 h-5 text-white/60" />
+                    <div>
+                      <p className="text-white text-sm font-medium">Chia sẻ lên</p>
+                      <p className="text-white/60 text-xs">Tin: {shareToStory ? 'Bật' : 'Tắt'}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShareToStory(!shareToStory)}
+                    className="text-white/60 hover:text-white"
+                  >
+                    <ChevronDown className="w-5 h-5 rotate-[-90deg]" />
+                  </button>
+                </div>
 
-          {/* Controls */}
-          <div className="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full ${isVideoEnabled ? 'bg-white/20 text-white' : 'bg-red-500 text-white'}`}
-                  onClick={toggleVideo}
-                >
-                  {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full ${isAudioEnabled ? 'bg-white/20 text-white' : 'bg-red-500 text-white'}`}
-                  onClick={toggleAudio}
-                >
-                  {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full bg-white/20 text-white"
-                  onClick={switchCamera}
-                >
-                  <RotateCcw className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full text-white ${showFilters ? 'bg-primary' : 'bg-white/20'}`}
-                  onClick={() => { setShowFilters(!showFilters); setShowStickers(false); }}
-                >
-                  <Palette className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`rounded-full text-white ${showStickers ? 'bg-primary' : 'bg-white/20'}`}
-                  onClick={() => { setShowStickers(!showStickers); setShowFilters(false); }}
-                >
-                  <Sparkles className="w-5 h-5" />
-                </Button>
-              </div>
-
-              {phase === 'setup' && (
+                {/* Go Live button */}
                 <Button
                   onClick={goLive}
-                  className="bg-red-500 hover:bg-red-600 text-white px-6 gap-2"
-                  disabled={!streamTitle.trim()}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-base font-medium rounded-xl"
+                  disabled={!streamRef.current}
                 >
-                  <Video className="w-4 h-4" />
                   Phát trực tiếp
                 </Button>
-              )}
+              </div>
+            </>
+          )}
 
-              {phase === 'live' && (
-                <Button
-                  onClick={endLive}
-                  className="bg-red-500 hover:bg-red-600 text-white px-6"
-                >
-                  Kết thúc
-                </Button>
-              )}
-
-              {phase === 'live' && (
-                <div className="flex items-center gap-2">
+          {/* Live Phase */}
+          {phase === 'live' && (
+            <>
+              {/* Header khi đang live */}
+              <div className="absolute top-0 left-0 right-0 z-20 p-4 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-11 h-11 border-2 border-white/50 ring-2 ring-red-500">
+                      <AvatarImage src={profile?.avatar_url || ""} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {profile?.full_name?.charAt(0) || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-white font-semibold text-sm">{profile?.full_name || "Bạn"}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className="bg-red-500 text-white text-xs animate-pulse px-2">
+                          🔴 LIVE
+                        </Badge>
+                        <span className="text-white/80 text-xs flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {viewerCount}
+                        </span>
+                        <span className="text-white/80 text-xs flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {formatDuration(streamDuration)}
+                        </span>
+                        {isRecording && (
+                          <span className="text-red-400 text-xs flex items-center gap-1">
+                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            REC
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-white/20 text-white"
-                    onClick={() => addReaction('❤️')}
+                    className="text-white hover:bg-white/20 rounded-full"
+                    onClick={handleClose}
                   >
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-white/20 text-white"
-                  >
-                    <Share2 className="w-5 h-5" />
+                    <X className="w-5 h-5" />
                   </Button>
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+
+              {/* Video Preview with Filter */}
+              <div className="flex-1 relative bg-black overflow-hidden">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  style={{ 
+                    transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+                    filter: getCurrentFilter()
+                  }}
+                />
+                
+                {/* Active Stickers */}
+                {activeStickers.map(stickerId => {
+                  const sticker = STICKERS.find(s => s.id === stickerId);
+                  if (!sticker) return null;
+                  return (
+                    <motion.div 
+                      key={stickerId}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={`absolute ${getStickerPosition(sticker.position)} text-5xl md:text-6xl pointer-events-none`}
+                      style={{ 
+                        animation: 'bounce 2s infinite',
+                        textShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      {sticker.emoji}
+                    </motion.div>
+                  );
+                })}
+
+                {/* Floating Reactions */}
+                <AnimatePresence>
+                  {reactions.map(reaction => (
+                    <motion.div
+                      key={reaction.id}
+                      initial={{ bottom: 150, opacity: 1, scale: 1 }}
+                      animate={{ bottom: 500, opacity: 0, scale: 1.5 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 2.5, ease: 'easeOut' }}
+                      className="absolute text-4xl pointer-events-none z-30"
+                      style={{ left: `${reaction.x}%` }}
+                    >
+                      {reaction.emoji}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                
+                {!isVideoEnabled && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <div className="text-center text-white">
+                      <VideoOff className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm opacity-70">Camera đã tắt</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Live Chat (during streaming) */}
+              <div className="absolute bottom-24 left-4 right-20 z-20">
+                <ScrollArea className="h-36 mb-2">
+                  <div className="space-y-2">
+                    {messages.slice(-15).map((msg) => (
+                      <motion.div 
+                        key={msg.id} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="flex items-start gap-2 bg-black/60 rounded-2xl px-3 py-2 backdrop-blur-sm"
+                      >
+                        <Avatar className="w-6 h-6">
+                          <AvatarImage src={msg.avatar} />
+                          <AvatarFallback className="text-xs bg-primary/50">
+                            {msg.user.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-primary text-xs font-semibold">{msg.user}</span>
+                          <p className="text-white text-sm break-words">{msg.text}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    placeholder="Viết bình luận..."
+                    className="flex-1 bg-black/60 border-white/30 text-white placeholder:text-white/60 text-sm rounded-full"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/20 rounded-full"
+                    onClick={sendMessage}
+                  >
+                    <Send className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Reaction buttons when streaming */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-20">
+                {['❤️', '😂', '😮', '😢', '👏', '🔥'].map(emoji => (
+                  <motion.button
+                    key={emoji}
+                    whileTap={{ scale: 1.3 }}
+                    onClick={() => addReaction(emoji)}
+                    className="w-11 h-11 bg-black/50 rounded-full flex items-center justify-center text-xl hover:scale-110 hover:bg-black/70 transition-all backdrop-blur-sm"
+                  >
+                    {emoji}
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Controls */}
+              <div className="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full ${isVideoEnabled ? 'bg-white/20 text-white' : 'bg-red-500 text-white'}`}
+                      onClick={toggleVideo}
+                    >
+                      {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full ${isAudioEnabled ? 'bg-white/20 text-white' : 'bg-red-500 text-white'}`}
+                      onClick={toggleAudio}
+                    >
+                      {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-white/20 text-white"
+                      onClick={switchCamera}
+                    >
+                      <RotateCcw className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full text-white ${showFilters ? 'bg-primary' : 'bg-white/20'}`}
+                      onClick={() => { setShowFilters(!showFilters); setShowStickers(false); }}
+                    >
+                      <Palette className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full text-white ${showStickers ? 'bg-primary' : 'bg-white/20'}`}
+                      onClick={() => { setShowStickers(!showStickers); setShowFilters(false); }}
+                    >
+                      <Sparkles className="w-5 h-5" />
+                    </Button>
+                  </div>
+
+                  <Button
+                    onClick={endLive}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6"
+                  >
+                    Kết thúc
+                  </Button>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-white/20 text-white"
+                      onClick={() => addReaction('❤️')}
+                    >
+                      <Heart className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-full bg-white/20 text-white"
+                    >
+                      <Share2 className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Save Video Dialog */}
