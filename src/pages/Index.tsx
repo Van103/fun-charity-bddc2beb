@@ -6,6 +6,8 @@ import { HowItWorks } from "@/components/home/HowItWorks";
 import { ImpactStats } from "@/components/home/ImpactStats";
 import { CTASection } from "@/components/home/CTASection";
 import { AboutSection } from "@/components/home/AboutSection";
+import { TestimonialsSection } from "@/components/home/TestimonialsSection";
+import { TeamSection } from "@/components/home/TeamSection";
 
 const Index = () => {
   return (
@@ -15,6 +17,8 @@ const Index = () => {
       <AboutSection />
       <FeaturedCampaigns />
       <HowItWorks />
+      <TestimonialsSection />
+      <TeamSection />
       <ImpactStats />
       <CTASection />
       <Footer />
