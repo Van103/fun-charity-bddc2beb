@@ -7,6 +7,7 @@ import { useCreateFeedPost } from "@/hooks/useFeedPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CreatePostModal } from "./CreatePostModal";
+import { FacebookCreatePostModal } from "./FacebookCreatePostModal";
 import { MentionInput } from "./MentionInput";
 import { extractMentionIds } from "@/lib/formatContent";
 import {
@@ -78,6 +79,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showAdvancedModal, setShowAdvancedModal] = useState(false);
+  const [showFacebookModal, setShowFacebookModal] = useState(false);
   const [showAiModal, setShowAiModal] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [aiImageStyle, setAiImageStyle] = useState("illustration");
@@ -544,17 +546,14 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
             
             {/* Input - expands when focused or has content */}
             <div className="flex-1">
-              {!isExpanded && !content && mediaItems.length === 0 && !aiGeneratedImage ? (
-                <input
-                  type="text"
-                  placeholder="Bạn đang nghĩ gì?"
-                  onFocus={() => {
-                    setIsExpanded(true);
-                    setTimeout(() => textareaRef.current?.focus(), 50);
-                  }}
-                  className="w-full bg-muted/30 border border-border rounded-full px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer"
-                  readOnly
-                />
+            {!isExpanded && !content && mediaItems.length === 0 && !aiGeneratedImage ? (
+                <button
+                  type="button"
+                  onClick={() => setShowFacebookModal(true)}
+                  className="w-full bg-muted/30 border border-border rounded-full px-4 py-2.5 text-sm text-muted-foreground text-left hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer"
+                >
+                  Bạn đang nghĩ gì?
+                </button>
               ) : (
                 <div className="space-y-3">
                   <MentionInput
@@ -968,6 +967,14 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
         open={showAdvancedModal}
         onOpenChange={setShowAdvancedModal}
         profile={profile}
+      />
+
+      {/* Facebook-style Create Post Modal */}
+      <FacebookCreatePostModal
+        open={showFacebookModal}
+        onOpenChange={setShowFacebookModal}
+        profile={profile}
+        onPostCreated={onPostCreated}
       />
     </>
   );
