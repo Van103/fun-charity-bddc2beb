@@ -7,25 +7,25 @@ import { Link } from "react-router-dom";
 const roles = [
   {
     icon: Heart,
-    title: "Dành Cho Nhà Hảo Tâm",
-    description: "Quyên góp với sự tin tưởng. Theo dõi tác động. Nhận uy tín & huy hiệu.",
-    cta: "Bắt Đầu Quyên Góp",
+    title: "Bạn Muốn Sẻ Chia? 💕",
+    description: "Gửi đi yêu thương và xem từng nụ cười được tạo ra. Nhận lại niềm vui và huy hiệu dễ thương!",
+    cta: "Bắt Đầu Cho Đi",
     href: "/campaigns",
     gradient: "from-secondary to-secondary-light",
   },
   {
     icon: Users,
-    title: "Dành Cho Tình Nguyện Viên",
-    description: "Tìm cơ hội. Xây dựng kỹ năng. Tạo tác động thực sự trong cộng đồng.",
-    cta: "Tham Gia Tình Nguyện",
+    title: "Bạn Có Thời Gian? ✨",
+    description: "Cùng mình làm tình nguyện nhé! Học thêm điều mới, có thêm bạn bè và tạo kỷ niệm đẹp.",
+    cta: "Tham Gia Cùng Mình",
     href: "/auth",
     gradient: "from-primary to-primary-light",
   },
   {
     icon: Building2,
-    title: "Dành Cho Tổ Chức",
-    description: "Khởi chạy chiến dịch. Xây dựng niềm tin với cộng đồng. Mở rộng tác động.",
-    cta: "Đăng Ký Tổ Chức",
+    title: "Bạn Là Tổ Chức? 🏢",
+    description: "Tạo chiến dịch, xây dựng niềm tin với cộng đồng. Cùng nhau lan tỏa yêu thương lớn hơn!",
+    cta: "Đăng Ký Ngay",
     href: "/auth",
     gradient: "from-success to-secondary",
   },
@@ -91,13 +91,13 @@ export function CTASection() {
               </div>
             </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
-              Sẵn Sàng Tạo <span className="text-secondary">Sự Khác Biệt</span>?
+              Bạn Ơi, Sẵn Sàng <span className="text-secondary">Lan Tỏa Yêu Thương</span> Chưa? 💖
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-4 max-w-2xl mx-auto">
-              Tham gia cùng hàng nghìn nhà hảo tâm, tình nguyện viên và tổ chức tạo nên tác động minh bạch, bền vững thông qua công nghệ Web3.
+              Hàng nghìn trái tim ấm áp đang chờ đón bạn! Cùng nhau, chúng ta sẽ tạo nên những điều kỳ diệu mỗi ngày.
             </p>
             <p className="text-secondary font-medium mb-8">
-              Từ thiện là ánh sáng. Minh bạch là vàng.
+              Cho đi là nhận lại. Yêu thương là hạnh phúc. ✨
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/campaigns">
@@ -109,7 +109,7 @@ export function CTASection() {
                   glowColor="#84D9BA"
                 >
                   <Heart className="w-5 h-5" fill="currentColor" />
-                  Duyệt Chiến Dịch
+                  Khám Phá Chiến Dịch
                 </ParticleButton>
               </Link>
               <ParticleButton 

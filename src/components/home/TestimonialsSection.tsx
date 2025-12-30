@@ -5,55 +5,55 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const testimonials = [
   {
     id: 1,
-    name: "Nguyễn Thị Hạnh",
-    role: "Nhà Hảo Tâm Hàng Tháng",
+    name: "Chị Hạnh",
+    role: "Nhà Hảo Tâm Mỗi Tháng 💕",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-    quote: "Fun Charity khiến việc cho đi trở nên thật vui vẻ! Tôi có thể thấy rõ tiền quyên góp của mình đi về đâu, và mỗi lần nhận được cập nhật, trái tim tôi đều ấm áp.",
+    quote: "Mình thích cách Fun Charity làm cho việc sẻ chia trở nên nhẹ nhàng và vui vẻ. Mỗi lần nhận được ảnh các bé cười, trái tim mình như ấm lên vậy đó!",
     rating: 5,
     type: "donor",
   },
   {
     id: 2,
-    name: "Trần Văn Minh",
-    role: "Người Thụ Hưởng",
+    name: "Anh Minh",
+    role: "Người Được Giúp Đỡ 🙏",
     avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=150&h=150&fit=crop&crop=face",
-    quote: "Nhờ những tấm lòng nhân ái nơi đây, các con tôi giờ đã có thể đến trường với đầy đủ sách vở. Nền tảng này đã thay đổi cuộc sống gia đình tôi mãi mãi.",
+    quote: "Nhờ các cô chú, anh chị nơi đây mà con mình giờ được đi học đầy đủ sách vở. Gia đình mình biết ơn lắm, cảm ơn mọi người nhiều!",
     rating: 5,
     type: "beneficiary",
   },
   {
     id: 3,
-    name: "Lê Hoàng Nam",
-    role: "Tình Nguyện Viên",
+    name: "Bạn Nam",
+    role: "Tình Nguyện Viên ✨",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-    quote: "Được là một phần của cộng đồng tình nguyện Fun Charity thật tuyệt vời. Sự minh bạch và tình yêu thương chân thành dành cho mọi người là điều làm nên sự khác biệt.",
+    quote: "Làm tình nguyện ở Fun Charity vui lắm mọi người ơi! Ai cũng nhiệt tình, chân thành. Mình học được nhiều điều và có thêm nhiều bạn mới nữa.",
     rating: 5,
     type: "volunteer",
   },
   {
     id: 4,
-    name: "Phạm Thu Hương",
-    role: "Người Tạo Chiến Dịch",
+    name: "Chị Hương",
+    role: "Người Tạo Chiến Dịch 🌸",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-    quote: "Tôi đã gây quỹ cho dự án vườn cộng đồng chỉ trong vài tuần! Sự ủng hộ từ cộng đồng yêu thương này đã vượt xa mọi kỳ vọng của tôi.",
+    quote: "Mình gây quỹ cho vườn rau cộng đồng trong xóm, chỉ vài tuần là đủ rồi! Cộng đồng ở đây dễ thương và nhiệt tình lắm, ai cũng sẵn lòng giúp đỡ.",
     rating: 5,
     type: "creator",
   },
   {
     id: 5,
-    name: "Đỗ Quang Huy",
-    role: "Đối Tác Doanh Nghiệp",
+    name: "Anh Huy",
+    role: "Đối Tác Doanh Nghiệp 🤝",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    quote: "Công ty chúng tôi hợp tác với Fun Charity cho các hoạt động CSR. Sự chuyên nghiệp và khả năng theo dõi tác động của họ thật xuất sắc.",
+    quote: "Công ty mình hợp tác với Fun Charity vì họ làm việc rất tâm huyết. Nhân viên ai cũng thích tham gia vì thấy được việc mình làm có ý nghĩa thật.",
     rating: 5,
     type: "partner",
   },
   {
     id: 6,
-    name: "Võ Thị Lan Anh",
-    role: "Gia Đình Thụ Hưởng",
+    name: "Cô Lan Anh",
+    role: "Gia Đình Được Hỗ Trợ 💖",
     avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
-    quote: "Sự hỗ trợ y tế mà chúng tôi nhận được trong quá trình điều trị cho cha tôi đã cứu sống ông. Chúng tôi mãi mãi biết ơn từng nhà hảo tâm.",
+    quote: "Lúc ba mình bệnh nặng, nhờ có các nhà hảo tâm mà gia đình có tiền chữa trị. Giờ ba đã khỏe lại rồi. Cảm ơn mọi người, mình sẽ nhớ hoài!",
     rating: 5,
     type: "beneficiary",
   },
@@ -95,14 +95,14 @@ export function TestimonialsSection() {
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Quote className="w-5 h-5 text-rose-500" />
-            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Cảm Nhận Từ Cộng Đồng</span>
+            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Tiếng Nói Từ Trái Tim</span>
             <Quote className="w-5 h-5 text-rose-500 rotate-180" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Những Câu Chuyện <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500">Yêu Thương & Lan Tỏa</span>
+            Những <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-amber-500">Câu Chuyện Ấm Áp</span> Từ Cộng Đồng
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Tiếng nói chân thực từ cộng đồng nhà hảo tâm, người thụ hưởng và tình nguyện viên chia sẻ những trải nghiệm đầy cảm xúc
+            Cùng lắng nghe những chia sẻ chân thành từ các nhà hảo tâm, bạn bè tình nguyện và những người được yêu thương nhé! 💕
           </p>
         </motion.div>
 
@@ -131,7 +131,7 @@ export function TestimonialsSection() {
                 </div>
 
                 {/* Quote text */}
-                <p className="text-foreground/80 leading-relaxed mb-6 flex-grow italic">
+                <p className="text-foreground/80 leading-relaxed mb-6 flex-grow">
                   "{testimonial.quote}"
                 </p>
 
@@ -167,19 +167,19 @@ export function TestimonialsSection() {
             <div className="flex items-center gap-2">
               <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
               <span className="text-foreground font-semibold">10,000+</span>
-              <span className="text-muted-foreground">Nhà Hảo Tâm</span>
+              <span className="text-muted-foreground">Trái Tim Yêu Thương</span>
             </div>
             <div className="w-px h-6 bg-rose-200 hidden sm:block" />
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
               <span className="text-foreground font-semibold">4.9/5</span>
-              <span className="text-muted-foreground">Đánh Giá</span>
+              <span className="text-muted-foreground">Yêu Thích</span>
             </div>
             <div className="w-px h-6 bg-rose-200 hidden sm:block" />
             <div className="flex items-center gap-2">
               <Quote className="w-5 h-5 text-pink-500" />
               <span className="text-foreground font-semibold">500+</span>
-              <span className="text-muted-foreground">Câu Chuyện Thành Công</span>
+              <span className="text-muted-foreground">Câu Chuyện Đẹp</span>
             </div>
           </div>
         </motion.div>

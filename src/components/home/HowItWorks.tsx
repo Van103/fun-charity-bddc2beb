@@ -14,33 +14,33 @@ import {
 const steps = [
   {
     icon: Wallet,
-    title: "Kết Nối & Khám Phá",
+    title: "Bước Vào Ngôi Nhà Yêu Thương",
     description:
-      "Kết nối ví hoặc đăng ký email. Khám phá các chiến dịch đã được xác minh và Bản Đồ Nhu Cầu để tìm cause phù hợp.",
+      "Đăng ký dễ dàng hoặc kết nối ví. Khám phá những chiến dịch ý nghĩa và tìm nơi bạn muốn gửi gắm yêu thương nhé! 💕",
     color: "text-secondary",
     bgColor: "bg-secondary/10",
   },
   {
     icon: Heart,
-    title: "Quyên Góp Tin Tưởng",
+    title: "Gửi Đi Tấm Lòng",
     description:
-      "Quyên góp bằng tiền mặt hoặc crypto. Mọi giao dịch được ghi nhận on-chain minh bạch 100%.",
+      "Góp yêu thương bằng tiền mặt hoặc crypto. Mọi đóng góp đều được ghi nhận rõ ràng, bạn yên tâm nhé! ✨",
     color: "text-primary",
     bgColor: "bg-primary/10",
   },
   {
     icon: LinkIcon,
-    title: "Theo Dõi On-Chain",
+    title: "Theo Dõi Hành Trình Yêu Thương",
     description:
-      "Theo dõi real-time từng đồng quyên góp đi đâu, chi tiêu như nào. Có hash, có bằng chứng, có tin tưởng.",
+      "Xem trực tiếp đóng góp của bạn đi về đâu, giúp được ai. Minh bạch từng bước, tin tưởng từng đồng! 🌟",
     color: "text-success",
     bgColor: "bg-success/10",
   },
   {
     icon: Trophy,
-    title: "Nhận Thưởng & Phát Triển",
+    title: "Nhận Lại Niềm Vui",
     description:
-      "Xây dựng Uy Tín, nhận huy hiệu, token FUN. Đóng góp nhiều = uy tín cao = được cộng đồng tin tưởng.",
+      "Tích lũy điểm uy tín, nhận huy hiệu dễ thương. Càng cho đi nhiều, càng được yêu thương nhiều! 🎉",
     color: "text-secondary",
     bgColor: "bg-secondary/10",
   },
@@ -54,13 +54,13 @@ export function HowItWorks() {
         <div className="text-center mb-16">
           <Badge variant="purple" className="mb-4">
             <Sparkles className="w-3.5 h-3.5 mr-1" />
-            Đơn Giản & Minh Bạch
+            Đơn Giản & Ấm Áp
           </Badge>
           <h2 className="font-display text-4xl font-bold mb-4">
-            Cách <span className="gradient-text">FUN</span> Hoạt Động
+            Hành Trình <span className="gradient-text">Sẻ Chia</span> Cùng Mình
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Từ khám phá đến theo dõi tác động – mọi thứ đều minh bạch, đơn giản và có phần thưởng.
+            Chỉ vài bước đơn giản, bạn đã có thể lan tỏa yêu thương và theo dõi từng niềm vui được tạo ra 💖
           </p>
         </div>
 
