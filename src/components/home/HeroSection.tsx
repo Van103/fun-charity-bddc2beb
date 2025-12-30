@@ -17,27 +17,27 @@ import {
 import { Link } from "react-router-dom";
 
 const stats = [
-  { label: "Đã Quyên Góp", value: "$2.4M+", icon: TrendingUp },
-  { label: "Chiến Dịch", value: "1,200+", icon: Heart },
-  { label: "Nhà Hảo Tâm", value: "45K+", icon: Users },
-  { label: "Quốc Gia", value: "80+", icon: Globe },
+  { label: "Yêu Thương Lan Tỏa", value: "$2.4M+", icon: TrendingUp },
+  { label: "Ước Mơ Được Chắp Cánh", value: "1,200+", icon: Heart },
+  { label: "Tấm Lòng Vàng", value: "45K+", icon: Users },
+  { label: "Quốc Gia Kết Nối", value: "80+", icon: Globe },
 ];
 
 const pillars = [
   {
     icon: Zap,
-    title: "Kết Nối Realtime",
-    description: "Ghép nối nhu cầu - nguồn lực tức thì với smart matching engine",
+    title: "💞 Kết Nối Yêu Thương",
+    description: "Mình kết nối những tấm lòng nhân ái với những hoàn cảnh cần giúp đỡ – tức thì, ấm áp",
   },
   {
     icon: Users,
-    title: "Mạng Xã Hội Từ Thiện",
-    description: "Feed cập nhật, chia sẻ tiến độ, tương tác cộng đồng",
+    title: "🤝 Cộng Đồng Chia Sẻ",
+    description: "Cùng nhau chia sẻ, động viên và lan tỏa những câu chuyện đẹp mỗi ngày",
   },
   {
     icon: LinkIcon,
-    title: "100% Minh Bạch Blockchain",
-    description: "Mọi giao dịch được ghi nhận on-chain, có thể kiểm chứng",
+    title: "✨ Minh Bạch Tuyệt Đối",
+    description: "Mọi đồng tiền đều được ghi nhận rõ ràng – bạn yên tâm, người nhận được ấm lòng",
   },
 ];
 
@@ -67,7 +67,7 @@ export function HeroSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
             <Badge variant="gold" className="mb-6 px-4 py-1.5">
               <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Cách Mạng Từ Thiện Web3
+              Nền Tảng Từ Thiện Minh Bạch 💛
             </Badge>
           </motion.div>
 
@@ -76,11 +76,11 @@ export function HeroSection() {
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="text-lg md:text-xl text-primary-foreground/80 mb-4 max-w-3xl mx-auto italic">
-            "Nơi lòng tốt trở nên minh bạch – kết nối – và bất tử hóa bằng blockchain."
+            "Nơi mỗi tấm lòng đều được ghi nhận, mỗi sự giúp đỡ đều trong sáng và chạm đến trái tim."
           </motion.p>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="text-lg md:text-xl slogan-glow mb-8">
-            ✨ Từ thiện là ánh sáng. Minh bạch là vàng. ✨
+            💖 Cho đi là hạnh phúc. Minh bạch là niềm tin. 💖
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
@@ -93,7 +93,7 @@ export function HeroSection() {
                 glowColor="#84D9BA"
               >
                 <Heart className="w-5 h-5" fill="currentColor" />
-                Quyên Góp Ngay
+                Lan Tỏa Yêu Thương
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </ParticleButton>
             </Link>
@@ -105,7 +105,7 @@ export function HeroSection() {
               glowColor="#8B5CF6"
             >
               <Wallet className="w-5 h-5" />
-              Kết Nối Ví
+              Tham Gia Cùng Mình
             </ParticleButton>
           </motion.div>
 
