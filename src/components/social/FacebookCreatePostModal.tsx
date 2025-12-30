@@ -105,6 +105,13 @@ export function FacebookCreatePostModal({
   const [selectedTagIndex, setSelectedTagIndex] = useState(0);
   const [mentionedUsers, setMentionedUsers] = useState<MentionUser[]>([]);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  
+  // AI Panel states
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiStyle, setAiStyle] = useState("thân thiện");
+  const [aiImageStyle, setAiImageStyle] = useState("illustration");
+  const [generateImage, setGenerateImage] = useState(true);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -333,8 +340,9 @@ export function FacebookCreatePostModal({
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          topic: content.trim() || undefined,
-          style: "thân thiện, ấm áp, truyền cảm hứng",
+          topic: aiTopic.trim() || content.trim() || undefined,
+          style: aiStyle,
+          imageStyle: generateImage ? aiImageStyle : undefined,
         }),
       });
 
@@ -353,8 +361,32 @@ export function FacebookCreatePostModal({
       const data = await response.json();
       if (data.content) {
         setContent(data.content);
-        toast({ title: "Đã tạo nội dung AI", description: "Bạn có thể chỉnh sửa trước khi đăng" });
       }
+      
+      // Add generated image to media items
+      if (data.image && generateImage) {
+        // Convert base64 to blob and add to media items
+        const base64Data = data.image;
+        if (base64Data.startsWith("data:image")) {
+          const imageId = `ai-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+          // Fetch base64 and convert to File
+          const res = await fetch(base64Data);
+          const blob = await res.blob();
+          const file = new File([blob], `ai-generated-${Date.now()}.png`, { type: "image/png" });
+          
+          const newItem: MediaItem = {
+            id: imageId,
+            file,
+            preview: base64Data,
+            isVideo: false,
+          };
+          setMediaItems((prev) => [...prev, newItem]);
+        }
+      }
+      
+      toast({ title: "Đã tạo nội dung AI", description: "Bạn có thể chỉnh sửa trước khi đăng" });
+      setShowAIPanel(false);
+      setAiTopic("");
     } catch (error) {
       console.error("AI generation error:", error);
       toast({ title: "Lỗi", description: "Không thể tạo nội dung AI", variant: "destructive" });
@@ -362,6 +394,22 @@ export function FacebookCreatePostModal({
       setIsGeneratingAI(false);
     }
   };
+
+  const aiStyles = [
+    { value: "thân thiện", label: "Thân thiện" },
+    { value: "chuyên nghiệp", label: "Chuyên nghiệp" },
+    { value: "cảm xúc", label: "Cảm xúc" },
+    { value: "hài hước", label: "Hài hước" },
+    { value: "truyền cảm hứng", label: "Truyền cảm hứng" },
+  ];
+
+  const aiImageStyles = [
+    { value: "illustration", label: "Minh họa", icon: "🎨" },
+    { value: "realistic", label: "Chân thực", icon: "📷" },
+    { value: "cartoon", label: "Hoạt hình", icon: "🎭" },
+    { value: "watercolor", label: "Màu nước", icon: "🖌️" },
+    { value: "3d", label: "3D", icon: "💎" },
+  ];
 
   const resetForm = () => {
     mediaItems.forEach((item) => {
@@ -573,6 +621,128 @@ export function FacebookCreatePostModal({
             </div>
           )}
 
+          {/* AI Generation Panel */}
+          <AnimatePresence>
+            {showAIPanel && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mx-4 mb-3 border border-purple-500/30 rounded-lg overflow-hidden bg-gradient-to-br from-purple-500/5 to-pink-500/5"
+              >
+                <div className="p-4 space-y-4">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-purple-500" />
+                      <span className="font-semibold text-foreground">Tạo bài viết bằng AI</span>
+                    </div>
+                    <button
+                      onClick={() => setShowAIPanel(false)}
+                      className="p-1 hover:bg-muted rounded-full transition-colors"
+                    >
+                      <X className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </div>
+
+                  {/* Topic Input */}
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1.5 block">Chủ đề bài viết</label>
+                    <Input
+                      placeholder="Ví dụ: Giúp đỡ trẻ em vùng cao, Quyên góp sách..."
+                      value={aiTopic}
+                      onChange={(e) => setAiTopic(e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
+
+                  {/* Writing Style */}
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1.5 block">Phong cách viết</label>
+                    <div className="flex flex-wrap gap-2">
+                      {aiStyles.map((style) => (
+                        <button
+                          key={style.value}
+                          onClick={() => setAiStyle(style.value)}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-sm transition-colors",
+                            aiStyle === style.value
+                              ? "bg-purple-500 text-white"
+                              : "bg-muted hover:bg-muted/80 text-foreground"
+                          )}
+                        >
+                          {style.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Generate Image Toggle */}
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-muted-foreground">Tạo hình ảnh kèm theo</label>
+                    <button
+                      onClick={() => setGenerateImage(!generateImage)}
+                      className={cn(
+                        "relative w-11 h-6 rounded-full transition-colors",
+                        generateImage ? "bg-purple-500" : "bg-muted"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform",
+                          generateImage && "translate-x-5"
+                        )}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Image Style (only show if generateImage is true) */}
+                  {generateImage && (
+                    <div>
+                      <label className="text-sm text-muted-foreground mb-1.5 block">Phong cách hình ảnh</label>
+                      <div className="grid grid-cols-5 gap-2">
+                        {aiImageStyles.map((style) => (
+                          <button
+                            key={style.value}
+                            onClick={() => setAiImageStyle(style.value)}
+                            className={cn(
+                              "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors",
+                              aiImageStyle === style.value
+                                ? "bg-purple-500/20 border border-purple-500"
+                                : "bg-muted hover:bg-muted/80 border border-transparent"
+                            )}
+                          >
+                            <span className="text-lg">{style.icon}</span>
+                            <span className="text-xs text-foreground">{style.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Generate Button */}
+                  <Button
+                    onClick={generateAIContent}
+                    disabled={isGeneratingAI}
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                  >
+                    {isGeneratingAI ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Đang tạo...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Tạo bài viết AI
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Emoji/Font Size Row */}
           <div className="px-4 pb-3 flex items-center justify-between">
             <button className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
@@ -694,7 +864,7 @@ export function FacebookCreatePostModal({
 
                 {/* AI Generate */}
                 <button
-                  onClick={generateAIContent}
+                  onClick={() => setShowAIPanel(true)}
                   disabled={isSubmitting || isGeneratingAI}
                   className="w-9 h-9 rounded-full hover:bg-muted flex items-center justify-center transition-colors disabled:opacity-50"
                   title="Tạo bài viết bằng AI"
