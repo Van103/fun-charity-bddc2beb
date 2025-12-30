@@ -7,48 +7,48 @@ import { Link } from "react-router-dom";
 const missionItems = [
   {
     icon: Users,
-    text: "Connecting kind hearts with people in need",
+    text: "Kết nối những tấm lòng nhân ái với những người đang cần được giúp đỡ",
   },
   {
     icon: Sparkles,
-    text: "Spreading the spirit of joyful giving",
+    text: "Lan tỏa tinh thần cho đi trong niềm vui và hạnh phúc",
   },
   {
     icon: Globe,
-    text: "Building a transparent, positive, and human-centered charity community",
+    text: "Xây dựng cộng đồng từ thiện minh bạch, tích cực và lấy con người làm trung tâm",
   },
 ];
 
 const visionItems = [
   {
     icon: HandHeart,
-    text: "Becoming a friendly and accessible charity platform",
+    text: "Trở thành nền tảng từ thiện thân thiện và dễ tiếp cận với tất cả mọi người",
   },
   {
     icon: Heart,
-    text: "Inspiring real actions of love",
+    text: "Truyền cảm hứng cho những hành động yêu thương thực sự trong cuộc sống",
   },
   {
     icon: Target,
-    text: "Growing into a transparent and trust-based charity ecosystem",
+    text: "Phát triển thành hệ sinh thái từ thiện minh bạch và đáng tin cậy",
   },
 ];
 
 const howWeWorkItems = [
   {
     icon: Target,
-    title: "Clear Goals",
-    text: "Each project has well-defined objectives and measurable outcomes",
+    title: "Mục Tiêu Rõ Ràng",
+    text: "Mỗi dự án đều có mục tiêu cụ thể và kết quả có thể đo lường được",
   },
   {
     icon: FileCheck,
-    title: "Public Updates",
-    text: "Transparent tracking of all donations and their impact",
+    title: "Cập Nhật Công Khai",
+    text: "Theo dõi minh bạch mọi khoản đóng góp và tác động của chúng",
   },
   {
     icon: MessageCircleHeart,
-    title: "Honest Stories",
-    text: "Real stories, authentic images, and genuine results shared openly",
+    title: "Câu Chuyện Chân Thực",
+    text: "Những câu chuyện thật, hình ảnh chân thực và kết quả được chia sẻ một cách trung thực",
   },
 ];
 
@@ -92,18 +92,18 @@ export function AboutSection() {
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Heart className="w-6 h-6 text-rose-500 fill-rose-500 animate-pulse" />
-            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Our Story</span>
+            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Câu Chuyện Của Chúng Tôi</span>
             <Heart className="w-6 h-6 text-rose-500 fill-rose-500 animate-pulse" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 bg-clip-text text-transparent mb-6">
-            About Fun Charity
+            Về Fun Charity
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Fun Charity is a <span className="text-rose-500 font-semibold">joyful charity platform</span> built on 
-            <span className="text-amber-600 font-semibold"> love</span>, 
-            <span className="text-pink-500 font-semibold"> kindness</span>, and the 
-            <span className="text-orange-500 font-semibold"> spirit of giving with happiness</span>. 
-            We believe that every act of kindness, no matter how small, can create ripples of joy that transform lives.
+            Fun Charity là một <span className="text-rose-500 font-semibold">nền tảng từ thiện tràn đầy niềm vui</span> được xây dựng trên nền tảng
+            <span className="text-amber-600 font-semibold"> tình yêu thương</span>, 
+            <span className="text-pink-500 font-semibold"> lòng nhân ái</span>, và 
+            <span className="text-orange-500 font-semibold"> tinh thần cho đi trong hạnh phúc</span>. 
+            Chúng tôi tin rằng mỗi hành động tử tế, dù nhỏ bé đến đâu, đều có thể tạo nên những làn sóng yêu thương lan tỏa và thay đổi cuộc sống.
           </p>
         </motion.div>
 
@@ -121,7 +121,7 @@ export function AboutSection() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center shadow-lg shadow-rose-200">
                 <Target className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-rose-600">Our Mission</h3>
+              <h3 className="text-2xl font-bold text-rose-600">Sứ Mệnh Của Chúng Tôi</h3>
             </motion.div>
             <div className="space-y-4">
               {missionItems.map((item, index) => (
@@ -151,7 +151,7 @@ export function AboutSection() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
                 <Eye className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-amber-600">Our Vision</h3>
+              <h3 className="text-2xl font-bold text-amber-600">Tầm Nhìn Của Chúng Tôi</h3>
             </motion.div>
             <div className="space-y-4">
               {visionItems.map((item, index) => (
@@ -194,10 +194,10 @@ export function AboutSection() {
           className="text-center mb-10"
         >
           <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            How We <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-amber-500">Work</span>
+            Cách Chúng Tôi <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-amber-500">Hoạt Động</span>
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Transparency and trust are at the heart of everything we do
+            Sự minh bạch và tin cậy là trọng tâm trong mọi hoạt động của chúng tôi
           </p>
         </motion.div>
 
@@ -246,24 +246,24 @@ export function AboutSection() {
             ))}
           </div>
           <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Join Our Community of <span className="text-rose-500">Joyful Givers</span>
+            Hãy Cùng Chúng Tôi Tạo Nên <span className="text-rose-500">Niềm Vui Cho Đi</span>
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8 text-lg">
-            Whether you want to donate, volunteer, or simply spread kindness, 
-            there's a place for you in our family. Together, we can create a world 
-            where giving brings joy to both the giver and the receiver.
+            Dù bạn muốn quyên góp, tình nguyện, hay đơn giản chỉ là lan tỏa yêu thương, 
+            luôn có một vị trí dành cho bạn trong đại gia đình của chúng tôi. Cùng nhau, 
+            chúng ta có thể tạo nên một thế giới nơi sự cho đi mang lại niềm vui cho cả người trao lẫn người nhận.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/campaigns">
               <ParticleButton variant="default" size="lg" className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg shadow-rose-200">
                 <Heart className="w-5 h-5 mr-2 fill-current" />
-                Donate Now
+                Quyên Góp Ngay
               </ParticleButton>
             </Link>
             <Link to="/volunteer">
               <ParticleButton variant="outline" size="lg" className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50">
                 <HandHeart className="w-5 h-5 mr-2" />
-                Become a Volunteer
+                Trở Thành Tình Nguyện Viên
               </ParticleButton>
             </Link>
           </div>
