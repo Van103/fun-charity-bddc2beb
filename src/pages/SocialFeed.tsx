@@ -6,7 +6,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SwipeIndicator } from "@/components/layout/SwipeIndicator";
 import { LeftSidebar } from "@/components/social/LeftSidebar";
 import { RightSidebar } from "@/components/social/RightSidebar";
-import { StoriesSection } from "@/components/social/StoriesSection";
+
 import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
@@ -137,7 +137,6 @@ export default function SocialFeed() {
               <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
                 <PullToRefresh onRefresh={handleRefresh}>
                   <div className="space-y-4 sm:space-y-6">
-                    <StoriesSection />
                     <CreatePostBox profile={profile} />
                     
                     <FriendRequestsSection />
