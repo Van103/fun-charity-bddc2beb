@@ -7,48 +7,48 @@ import { Link } from "react-router-dom";
 const missionItems = [
   {
     icon: Users,
-    text: "Kết nối những tấm lòng nhân ái với những người đang cần được giúp đỡ",
+    text: "Nối những trái tim ấm áp với những mảnh đời cần được yêu thương ♥",
   },
   {
     icon: Sparkles,
-    text: "Lan tỏa tinh thần cho đi trong niềm vui và hạnh phúc",
+    text: "Gieo niềm vui qua từng hành động sẻ chia, để cho đi là hạnh phúc ✨",
   },
   {
     icon: Globe,
-    text: "Xây dựng cộng đồng từ thiện minh bạch, tích cực và lấy con người làm trung tâm",
+    text: "Vun đắp một cộng đồng yêu thương, nơi mọi người tin tưởng và đồng hành cùng nhau 🌏",
   },
 ];
 
 const visionItems = [
   {
     icon: HandHeart,
-    text: "Trở thành nền tảng từ thiện thân thiện và dễ tiếp cận với tất cả mọi người",
+    text: "Trở thành mái nhà ấm áp cho những ai muốn trao đi yêu thương 🏠",
   },
   {
     icon: Heart,
-    text: "Truyền cảm hứng cho những hành động yêu thương thực sự trong cuộc sống",
+    text: "Khơi dậy những hành động yêu thương nhỏ bé nhưng ý nghĩa trong cuộc sống 💕",
   },
   {
     icon: Target,
-    text: "Phát triển thành hệ sinh thái từ thiện minh bạch và đáng tin cậy",
+    text: "Xây dựng một vòng tay lớn kết nối hàng triệu trái tim nhân ái 🤝",
   },
 ];
 
 const howWeWorkItems = [
   {
     icon: Target,
-    title: "Mục Tiêu Rõ Ràng",
-    text: "Mỗi dự án đều có mục tiêu cụ thể và kết quả có thể đo lường được",
+    title: "Rõ Ràng Từ Trái Tim",
+    text: "Mỗi dự án là một câu chuyện thật, với mục tiêu rõ ràng để bạn yên tâm đồng hành",
   },
   {
     icon: FileCheck,
-    title: "Cập Nhật Công Khai",
-    text: "Theo dõi minh bạch mọi khoản đóng góp và tác động của chúng",
+    title: "Chia Sẻ Mọi Bước Đi",
+    text: "Bạn sẽ nhận được cập nhật chân thực về hành trình của từng đồng yêu thương",
   },
   {
     icon: MessageCircleHeart,
-    title: "Câu Chuyện Chân Thực",
-    text: "Những câu chuyện thật, hình ảnh chân thực và kết quả được chia sẻ một cách trung thực",
+    title: "Kể Chuyện Bằng Cả Trái Tim",
+    text: "Những câu chuyện thật, nụ cười thật, và niềm hạnh phúc thật từ người nhận",
   },
 ];
 
@@ -92,18 +92,18 @@ export function AboutSection() {
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Heart className="w-6 h-6 text-rose-500 fill-rose-500 animate-pulse" />
-            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Câu Chuyện Của Chúng Tôi</span>
+            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Từ Trái Tim Chúng Mình</span>
             <Heart className="w-6 h-6 text-rose-500 fill-rose-500 animate-pulse" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 bg-clip-text text-transparent mb-6">
             Về Fun Charity
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Fun Charity là một <span className="text-rose-500 font-semibold">nền tảng từ thiện tràn đầy niềm vui</span> được xây dựng trên nền tảng
-            <span className="text-amber-600 font-semibold"> tình yêu thương</span>, 
-            <span className="text-pink-500 font-semibold"> lòng nhân ái</span>, và 
-            <span className="text-orange-500 font-semibold"> tinh thần cho đi trong hạnh phúc</span>. 
-            Chúng tôi tin rằng mỗi hành động tử tế, dù nhỏ bé đến đâu, đều có thể tạo nên những làn sóng yêu thương lan tỏa và thay đổi cuộc sống.
+            Fun Charity là <span className="text-rose-500 font-semibold">ngôi nhà của những trái tim yêu thương</span> — nơi 
+            <span className="text-amber-600 font-semibold"> tình người</span>, 
+            <span className="text-pink-500 font-semibold"> niềm vui</span> và 
+            <span className="text-orange-500 font-semibold"> hạnh phúc được sẻ chia</span>. 
+            Chúng mình tin rằng khi cho đi bằng cả trái tim, bạn không chỉ giúp đỡ người khác mà còn nhận lại niềm hạnh phúc thật sự. Mỗi hành động nhỏ đều có thể tạo nên điều kỳ diệu! ✨
           </p>
         </motion.div>
 
@@ -121,7 +121,7 @@ export function AboutSection() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center shadow-lg shadow-rose-200">
                 <Target className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-rose-600">Sứ Mệnh Của Chúng Tôi</h3>
+              <h3 className="text-2xl font-bold text-rose-600">Chúng Mình Mong Muốn</h3>
             </motion.div>
             <div className="space-y-4">
               {missionItems.map((item, index) => (
@@ -151,7 +151,7 @@ export function AboutSection() {
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
                 <Eye className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-amber-600">Tầm Nhìn Của Chúng Tôi</h3>
+              <h3 className="text-2xl font-bold text-amber-600">Ước Mơ Của Chúng Mình</h3>
             </motion.div>
             <div className="space-y-4">
               {visionItems.map((item, index) => (
@@ -194,10 +194,10 @@ export function AboutSection() {
           className="text-center mb-10"
         >
           <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Cách Chúng Tôi <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-amber-500">Hoạt Động</span>
+            Hành Trình <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-amber-500">Yêu Thương</span> Cùng Nhau
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Sự minh bạch và tin cậy là trọng tâm trong mọi hoạt động của chúng tôi
+            Chúng mình luôn muốn bạn cảm nhận được sự ấm áp và tin tưởng trong từng bước đồng hành 💖
           </p>
         </motion.div>
 
@@ -246,24 +246,24 @@ export function AboutSection() {
             ))}
           </div>
           <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Hãy Cùng Chúng Tôi Tạo Nên <span className="text-rose-500">Niềm Vui Cho Đi</span>
+            Bạn Ơi, Hãy Cùng <span className="text-rose-500">Lan Tỏa Yêu Thương</span> Nhé! 💕
           </h3>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8 text-lg">
-            Dù bạn muốn quyên góp, tình nguyện, hay đơn giản chỉ là lan tỏa yêu thương, 
-            luôn có một vị trí dành cho bạn trong đại gia đình của chúng tôi. Cùng nhau, 
-            chúng ta có thể tạo nên một thế giới nơi sự cho đi mang lại niềm vui cho cả người trao lẫn người nhận.
+            Dù bạn muốn góp một chút tấm lòng, dành thời gian làm tình nguyện, hay đơn giản chỉ muốn 
+            chia sẻ niềm vui — ở đây luôn có một chỗ dành cho bạn. Cùng nhau, chúng ta tạo nên 
+            một thế giới nơi cho đi là nhận lại, và yêu thương sinh sôi nảy nở mỗi ngày! 🌸
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/campaigns">
               <ParticleButton variant="default" size="lg" className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg shadow-rose-200">
                 <Heart className="w-5 h-5 mr-2 fill-current" />
-                Quyên Góp Ngay
+                Góp Yêu Thương Ngay
               </ParticleButton>
             </Link>
             <Link to="/volunteer">
               <ParticleButton variant="outline" size="lg" className="border-2 border-amber-400 text-amber-600 hover:bg-amber-50">
                 <HandHeart className="w-5 h-5 mr-2" />
-                Trở Thành Tình Nguyện Viên
+                Tham Gia Cùng Mình
               </ParticleButton>
             </Link>
           </div>
