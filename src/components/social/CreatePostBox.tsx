@@ -2,11 +2,13 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Image, Video, Sparkles, X, Loader2, Send, RefreshCw, AlertCircle, Check, Palette, Copy, Trash2 } from "lucide-react";
+import { Image, Video, Sparkles, X, Loader2, Send, RefreshCw, AlertCircle, Check, Palette, Copy, Trash2, UserPlus } from "lucide-react";
 import { useCreateFeedPost } from "@/hooks/useFeedPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CreatePostModal } from "./CreatePostModal";
+import { MentionInput } from "./MentionInput";
+import { extractMentionIds } from "@/lib/formatContent";
 import {
   Dialog,
   DialogContent,
@@ -85,6 +87,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const [aiPreviewContent, setAiPreviewContent] = useState<string | null>(null);
   const [aiPreviewImage, setAiPreviewImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [mentionedUsers, setMentionedUsers] = useState<Array<{user_id: string; full_name: string | null; avatar_url: string | null}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -488,11 +491,21 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
         mediaUrls = await uploadFiles();
       }
 
-      await createPost.mutateAsync({
+      const postData = await createPost.mutateAsync({
         post_type: "story",
         content: content.trim(),
         media_urls: mediaUrls,
       });
+
+      // Save mentions to post_mentions table
+      if (mentionedUsers.length > 0 && postData?.id) {
+        const mentionInserts = mentionedUsers.map(user => ({
+          post_id: postData.id,
+          mentioned_user_id: user.user_id,
+        }));
+        
+        await supabase.from("post_mentions").insert(mentionInserts);
+      }
 
       // Revoke blob preview URLs to avoid memory leaks
       mediaItems.forEach((item) => revokePreviewUrl(item.preview));
@@ -500,6 +513,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
       setContent("");
       setMediaItems([]);
       setAiGeneratedImage(null);
+      setMentionedUsers([]);
       setIsExpanded(false);
       onPostCreated?.();
     } catch (error) {
@@ -543,21 +557,26 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
                 />
               ) : (
                 <div className="space-y-3">
-                  <textarea
-                    ref={textareaRef}
-                    placeholder="Bạn đang nghĩ gì? Chia sẻ câu chuyện, hình ảnh hoặc video của bạn..."
+                  <MentionInput
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && canSubmit && !isSubmitting) {
-                        e.preventDefault();
-                        handleSubmit();
-                      }
-                    }}
-                    className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all resize-y min-h-[120px] max-h-[400px]"
+                    onChange={setContent}
+                    onMentionsChange={setMentionedUsers}
+                    placeholder="Bạn đang nghĩ gì? Gõ @ để gắn thẻ bạn bè..."
+                    className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+                    minHeight="120px"
                     disabled={isSubmitting}
-                    rows={4}
                   />
+                  {/* Show tagged users */}
+                  {mentionedUsers.length > 0 && (
+                    <div className="flex flex-wrap gap-2 px-1">
+                      <span className="text-xs text-muted-foreground">Gắn thẻ:</span>
+                      {mentionedUsers.map((user) => (
+                        <span key={user.user_id} className="text-xs text-primary font-medium">
+                          @{user.full_name || "Người dùng"}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   {/* Collapse button when empty */}
                   {!content && mediaItems.length === 0 && !aiGeneratedImage && (
                     <Button
@@ -684,6 +703,28 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
             >
               <Sparkles className="w-5 h-5" />
               <span className="text-xs font-medium hidden sm:inline">AI</span>
+            </Button>
+            <Button 
+              variant="ghost"
+              size="sm" 
+              className={`gap-2 rounded-lg ${
+                mentionedUsers.length > 0 
+                  ? "text-primary bg-primary/10" 
+                  : "text-muted-foreground hover:text-secondary hover:bg-secondary/10"
+              }`}
+              onClick={() => {
+                setIsExpanded(true);
+                toast({
+                  title: "Gắn thẻ bạn bè",
+                  description: "Gõ @ trong nội dung để gắn thẻ bạn bè",
+                });
+              }}
+              disabled={isSubmitting}
+            >
+              <UserPlus className="w-5 h-5" />
+              <span className="text-xs font-medium hidden sm:inline">
+                Gắn thẻ {mentionedUsers.length > 0 ? `(${mentionedUsers.length})` : ""}
+              </span>
             </Button>
           </div>
           

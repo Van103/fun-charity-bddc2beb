@@ -25,7 +25,7 @@ import { ImageLightbox } from "./ImageLightbox";
 import { EditFeedPostModal } from "./EditFeedPostModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { formatPostContent } from "@/lib/formatContent";
 import {
   DropdownMenu,
@@ -43,6 +43,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+interface MentionedUser {
+  user_id: string;
+  full_name: string | null;
+}
 
 interface SocialPostCardProps {
   post: FeedPost;
@@ -77,14 +82,33 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch mentioned users for this post
+  const { data: mentionedUsers = [] } = useQuery({
+    queryKey: ["post-mentions", post.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("post_mentions")
+        .select("mentioned_user_id")
+        .eq("post_id", post.id);
+      
+      if (!data || data.length === 0) return [];
+      
+      const userIds = data.map(m => m.mentioned_user_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, full_name")
+        .in("user_id", userIds);
+      
+      return (profiles || []) as MentionedUser[];
+    },
+  });
+
   // Handle highlight and scroll
   useEffect(() => {
     if (highlightPostId === post.id && cardRef.current) {
-      // Scroll into view
       setTimeout(() => {
         cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         setIsHighlighted(true);
-        // Remove highlight after 3 seconds
         setTimeout(() => setIsHighlighted(false), 3000);
       }, 100);
     }
@@ -196,6 +220,20 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                 >
                   {userName}
                 </Link>
+                {mentionedUsers.length > 0 && (
+                  <span className="text-muted-foreground text-sm">
+                    cùng với{" "}
+                    <Link 
+                      to={`/user/${mentionedUsers[0].user_id}`}
+                      className="text-primary font-medium hover:underline"
+                    >
+                      {mentionedUsers[0].full_name || "Người dùng"}
+                    </Link>
+                    {mentionedUsers.length > 1 && (
+                      <span> và {mentionedUsers.length - 1} người khác</span>
+                    )}
+                  </span>
+                )}
                 {post.profiles?.is_verified && (
                   <span className="text-primary text-sm">✓</span>
                 )}
