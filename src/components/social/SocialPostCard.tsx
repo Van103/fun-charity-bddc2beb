@@ -10,6 +10,8 @@ import {
   Pencil,
   Trash2,
   Loader2,
+  Video,
+  Eye,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FeedPost } from "@/hooks/useFeedPosts";
@@ -49,8 +51,13 @@ interface MentionedUser {
   full_name: string | null;
 }
 
+interface ExtendedFeedPost extends FeedPost {
+  is_live_video?: boolean;
+  live_viewer_count?: number;
+}
+
 interface SocialPostCardProps {
-  post: FeedPost;
+  post: ExtendedFeedPost;
   highlightPostId?: string | null;
 }
 
@@ -68,6 +75,8 @@ const getAvatarGradient = (name: string) => {
 };
 
 export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
+  const isLiveVideo = (post as ExtendedFeedPost).is_live_video;
+  const liveViewerCount = (post as ExtendedFeedPost).live_viewer_count || 0;
   const [showComments, setShowComments] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
@@ -247,11 +256,27 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                   </>
                 )}
               </div>
-              <span className="text-xs text-muted-foreground">{timeAgo}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">{timeAgo}</span>
+                {isLiveVideo && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-1 bg-red-500/10 text-red-500 border-red-500/20">
+                    <Video className="w-2.5 h-2.5" />
+                    Đã phát trực tiếp
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Live viewer count badge */}
+            {isLiveVideo && liveViewerCount > 0 && (
+              <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20 gap-1 text-xs">
+                <Eye className="w-3 h-3" />
+                {liveViewerCount.toLocaleString()}
+              </Badge>
+            )}
+            
             {/* Earned amount badge - shows total gifts received */}
             <Badge variant="outline" className="bg-gold-champagne/10 text-gold-dark border-gold-champagne/30 gap-1 text-xs font-medium">
               +{(post.fulfilled_amount || 0).toLocaleString()}₫

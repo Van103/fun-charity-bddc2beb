@@ -655,8 +655,10 @@ export type Database = {
           fulfilled_amount: number | null
           id: string
           is_active: boolean | null
+          is_live_video: boolean | null
           is_matched: boolean | null
           latitude: number | null
+          live_viewer_count: number | null
           location: string | null
           longitude: number | null
           matched_with_id: string | null
@@ -684,8 +686,10 @@ export type Database = {
           fulfilled_amount?: number | null
           id?: string
           is_active?: boolean | null
+          is_live_video?: boolean | null
           is_matched?: boolean | null
           latitude?: number | null
+          live_viewer_count?: number | null
           location?: string | null
           longitude?: number | null
           matched_with_id?: string | null
@@ -713,8 +717,10 @@ export type Database = {
           fulfilled_amount?: number | null
           id?: string
           is_active?: boolean | null
+          is_live_video?: boolean | null
           is_matched?: boolean | null
           latitude?: number | null
+          live_viewer_count?: number | null
           location?: string | null
           longitude?: number | null
           matched_with_id?: string | null
