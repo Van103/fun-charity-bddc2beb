@@ -339,9 +339,21 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     toast.success("🔴 Bắt đầu phát trực tiếp!");
   };
 
-  const endLive = () => {
-    setPhase('ended');
+  const endLive = async () => {
     stopRecording();
+    
+    // Wait a moment for the recording to finalize
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Check if we have recorded content
+    if (recordedChunksRef.current.length > 0) {
+      setPhase('ended');
+    } else {
+      // No recording, just close
+      toast.info('Buổi phát trực tiếp đã kết thúc');
+      stopStream();
+      onOpenChange(false);
+    }
   };
 
   const sendMessage = () => {
@@ -415,27 +427,26 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
         .from('live-videos')
         .getPublicUrl(fileName);
 
-      // Create feed post with video
+      // Create feed post with video - use direct URL format
       await createFeedPost.mutateAsync({
         post_type: 'update',
         title: streamTitle,
         content: streamDescription || `🔴 Video phát trực tiếp: ${streamTitle}`,
-        media_urls: [JSON.stringify({ url: publicUrl, type: 'video' })],
-        is_live_video: true,
+        media_urls: [publicUrl],
+        is_live_video: false, // Not live anymore, it's a recorded video
         live_viewer_count: peakViewers,
       });
-
-      // Update the post to mark it as live video with viewer count
-      // This will be handled by the mutation success
 
       toast.success('Video đã được đăng lên bảng tin!');
       
       // Cleanup
+      stopStream();
       if (recordedVideoUrl) {
         URL.revokeObjectURL(recordedVideoUrl);
       }
       setRecordedBlob(null);
       setRecordedVideoUrl(null);
+      recordedChunksRef.current = [];
       onOpenChange(false);
     } catch (error: any) {
       console.error('Error saving video:', error);
@@ -463,6 +474,8 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       setRecordedVideoUrl(null);
     }
     setRecordedBlob(null);
+    recordedChunksRef.current = [];
+    stopStream();
     onOpenChange(false);
   };
 
@@ -856,7 +869,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
         </div>
 
         {/* Save Video Dialog */}
-        {phase === 'ended' && recordedVideoUrl && (
+        {phase === 'ended' && (
           <div className="absolute inset-0 bg-black/95 z-50 flex items-center justify-center p-6">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
@@ -865,7 +878,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
             >
               <h3 className="text-xl font-semibold text-foreground flex items-center gap-2">
                 <Video className="w-5 h-5 text-primary" />
-                Lưu video Live Stream
+                {recordedVideoUrl ? 'Lưu video Live Stream' : 'Buổi phát đã kết thúc'}
               </h3>
               
               {/* Stream stats */}
@@ -880,64 +893,80 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 </span>
               </div>
               
-              <video 
-                src={recordedVideoUrl} 
-                controls 
-                className="w-full rounded-xl aspect-video bg-black"
-              />
+              {recordedVideoUrl ? (
+                <>
+                  <video 
+                    src={recordedVideoUrl} 
+                    controls 
+                    className="w-full rounded-xl aspect-video bg-black"
+                  />
 
-              {/* Edit title/description before posting */}
-              <div className="space-y-2">
-                <Input
-                  value={streamTitle}
-                  onChange={(e) => setStreamTitle(e.target.value)}
-                  placeholder="Tiêu đề video..."
-                  className="text-sm"
-                />
-                <Textarea
-                  value={streamDescription}
-                  onChange={(e) => setStreamDescription(e.target.value)}
-                  placeholder="Thêm mô tả..."
-                  className="resize-none h-16 text-sm"
-                />
-              </div>
+                  {/* Edit title/description before posting */}
+                  <div className="space-y-2">
+                    <Input
+                      value={streamTitle}
+                      onChange={(e) => setStreamTitle(e.target.value)}
+                      placeholder="Tiêu đề video..."
+                      className="text-sm"
+                    />
+                    <Textarea
+                      value={streamDescription}
+                      onChange={(e) => setStreamDescription(e.target.value)}
+                      placeholder="Thêm mô tả..."
+                      className="resize-none h-16 text-sm"
+                    />
+                  </div>
 
-              <div className="flex flex-col gap-2">
-                <Button 
-                  onClick={handleSaveToFeed}
-                  className="w-full gap-2"
-                  disabled={isUploading}
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Đang đăng...
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="w-4 h-4" />
-                      Đăng lên bảng tin
-                    </>
-                  )}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleDownloadVideo}
-                  className="w-full gap-2"
-                  disabled={isUploading}
-                >
-                  <Download className="w-4 h-4" />
-                  Tải về thiết bị
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={handleDiscardVideo}
-                  className="w-full text-muted-foreground hover:text-destructive"
-                  disabled={isUploading}
-                >
-                  Hủy bỏ video
-                </Button>
-              </div>
+                  <div className="flex flex-col gap-2">
+                    <Button 
+                      onClick={handleSaveToFeed}
+                      className="w-full gap-2"
+                      disabled={isUploading}
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Đang đăng...
+                        </>
+                      ) : (
+                        <>
+                          <Share2 className="w-4 h-4" />
+                          Đăng lên bảng tin
+                        </>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleDownloadVideo}
+                      className="w-full gap-2"
+                      disabled={isUploading}
+                    >
+                      <Download className="w-4 h-4" />
+                      Tải về thiết bị
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      onClick={handleDiscardVideo}
+                      className="w-full text-muted-foreground hover:text-destructive"
+                      disabled={isUploading}
+                    >
+                      Hủy bỏ video
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-muted-foreground text-sm">
+                    Video không thể ghi lại do trình duyệt không hỗ trợ hoặc buổi phát quá ngắn.
+                  </p>
+                  <Button 
+                    onClick={handleDiscardVideo}
+                    className="w-full"
+                  >
+                    Đóng
+                  </Button>
+                </>
+              )}
             </motion.div>
           </div>
         )}
