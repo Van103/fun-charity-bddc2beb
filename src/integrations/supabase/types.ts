@@ -1339,6 +1339,48 @@ export type Database = {
         }
         Relationships: []
       }
+      stories: {
+        Row: {
+          created_at: string
+          duration: number | null
+          expires_at: string
+          filter: string | null
+          id: string
+          media_type: string
+          media_url: string
+          text_overlay: string | null
+          text_position: Json | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          expires_at?: string
+          filter?: string | null
+          id?: string
+          media_type?: string
+          media_url: string
+          text_overlay?: string | null
+          text_position?: Json | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          expires_at?: string
+          filter?: string | null
+          id?: string
+          media_type?: string
+          media_url?: string
+          text_overlay?: string | null
+          text_position?: Json | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
