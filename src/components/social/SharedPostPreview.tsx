@@ -98,23 +98,32 @@ export function SharedPostPreview({ sharedPostId }: SharedPostPreviewProps) {
   });
 
   return (
-    <Link
-      to={`/social?post=${sharedPost.id}`}
-      className="block border border-border rounded-xl overflow-hidden bg-muted/30 hover:bg-muted/50 transition-colors"
-    >
+    <div className="block border border-border rounded-xl overflow-hidden bg-muted/30 hover:bg-muted/50 transition-colors">
       {/* Shared post header */}
       <div className="p-3 pb-2">
         <div className="flex items-center gap-2">
-          <Avatar className="w-8 h-8">
-            <AvatarImage src={sharedPost.profiles?.avatar_url || ""} />
-            <AvatarFallback
-              className={`bg-gradient-to-br ${getAvatarGradient(userName)} text-white text-xs font-semibold`}
-            >
-              {userName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          <Link 
+            to={`/user/${sharedPost.user_id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0"
+          >
+            <Avatar className="w-8 h-8 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all">
+              <AvatarImage src={sharedPost.profiles?.avatar_url || ""} />
+              <AvatarFallback
+                className={`bg-gradient-to-br ${getAvatarGradient(userName)} text-white text-xs font-semibold`}
+              >
+                {userName.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">{userName}</p>
+            <Link 
+              to={`/user/${sharedPost.user_id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-semibold truncate hover:underline block"
+            >
+              {userName}
+            </Link>
             <p className="text-xs text-muted-foreground">{timeAgo}</p>
           </div>
         </div>
@@ -157,6 +166,6 @@ export function SharedPostPreview({ sharedPostId }: SharedPostPreviewProps) {
           )}
         </div>
       )}
-    </Link>
+    </div>
   );
 }
