@@ -5,29 +5,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const founders = [
   {
     id: 1,
-    name: "Alex Nguyen",
-    role: "Founder & CEO",
+    name: "Nguyễn Minh Đức",
+    role: "Nhà Sáng Lập & CEO",
     avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=face",
-    bio: "Passionate about using technology to create positive social impact. Former nonprofit director with 15 years of experience.",
-    social: { linkedin: "#", twitter: "#", email: "alex@funcharity.org" },
+    bio: "Đam mê sử dụng công nghệ để tạo ra tác động xã hội tích cực. Cựu giám đốc tổ chức phi lợi nhuận với 15 năm kinh nghiệm trong lĩnh vực từ thiện.",
+    social: { linkedin: "#", twitter: "#", email: "duc@funcharity.org" },
     color: "from-rose-400 to-pink-500",
   },
   {
     id: 2,
-    name: "Maya Patel",
-    role: "Co-Founder & COO",
+    name: "Trần Thị Mai Anh",
+    role: "Đồng Sáng Lập & COO",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&crop=face",
-    bio: "Operations expert dedicated to building transparent and efficient charity systems. MBA from Stanford.",
-    social: { linkedin: "#", twitter: "#", email: "maya@funcharity.org" },
+    bio: "Chuyên gia vận hành tận tâm xây dựng hệ thống từ thiện minh bạch và hiệu quả. Thạc sĩ Quản trị Kinh doanh từ Đại học Stanford.",
+    social: { linkedin: "#", twitter: "#", email: "maianh@funcharity.org" },
     color: "from-amber-400 to-orange-500",
   },
   {
     id: 3,
-    name: "Daniel Kim",
-    role: "CTO",
+    name: "Lê Hoàng Khang",
+    role: "Giám Đốc Công Nghệ",
     avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=face",
-    bio: "Tech visionary building secure, scalable platforms for social good. Previously at Google and various blockchain startups.",
-    social: { linkedin: "#", twitter: "#", email: "daniel@funcharity.org" },
+    bio: "Chuyên gia công nghệ xây dựng nền tảng an toàn, có thể mở rộng vì mục tiêu xã hội. Từng làm việc tại Google và các startup blockchain.",
+    social: { linkedin: "#", twitter: "#", email: "khang@funcharity.org" },
     color: "from-violet-400 to-purple-500",
   },
 ];
@@ -35,29 +35,29 @@ const founders = [
 const teamMembers = [
   {
     id: 4,
-    name: "Sophie Chen",
-    role: "Head of Community",
+    name: "Phạm Thu Hà",
+    role: "Trưởng Phòng Cộng Đồng",
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face",
     color: "from-emerald-400 to-teal-500",
   },
   {
     id: 5,
-    name: "Marcus Johnson",
-    role: "Lead Designer",
+    name: "Đỗ Quốc Bảo",
+    role: "Trưởng Phòng Thiết Kế",
     avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face",
     color: "from-blue-400 to-indigo-500",
   },
   {
     id: 6,
-    name: "Aria Rahman",
-    role: "Campaign Manager",
+    name: "Võ Ngọc Linh",
+    role: "Quản Lý Chiến Dịch",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=face",
     color: "from-pink-400 to-rose-500",
   },
   {
     id: 7,
-    name: "James Liu",
-    role: "Finance Director",
+    name: "Hoàng Văn Thịnh",
+    role: "Giám Đốc Tài Chính",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
     color: "from-amber-400 to-yellow-500",
   },
@@ -83,14 +83,14 @@ export function TeamSection() {
         >
           <div className="inline-flex items-center gap-2 mb-4">
             <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
-            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Our Team</span>
+            <span className="text-rose-500 font-medium tracking-wide uppercase text-sm">Đội Ngũ Của Chúng Tôi</span>
             <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Meet the <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500">Hearts Behind</span> Fun Charity
+            Gặp Gỡ <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500">Những Trái Tim</span> Đằng Sau Fun Charity
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A passionate team dedicated to making charity joyful, transparent, and impactful
+            Một đội ngũ đầy nhiệt huyết cam kết làm cho việc từ thiện trở nên vui vẻ, minh bạch và có tác động thực sự
           </p>
         </motion.div>
 
@@ -117,7 +117,7 @@ export function TeamSection() {
                   </Avatar>
                   <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r ${founder.color} text-white text-xs font-medium shadow-lg`}>
                     <Sparkles className="w-3 h-3 inline mr-1" />
-                    Founder
+                    Sáng Lập
                   </div>
                 </div>
 
@@ -152,9 +152,9 @@ export function TeamSection() {
           className="text-center mb-10"
         >
           <h3 className="text-2xl font-bold text-foreground mb-2">
-            Our Amazing <span className="text-rose-500">Team</span>
+            Đội Ngũ <span className="text-rose-500">Tuyệt Vời</span> Của Chúng Tôi
           </h3>
-          <p className="text-muted-foreground">The dedicated people who make it all happen</p>
+          <p className="text-muted-foreground">Những con người tận tâm làm nên tất cả điều kỳ diệu</p>
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -191,14 +191,14 @@ export function TeamSection() {
           className="mt-16 text-center"
         >
           <div className="inline-block bg-gradient-to-r from-rose-100/80 via-pink-100/80 to-amber-100/80 rounded-2xl px-8 py-6 border border-rose-200/50">
-            <p className="text-foreground font-medium mb-2">Want to join our mission?</p>
-            <p className="text-muted-foreground text-sm mb-4">We're always looking for passionate people to join our team</p>
+            <p className="text-foreground font-medium mb-2">Bạn muốn cùng chúng tôi lan tỏa yêu thương?</p>
+            <p className="text-muted-foreground text-sm mb-4">Chúng tôi luôn tìm kiếm những người đầy nhiệt huyết để gia nhập đội ngũ</p>
             <a
               href="mailto:careers@funcharity.org"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-medium hover:from-rose-600 hover:to-pink-600 transition-all shadow-lg shadow-rose-200"
             >
               <Mail className="w-4 h-4" />
-              Get in Touch
+              Liên Hệ Ngay
             </a>
           </div>
         </motion.div>
