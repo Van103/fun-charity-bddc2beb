@@ -67,6 +67,8 @@ export interface CreateFeedPostInput {
   campaign_id?: string;
   expires_at?: string;
   shared_post_id?: string;
+  is_live_video?: boolean;
+  live_viewer_count?: number;
 }
 
 export interface FeedFilters {
@@ -302,6 +304,12 @@ export function useCreateFeedPost() {
       // Add shared_post_id if provided
       if (input.shared_post_id) {
         insertData.shared_post_id = input.shared_post_id;
+      }
+
+      // Add live video fields if provided
+      if (input.is_live_video) {
+        insertData.is_live_video = input.is_live_video;
+        insertData.live_viewer_count = input.live_viewer_count || 0;
       }
 
       const { data, error } = await supabase
