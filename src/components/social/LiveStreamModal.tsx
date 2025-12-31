@@ -40,7 +40,8 @@ import {
   Music,
   MessageCircleQuestion,
   Pin,
-  PinOff
+  PinOff,
+  Gift
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -49,6 +50,9 @@ import { useCreateFeedPost } from "@/hooks/useFeedPosts";
 import { FriendExcludeSelector } from "./FriendExcludeSelector";
 import { LiveStreamMusicPanel } from "./LiveStreamMusicPanel";
 import { LiveStreamQAPanel, PinnedCommentDisplay, Question, PinnedComment } from "./LiveStreamQAPanel";
+import { LiveStreamCountdown } from "./LiveStreamCountdown";
+import { LiveStreamSharePanel } from "./LiveStreamSharePanel";
+import { LiveStreamGiftPanel, FloatingGiftAnimation, Gift as GiftType } from "./LiveStreamGiftPanel";
 
 interface LiveStreamModalProps {
   open: boolean;
@@ -116,10 +120,11 @@ const AUDIENCE_OPTIONS = [
 
 export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModalProps) {
   // Setup phase states
-  const [phase, setPhase] = useState<'setup' | 'live' | 'ended'>('setup');
+  const [phase, setPhase] = useState<'setup' | 'countdown' | 'live' | 'ended'>('setup');
   const [streamTitle, setStreamTitle] = useState("");
   const [streamDescription, setStreamDescription] = useState("");
   const [audience, setAudience] = useState<AudienceType>('public');
+  const [showCountdown, setShowCountdown] = useState(false);
   
   // Live states
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -160,6 +165,18 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [showQAPanel, setShowQAPanel] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [pinnedComment, setPinnedComment] = useState<PinnedComment | null>(null);
+  
+  // Share panel state
+  const [showSharePanel, setShowSharePanel] = useState(false);
+  
+  // Gift panel state
+  const [showGiftPanel, setShowGiftPanel] = useState(false);
+  const [giftAnimations, setGiftAnimations] = useState<Array<{
+    id: string;
+    gift: GiftType;
+    senderName: string;
+    senderAvatar?: string;
+  }>>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -366,10 +383,30 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       toast.error("Vui lòng nhập tiêu đề cho buổi phát trực tiếp");
       return;
     }
+    // Start countdown
+    setShowCountdown(true);
+  };
+
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
     setPhase('live');
     setViewerCount(1);
     startRecording();
     toast.success("🔴 Bắt đầu phát trực tiếp!");
+  };
+
+  const handleGiftSent = (gift: GiftType) => {
+    const animationId = Date.now().toString() + Math.random();
+    setGiftAnimations(prev => [...prev, {
+      id: animationId,
+      gift,
+      senderName: profile?.full_name || 'Người xem',
+      senderAvatar: profile?.avatar_url || undefined
+    }]);
+  };
+
+  const removeGiftAnimation = (id: string) => {
+    setGiftAnimations(prev => prev.filter(a => a.id !== id));
   };
 
   const endLive = async () => {
@@ -542,6 +579,16 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-[100vw] md:max-w-4xl h-[100vh] md:h-[90vh] p-0 overflow-hidden bg-black border-0 rounded-none md:rounded-lg">
         <div className="relative w-full h-full flex flex-col">
+          
+          {/* Countdown Overlay */}
+          <AnimatePresence>
+            {showCountdown && (
+              <LiveStreamCountdown 
+                isActive={showCountdown} 
+                onComplete={handleCountdownComplete} 
+              />
+            )}
+          </AnimatePresence>
           
           {/* Setup Phase - Facebook-like UI */}
           {phase === 'setup' && (
@@ -1216,6 +1263,14 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                     <Button
                       variant="ghost"
                       size="icon"
+                      className={`rounded-full text-white ${showGiftPanel ? 'bg-yellow-500' : 'bg-white/20'}`}
+                      onClick={() => setShowGiftPanel(!showGiftPanel)}
+                    >
+                      <Gift className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="rounded-full bg-white/20 text-white"
                       onClick={() => addReaction('❤️')}
                     >
@@ -1224,13 +1279,15 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-full bg-white/20 text-white"
+                      className={`rounded-full text-white ${showSharePanel ? 'bg-primary' : 'bg-white/20'}`}
+                      onClick={() => setShowSharePanel(!showSharePanel)}
                     >
                       <Share2 className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
               </div>
+
               {/* Music Panel */}
               <LiveStreamMusicPanel 
                 open={showMusicPanel} 
@@ -1248,6 +1305,33 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 onPinComment={setPinnedComment}
                 isHost={true}
               />
+
+              {/* Share Panel */}
+              <LiveStreamSharePanel
+                open={showSharePanel}
+                onClose={() => setShowSharePanel(false)}
+                streamTitle={streamTitle}
+              />
+
+              {/* Gift Panel */}
+              <LiveStreamGiftPanel
+                open={showGiftPanel}
+                onClose={() => setShowGiftPanel(false)}
+                onGiftSent={handleGiftSent}
+                senderName={profile?.full_name || 'Người xem'}
+                senderAvatar={profile?.avatar_url || undefined}
+              />
+
+              {/* Gift Animations */}
+              <AnimatePresence>
+                {giftAnimations.map(anim => (
+                  <FloatingGiftAnimation
+                    key={anim.id}
+                    gift={anim}
+                    onComplete={() => removeGiftAnimation(anim.id)}
+                  />
+                ))}
+              </AnimatePresence>
 
               {/* Pinned Comment */}
               <AnimatePresence>
