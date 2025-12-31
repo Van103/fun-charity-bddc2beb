@@ -36,12 +36,19 @@ import {
   ChevronUp,
   HelpCircle,
   UserMinus,
-  ChevronLeft
+  ChevronLeft,
+  Music,
+  MessageCircleQuestion,
+  Pin,
+  PinOff
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useCreateFeedPost } from "@/hooks/useFeedPosts";
+import { FriendExcludeSelector } from "./FriendExcludeSelector";
+import { LiveStreamMusicPanel } from "./LiveStreamMusicPanel";
+import { LiveStreamQAPanel, PinnedCommentDisplay, Question, PinnedComment } from "./LiveStreamQAPanel";
 
 interface LiveStreamModalProps {
   open: boolean;
@@ -143,6 +150,16 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [showTextOverlay, setShowTextOverlay] = useState(false);
   const [textOverlay, setTextOverlay] = useState("");
   const [shareToStory, setShareToStory] = useState(true);
+  const [excludedFriends, setExcludedFriends] = useState<string[]>([]);
+  const [showFriendExcludeModal, setShowFriendExcludeModal] = useState(false);
+  
+  // Music & Effects states
+  const [showMusicPanel, setShowMusicPanel] = useState(false);
+  
+  // Q&A states
+  const [showQAPanel, setShowQAPanel] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [pinnedComment, setPinnedComment] = useState<PinnedComment | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -578,6 +595,10 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                                 onClick={() => {
                                   setAudience(option.value);
                                   setShowAudienceDropdown(false);
+                                  // Show friend exclude modal when selecting friends_except
+                                  if (option.value === 'friends_except') {
+                                    setTimeout(() => setShowFriendExcludeModal(true), 100);
+                                  }
                                 }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors ${
                                   audience === option.value ? 'bg-primary/10' : ''
@@ -591,6 +612,9 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                                 <div className="text-left flex-1">
                                   <p className={`text-sm font-medium ${audience === option.value ? 'text-primary' : 'text-foreground'}`}>
                                     {option.label}
+                                    {option.value === 'friends_except' && excludedFriends.length > 0 && (
+                                      <span className="ml-1 text-muted-foreground">({excludedFriends.length})</span>
+                                    )}
                                   </p>
                                   <p className="text-xs text-muted-foreground">{option.description}</p>
                                 </div>
@@ -762,6 +786,21 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                           showTextOverlay || textOverlay ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
                         }`}>
                           <Type className="w-5 h-5 text-white" />
+                        </div>
+                      </button>
+
+                      {/* Music */}
+                      <button
+                        onClick={() => setShowMusicPanel(!showMusicPanel)}
+                        className="flex items-center gap-2 group"
+                      >
+                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
+                          Nhạc nền
+                        </span>
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          showMusicPanel ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          <Music className="w-5 h-5 text-white" />
                         </div>
                       </button>
 
@@ -1027,25 +1066,48 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
               <div className="absolute bottom-24 left-4 right-20 z-20">
                 <ScrollArea className="h-36 mb-2">
                   <div className="space-y-2">
-                    {messages.slice(-15).map((msg) => (
-                      <motion.div 
-                        key={msg.id} 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="flex items-start gap-2 bg-black/60 rounded-2xl px-3 py-2 backdrop-blur-sm"
-                      >
-                        <Avatar className="w-6 h-6">
-                          <AvatarImage src={msg.avatar} />
-                          <AvatarFallback className="text-xs bg-primary/50">
-                            {msg.user.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-primary text-xs font-semibold">{msg.user}</span>
-                          <p className="text-white text-sm break-words">{msg.text}</p>
-                        </div>
-                      </motion.div>
-                    ))}
+                    {messages.slice(-15).map((msg) => {
+                      const isQuestion = msg.text.includes('?');
+                      return (
+                        <motion.div 
+                          key={msg.id} 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className={`flex items-start gap-2 rounded-2xl px-3 py-2 backdrop-blur-sm group ${
+                            isQuestion ? 'bg-primary/30' : 'bg-black/60'
+                          }`}
+                        >
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src={msg.avatar} />
+                            <AvatarFallback className="text-xs bg-primary/50">
+                              {msg.user.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className="text-primary text-xs font-semibold">{msg.user}</span>
+                              {isQuestion && (
+                                <Badge className="bg-yellow-500 text-black text-[10px] px-1 py-0">Q&A</Badge>
+                              )}
+                            </div>
+                            <p className="text-white text-sm break-words">{msg.text}</p>
+                          </div>
+                          {/* Pin button for host */}
+                          <button
+                            onClick={() => setPinnedComment({
+                              id: msg.id,
+                              user: msg.user,
+                              avatar: msg.avatar,
+                              text: msg.text,
+                              timestamp: msg.timestamp
+                            })}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white"
+                          >
+                            <Pin className="w-4 h-4" />
+                          </button>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 </ScrollArea>
                 <div className="flex items-center gap-2">
@@ -1125,6 +1187,22 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                     >
                       <Sparkles className="w-5 h-5" />
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full text-white ${showMusicPanel ? 'bg-primary' : 'bg-white/20'}`}
+                      onClick={() => setShowMusicPanel(!showMusicPanel)}
+                    >
+                      <Music className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`rounded-full text-white ${showQAPanel ? 'bg-primary' : 'bg-white/20'}`}
+                      onClick={() => setShowQAPanel(!showQAPanel)}
+                    >
+                      <MessageCircleQuestion className="w-5 h-5" />
+                    </Button>
                   </div>
 
                   <Button
@@ -1153,6 +1231,34 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                   </div>
                 </div>
               </div>
+              {/* Music Panel */}
+              <LiveStreamMusicPanel 
+                open={showMusicPanel} 
+                onClose={() => setShowMusicPanel(false)} 
+              />
+
+              {/* Q&A Panel */}
+              <LiveStreamQAPanel
+                open={showQAPanel}
+                onClose={() => setShowQAPanel(false)}
+                questions={questions}
+                onQuestionAnswered={(id) => setQuestions(prev => prev.map(q => q.id === id ? {...q, isAnswered: true} : q))}
+                onQuestionDismissed={(id) => setQuestions(prev => prev.filter(q => q.id !== id))}
+                pinnedComment={pinnedComment}
+                onPinComment={setPinnedComment}
+                isHost={true}
+              />
+
+              {/* Pinned Comment */}
+              <AnimatePresence>
+                {pinnedComment && (
+                  <PinnedCommentDisplay
+                    comment={pinnedComment}
+                    onUnpin={() => setPinnedComment(null)}
+                    isHost={true}
+                  />
+                )}
+              </AnimatePresence>
             </>
           )}
         </div>
@@ -1260,6 +1366,15 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
           </div>
         )}
       </DialogContent>
+
+      {/* Friend Exclude Selector Modal */}
+      <FriendExcludeSelector
+        open={showFriendExcludeModal}
+        onOpenChange={setShowFriendExcludeModal}
+        excludedFriends={excludedFriends}
+        onExcludedFriendsChange={setExcludedFriends}
+        currentUserId={profile?.user_id}
+      />
     </Dialog>
   );
 }
