@@ -861,31 +861,33 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                         </div>
                       </button>
 
-                      {/* Camera front/back toggle */}
+                      {/* Camera trước */}
                       <button
-                        onClick={switchCamera}
+                        onClick={() => setFacingMode('user')}
                         className="flex items-center gap-2 group"
                       >
                         <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          {facingMode === 'user' ? 'Camera sau' : 'Camera trước'}
+                          Camera trước
                         </span>
                         <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          facingMode === 'environment' ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
+                          facingMode === 'user' ? 'bg-primary ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
                         }`}>
-                          <SwitchCamera className="w-5 h-5 text-white" />
+                          <Camera className="w-5 h-5 text-white" />
                         </div>
                       </button>
 
-                      {/* Current camera indicator */}
+                      {/* Camera sau */}
                       <button
-                        onClick={switchCamera}
+                        onClick={() => setFacingMode('environment')}
                         className="flex items-center gap-2 group"
                       >
                         <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          {facingMode === 'user' ? 'Đang dùng cam trước' : 'Đang dùng cam sau'}
+                          Camera sau
                         </span>
-                        <div className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all">
-                          <Camera className="w-5 h-5 text-white" />
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                          facingMode === 'environment' ? 'bg-primary ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
+                        }`}>
+                          <SwitchCamera className="w-5 h-5 text-white" />
                         </div>
                       </button>
 
