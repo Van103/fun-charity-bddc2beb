@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCursor } from '@/contexts/CursorContext';
+import { useCursor, FAIRY_COLOR_OPTIONS, AngelStyle } from '@/contexts/CursorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const FAIRY_IMAGES = [
-  '/cursors/fairy-angel.png',
-  '/cursors/fairy-angel-purple.png',
-  '/cursors/fairy-angel-yellow.png',
-  '/cursors/fairy-angel-blue.png',
-];
+const FAIRY_IMAGES: Record<Exclude<AngelStyle, 'random'>, string> = {
+  pink: '/cursors/fairy-angel.png',
+  purple: '/cursors/fairy-angel-purple.png',
+  yellow: '/cursors/fairy-angel-yellow.png',
+  blue: '/cursors/fairy-angel-blue.png',
+};
+
+const ALL_FAIRY_IMAGES = Object.values(FAIRY_IMAGES);
 
 const SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#FFFACD', '#E6E6FA'];
 
@@ -124,13 +126,16 @@ async function removeBackgroundByEdgeFloodFill(src: string): Promise<Blob> {
 }
 
 const FlyingAngel = () => {
-  const { cursorType } = useCursor();
+  const { cursorType, fairyColor } = useCursor();
 
   const isAngelCursor = cursorType.startsWith('angel');
 
   const selectedFairy = useMemo(() => {
-    return FAIRY_IMAGES[Math.floor(Math.random() * FAIRY_IMAGES.length)];
-  }, []);
+    if (fairyColor === 'random') {
+      return ALL_FAIRY_IMAGES[Math.floor(Math.random() * ALL_FAIRY_IMAGES.length)];
+    }
+    return FAIRY_IMAGES[fairyColor];
+  }, [fairyColor]);
 
   const [processedFairySrc, setProcessedFairySrc] = useState<string | null>(null);
 

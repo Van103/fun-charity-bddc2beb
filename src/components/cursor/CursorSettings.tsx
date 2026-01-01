@@ -7,11 +7,13 @@ import {
 } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useCursor, CURSOR_OPTIONS, CursorType } from '@/contexts/CursorContext';
+import { useCursor, CURSOR_OPTIONS, CursorType, FAIRY_COLOR_OPTIONS, AngelStyle } from '@/contexts/CursorContext';
 import { cn } from '@/lib/utils';
 
 const CursorSettings = () => {
-  const { cursorType, setCursorType, particlesEnabled, setParticlesEnabled } = useCursor();
+  const { cursorType, setCursorType, particlesEnabled, setParticlesEnabled, fairyColor, setFairyColor } = useCursor();
+
+  const isAngelCursor = cursorType.startsWith('angel');
 
   return (
     <Popover>
@@ -85,6 +87,50 @@ const CursorSettings = () => {
               </button>
             ))}
           </div>
+
+          {/* Fairy Color Selection - Only show when angel cursor is selected */}
+          {isAngelCursor && (
+            <div className="pt-2 border-t border-border/50">
+              <Label className="text-sm mb-2 block">Chọn màu thiên thần</Label>
+              <div className="flex gap-2 flex-wrap">
+                {FAIRY_COLOR_OPTIONS.map((colorOption) => (
+                  <button
+                    key={colorOption.id}
+                    onClick={() => setFairyColor(colorOption.id)}
+                    className={cn(
+                      "relative flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200",
+                      "hover:bg-muted/50 border-2",
+                      fairyColor === colorOption.id 
+                        ? "border-secondary bg-secondary/10" 
+                        : "border-transparent"
+                    )}
+                    title={colorOption.name}
+                  >
+                    {colorOption.id === 'random' ? (
+                      <div 
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        style={{ background: colorOption.color }}
+                      >
+                        🎲
+                      </div>
+                    ) : (
+                      <img 
+                        src={colorOption.image}
+                        alt={colorOption.name}
+                        className="w-8 h-8 object-contain"
+                      />
+                    )}
+                    <span className="text-[9px] mt-1 text-muted-foreground">
+                      {colorOption.name}
+                    </span>
+                    {fairyColor === colorOption.id && (
+                      <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Particles Toggle */}
           <div className="flex items-center justify-between pt-2 border-t border-border/50">

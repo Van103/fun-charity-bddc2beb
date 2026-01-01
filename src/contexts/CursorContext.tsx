@@ -2,7 +2,15 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 export type CursorType = 'angel' | 'angel-gold' | 'angel-pink' | 'angel-blue' | 'diamond' | 'heart' | 'baby' | 'star' | 'crown' | 'default';
 
-export type AngelStyle = 'purple' | 'gold' | 'pink' | 'blue';
+export type AngelStyle = 'pink' | 'purple' | 'yellow' | 'blue' | 'random';
+
+export const FAIRY_COLOR_OPTIONS = [
+  { id: 'pink' as const, name: 'Hồng', image: '/cursors/fairy-angel.png', color: '#FF69B4' },
+  { id: 'purple' as const, name: 'Tím', image: '/cursors/fairy-angel-purple.png', color: '#9333EA' },
+  { id: 'yellow' as const, name: 'Vàng', image: '/cursors/fairy-angel-yellow.png', color: '#F59E0B' },
+  { id: 'blue' as const, name: 'Xanh', image: '/cursors/fairy-angel-blue.png', color: '#3B82F6' },
+  { id: 'random' as const, name: 'Ngẫu nhiên', image: '', color: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6)' },
+];
 
 interface CursorOption {
   id: CursorType;
@@ -34,7 +42,7 @@ export const CURSOR_OPTIONS: CursorOption[] = [
     cursorHover: '/cursors/angel-gold.svg',
     particleColor: 'rgba(255, 215, 0, 1)',
     particleColorAlt: 'rgba(255, 180, 0, 1)',
-    angelStyle: 'gold',
+    angelStyle: 'yellow',
   },
   {
     id: 'angel-pink',
@@ -118,6 +126,8 @@ interface CursorContextType {
   particlesEnabled: boolean;
   setParticlesEnabled: (enabled: boolean) => void;
   currentCursor: CursorOption;
+  fairyColor: AngelStyle;
+  setFairyColor: (color: AngelStyle) => void;
 }
 
 const CursorContext = createContext<CursorContextType | undefined>(undefined);
@@ -133,6 +143,11 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
     return saved !== 'false';
   });
 
+  const [fairyColor, setFairyColorState] = useState<AngelStyle>(() => {
+    const saved = localStorage.getItem('fairyColor');
+    return (saved as AngelStyle) || 'random';
+  });
+
   const currentCursor = CURSOR_OPTIONS.find(c => c.id === cursorType) || CURSOR_OPTIONS[0];
 
   const setCursorType = (type: CursorType) => {
@@ -143,6 +158,11 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
   const setParticlesEnabled = (enabled: boolean) => {
     setParticlesEnabledState(enabled);
     localStorage.setItem('cursorParticles', String(enabled));
+  };
+
+  const setFairyColor = (color: AngelStyle) => {
+    setFairyColorState(color);
+    localStorage.setItem('fairyColor', color);
   };
 
   // Apply cursor styles dynamically
@@ -195,6 +215,8 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
       particlesEnabled,
       setParticlesEnabled,
       currentCursor,
+      fairyColor,
+      setFairyColor,
     }}>
       {children}
     </CursorContext.Provider>
