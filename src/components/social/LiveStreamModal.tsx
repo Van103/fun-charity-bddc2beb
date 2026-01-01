@@ -1236,24 +1236,20 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                           key={msg.id} 
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className={`flex items-start gap-2 rounded-2xl px-3 py-2 backdrop-blur-sm group ${
-                            isQuestion ? 'bg-primary/30' : 'bg-black/60'
-                          }`}
+                          className="flex items-start gap-2 group"
                         >
-                          <Avatar className="w-6 h-6">
+                          <Avatar className="w-6 h-6 flex-shrink-0">
                             <AvatarImage src={msg.avatar} />
                             <AvatarFallback className="text-xs bg-primary/50">
                               {msg.user.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1">
-                              <span className="text-primary text-xs font-semibold">{msg.user}</span>
-                              {isQuestion && (
-                                <Badge className="bg-yellow-500 text-black text-[10px] px-1 py-0">Q&A</Badge>
-                              )}
-                            </div>
-                            <p className="text-white text-sm break-words">{msg.text}</p>
+                            <span className="text-primary text-xs font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{msg.user}</span>
+                            {isQuestion && (
+                              <Badge className="bg-yellow-500 text-black text-[10px] px-1 py-0 ml-1">Q&A</Badge>
+                            )}
+                            <p className="text-white text-sm break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{msg.text}</p>
                           </div>
                           {/* Pin button for host */}
                           <button
@@ -1264,7 +1260,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                               text: msg.text,
                               timestamp: msg.timestamp
                             })}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white flex-shrink-0"
                           >
                             <Pin className="w-4 h-4" />
                           </button>
