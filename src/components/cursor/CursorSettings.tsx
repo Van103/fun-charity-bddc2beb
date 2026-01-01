@@ -39,7 +39,7 @@ const CursorSettings = () => {
           </div>
 
           {/* Cursor Options Grid */}
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {CURSOR_OPTIONS.map((option) => (
               <button
                 key={option.id}
@@ -54,14 +54,14 @@ const CursorSettings = () => {
                 title={option.nameVi}
               >
                 {option.id === 'default' ? (
-                  <div className="w-7 h-7 flex items-center justify-center text-muted-foreground">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                  <div className="w-8 h-8 flex items-center justify-center text-muted-foreground">
+                    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
                       <path d="M4 4l7 19 2-7 7-2z"/>
                     </svg>
                   </div>
                 ) : option.id.startsWith('angel') ? (
                   <div 
-                    className="w-7 h-7 flex items-center justify-center rounded-full"
+                    className="w-8 h-8 flex items-center justify-center rounded-full"
                     style={{
                       background: option.id === 'angel' ? 'linear-gradient(135deg, #9333EA, #A855F7)' :
                                  option.id === 'angel-gold' ? 'linear-gradient(135deg, #F59E0B, #FCD34D)' :
@@ -69,16 +69,26 @@ const CursorSettings = () => {
                                  'linear-gradient(135deg, #3B82F6, #60A5FA)'
                     }}
                   >
-                    <span className="text-sm">👼</span>
+                    <span className="text-base">👼</span>
+                  </div>
+                ) : option.id.startsWith('arrow') ? (
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <img 
+                      src={option.cursor} 
+                      alt={option.nameVi} 
+                      className="w-6 h-6 object-contain"
+                    />
                   </div>
                 ) : (
-                  <img 
-                    src={`${option.cursor}?v=${Date.now()}`} 
-                    alt={option.nameVi} 
-                    className="w-7 h-7 object-contain"
-                  />
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <img 
+                      src={option.cursor} 
+                      alt={option.nameVi} 
+                      className="w-7 h-7 object-contain"
+                    />
+                  </div>
                 )}
-                <span className="text-[9px] mt-1 text-muted-foreground truncate w-full text-center">
+                <span className="text-[8px] mt-1 text-muted-foreground truncate w-full text-center leading-tight">
                   {option.nameVi}
                 </span>
                 {cursorType === option.id && (
