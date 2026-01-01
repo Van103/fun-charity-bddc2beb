@@ -2,25 +2,118 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCursor } from '@/contexts/CursorContext';
 import { motion } from 'framer-motion';
 
+const FAIRY_IMAGES = [
+  '/cursors/fairy-pink.png',
+  '/cursors/fairy-yellow.png',
+  '/cursors/fairy-purple.png',
+];
+
 interface Position {
   x: number;
   y: number;
 }
 
-// Map angel styles to their SVG paths
-const ANGEL_SVG_MAP: Record<string, string> = {
-  purple: '/cursors/angel-purple.svg',
-  gold: '/cursors/angel-gold.svg',
-  pink: '/cursors/angel-pink.svg',
-  blue: '/cursors/angel-blue.svg',
-};
+const BG_LUMA_MIN = 225;
+const BG_MAX_CHROMA = 18;
+
+function isLikelyBackground(r: number, g: number, b: number, a: number) {
+  if (a === 0) return true;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const chroma = max - min;
+  return max >= BG_LUMA_MIN && chroma <= BG_MAX_CHROMA;
+}
+
+async function removeBackgroundByEdgeFloodFill(src: string): Promise<Blob> {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = src;
+
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error('Failed to load fairy image'));
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('No canvas context');
+
+  ctx.drawImage(img, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  const w = canvas.width;
+  const h = canvas.height;
+  const visited = new Uint8Array(w * h);
+
+  const stack: number[] = [];
+  const push = (x: number, y: number) => {
+    if (x < 0 || y < 0 || x >= w || y >= h) return;
+    const idx = y * w + x;
+    if (visited[idx]) return;
+    visited[idx] = 1;
+
+    const o = idx * 4;
+    const r = data[o];
+    const g = data[o + 1];
+    const b = data[o + 2];
+    const a = data[o + 3];
+
+    if (isLikelyBackground(r, g, b, a)) {
+      // Make it transparent
+      data[o + 3] = 0;
+      stack.push(idx);
+    }
+  };
+
+  // Seed edges
+  for (let x = 0; x < w; x++) {
+    push(x, 0);
+    push(x, h - 1);
+  }
+  for (let y = 0; y < h; y++) {
+    push(0, y);
+    push(w - 1, y);
+  }
+
+  // Flood fill background connected to edges
+  while (stack.length) {
+    const idx = stack.pop()!;
+    const x = idx % w;
+    const y = Math.floor(idx / w);
+
+    push(x - 1, y);
+    push(x + 1, y);
+    push(x, y - 1);
+    push(x, y + 1);
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error('Failed to export PNG'))),
+      'image/png',
+      1,
+    );
+  });
+
+  return blob;
+}
 
 const FlyingAngel = () => {
-  const { cursorType, currentCursor } = useCursor();
+  const { cursorType } = useCursor();
 
   const isAngelCursor = cursorType.startsWith('angel');
-  const angelStyle = currentCursor.angelStyle || 'purple';
-  const angelSvgSrc = ANGEL_SVG_MAP[angelStyle] || ANGEL_SVG_MAP.purple;
+
+  const selectedFairy = useMemo(() => {
+    return FAIRY_IMAGES[Math.floor(Math.random() * FAIRY_IMAGES.length)];
+  }, []);
+
+  const [processedFairySrc, setProcessedFairySrc] = useState<string | null>(null);
 
   const [position, setPosition] = useState<Position>({ x: -100, y: -100 });
   const [targetPos, setTargetPos] = useState<Position>({ x: -100, y: -100 });
@@ -36,6 +129,29 @@ const FlyingAngel = () => {
   const lastMouseMoveRef = useRef(Date.now());
   const idleCheckRef = useRef<number | null>(null);
   const sittingTimeoutRef = useRef<number | null>(null);
+
+  // Make sure we always display a transparent sprite even if the source image has a baked checkerboard.
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    (async () => {
+      try {
+        const blob = await removeBackgroundByEdgeFloodFill(selectedFairy);
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setProcessedFairySrc(objectUrl);
+      } catch {
+        // fallback to raw image
+        setProcessedFairySrc(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedFairy]);
 
   const getRandomIdleTarget = useCallback((): Position => {
     const targets = document.querySelectorAll('button, [role="button"], a, .cursor-pointer');
@@ -135,8 +251,7 @@ const FlyingAngel = () => {
       const delta = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
-      // Wing flap speed - faster when flying
-      const flapSpeed = isSitting ? 0.008 : 0.02;
+      const flapSpeed = isSitting ? 0.005 : 0.015;
       setWingPhase((prev) => (prev + delta * flapSpeed) % (Math.PI * 2));
 
       setPosition((prev) => {
@@ -161,143 +276,45 @@ const FlyingAngel = () => {
 
   if (!isAngelCursor) return null;
 
-  // Wing flap amplitude
-  const wingFlap = Math.sin(wingPhase);
-  const leftWingRotate = isSitting ? wingFlap * 8 : wingFlap * 25;
-  const rightWingRotate = isSitting ? -wingFlap * 8 : -wingFlap * 25;
+  const wingFlap = Math.sin(wingPhase) * (isSitting ? 5 : 12);
 
   return (
     <motion.div
       className="fixed pointer-events-none z-[9999]"
-      style={{ left: position.x - 48, top: position.y - 32 }}
+      style={{ left: position.x - 40, top: position.y - 25 }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
     >
       <motion.div
         style={{
-          width: 96,
-          height: 96,
-          position: 'relative',
+          width: 70,
+          height: 70,
+          transform: `scaleX(${direction === 'left' ? -1 : 1})`,
         }}
         animate={{
-          scaleX: direction === 'left' ? -1 : 1,
-          y: isSitting ? [0, -2, 0] : [0, -4, 0, 4, 0],
+          rotate: isSitting ? [0, 2, 0, -2, 0] : [wingFlap * 0.12, -wingFlap * 0.12],
+          y: isSitting ? [0, -1, 0] : [0, -3, 0, 3, 0],
         }}
         transition={{
-          scaleX: { duration: 0.1 },
-          y: { duration: isSitting ? 1.5 : 0.3, repeat: Infinity, ease: 'easeInOut' },
+          rotate: { duration: isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
+          y: { duration: isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
         }}
       >
-        {/* SVG with animated wings */}
-        <svg 
-          width="96" 
-          height="96" 
-          viewBox="0 0 32 32" 
-          className="absolute inset-0"
-        >
-          <defs>
-            {/* Purple gradients */}
-            <linearGradient id="wingGradPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#E9D5FF' }} />
-              <stop offset="50%" style={{ stopColor: '#A855F7' }} />
-              <stop offset="100%" style={{ stopColor: '#7C3AED' }} />
-            </linearGradient>
-            <linearGradient id="dressGradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#7C3AED' }} />
-              <stop offset="100%" style={{ stopColor: '#4C1D95' }} />
-            </linearGradient>
-            
-            {/* Gold gradients */}
-            <linearGradient id="wingGradGold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#FEF3C7' }} />
-              <stop offset="50%" style={{ stopColor: '#FBBF24' }} />
-              <stop offset="100%" style={{ stopColor: '#D97706' }} />
-            </linearGradient>
-            <linearGradient id="dressGradGold" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#F59E0B' }} />
-              <stop offset="100%" style={{ stopColor: '#B45309' }} />
-            </linearGradient>
-            
-            {/* Pink gradients */}
-            <linearGradient id="wingGradPink" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#FBCFE8' }} />
-              <stop offset="50%" style={{ stopColor: '#EC4899' }} />
-              <stop offset="100%" style={{ stopColor: '#DB2777' }} />
-            </linearGradient>
-            <linearGradient id="dressGradPink" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#DB2777' }} />
-              <stop offset="100%" style={{ stopColor: '#9D174D' }} />
-            </linearGradient>
-            
-            {/* Blue gradients */}
-            <linearGradient id="wingGradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#BFDBFE' }} />
-              <stop offset="50%" style={{ stopColor: '#3B82F6' }} />
-              <stop offset="100%" style={{ stopColor: '#1D4ED8' }} />
-            </linearGradient>
-            <linearGradient id="dressGradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#1D4ED8' }} />
-              <stop offset="100%" style={{ stopColor: '#1E3A8A' }} />
-            </linearGradient>
-
-            {/* Crown gradient */}
-            <linearGradient id="crownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#FFD700' }} />
-              <stop offset="100%" style={{ stopColor: '#FFA500' }} />
-            </linearGradient>
-          </defs>
-
-          {/* Left wing group - animated */}
-          <motion.g
-            style={{ transformOrigin: '10px 11px' }}
-            animate={{ rotate: leftWingRotate }}
-            transition={{ duration: 0.05, ease: 'linear' }}
-          >
-            <path d="M6 10 Q2 6 4 2 Q8 4 10 8 Q8 10 6 10" fill={`url(#wingGrad${angelStyle.charAt(0).toUpperCase() + angelStyle.slice(1)})`} opacity="0.9"/>
-            <path d="M6 12 Q1 14 2 18 Q6 16 8 13 Q7 12 6 12" fill={`url(#wingGrad${angelStyle.charAt(0).toUpperCase() + angelStyle.slice(1)})`} opacity="0.8"/>
-            <circle cx="5" cy="5" r="0.5" fill="#FFD700"/>
-            <circle cx="4" cy="15" r="0.4" fill="#FFD700"/>
-          </motion.g>
-
-          {/* Right wing group - animated */}
-          <motion.g
-            style={{ transformOrigin: '22px 11px' }}
-            animate={{ rotate: rightWingRotate }}
-            transition={{ duration: 0.05, ease: 'linear' }}
-          >
-            <path d="M26 10 Q30 6 28 2 Q24 4 22 8 Q24 10 26 10" fill={`url(#wingGrad${angelStyle.charAt(0).toUpperCase() + angelStyle.slice(1)})`} opacity="0.9"/>
-            <path d="M26 12 Q31 14 30 18 Q26 16 24 13 Q25 12 26 12" fill={`url(#wingGrad${angelStyle.charAt(0).toUpperCase() + angelStyle.slice(1)})`} opacity="0.8"/>
-            <circle cx="27" cy="5" r="0.5" fill="#FFD700"/>
-            <circle cx="28" cy="15" r="0.4" fill="#FFD700"/>
-          </motion.g>
-
-          {/* Dress with style-specific color */}
-          <path d="M12 16 Q9 22 6 32 Q11 34 16 34 Q21 34 26 32 Q23 22 20 16 Q18 17 16 17 Q14 17 12 16" fill={`url(#dressGrad${angelStyle.charAt(0).toUpperCase() + angelStyle.slice(1)})`}/>
-          <path d="M6 32 Q9 30 12 32 Q14 30 16 32 Q18 30 20 32 Q23 30 26 32" 
-            stroke={angelStyle === 'purple' ? '#5B21B6' : angelStyle === 'gold' ? '#D97706' : angelStyle === 'pink' ? '#BE185D' : '#2563EB'} 
-            strokeWidth="0.8" fill="none" opacity="0.7"/>
-
-          {/* Body */}
-          <ellipse cx="16" cy="14" rx="4" ry="3" fill="#FDE7F3"/>
-
-          {/* Head */}
-          <circle cx="16" cy="8" r="4" fill="#FDE7F3"/>
-
-          {/* Crown */}
-          <path d="M11 5 L12 2 L14 4 L16 1 L18 4 L20 2 L21 5 L20 6 L12 6 Z" fill="url(#crownGrad)"/>
-          <circle cx="16" cy="3" r="0.8" fill={angelStyle === 'purple' ? '#EC4899' : angelStyle === 'gold' ? '#DC2626' : angelStyle === 'pink' ? '#EC4899' : '#3B82F6'}/>
-          <circle cx="13" cy="4" r="0.5" fill={angelStyle === 'purple' ? '#9333EA' : angelStyle === 'gold' ? '#9333EA' : angelStyle === 'pink' ? '#F472B6' : '#60A5FA'}/>
-          <circle cx="19" cy="4" r="0.5" fill={angelStyle === 'purple' ? '#9333EA' : angelStyle === 'gold' ? '#9333EA' : angelStyle === 'pink' ? '#F472B6' : '#60A5FA'}/>
-
-          {/* Face */}
-          <circle cx="14.5" cy="7.5" r="0.6" fill={angelStyle === 'purple' ? '#7C3AED' : angelStyle === 'gold' ? '#92400E' : angelStyle === 'pink' ? '#DB2777' : '#1D4ED8'}/>
-          <circle cx="17.5" cy="7.5" r="0.6" fill={angelStyle === 'purple' ? '#7C3AED' : angelStyle === 'gold' ? '#92400E' : angelStyle === 'pink' ? '#DB2777' : '#1D4ED8'}/>
-          <path d="M15 9.5 Q16 10.5 17 9.5" stroke={angelStyle === 'purple' ? '#EC4899' : angelStyle === 'gold' ? '#F59E0B' : angelStyle === 'pink' ? '#EC4899' : '#3B82F6'} strokeWidth="0.5" fill="none"/>
-
-          {/* Halo */}
-          <ellipse cx="16" cy="0" rx="3" ry="0.8" fill="none" stroke="#FFD700" strokeWidth="0.8" opacity="0.8"/>
-        </svg>
+        <motion.img
+          src={processedFairySrc ?? selectedFairy}
+          alt="Fairy cursor"
+          className="w-full h-full object-contain"
+          animate={{
+            scaleY: isSitting ? [1, 1.02, 1] : [1, 1.01, 1, 0.99, 1],
+            scaleX: isSitting ? 1 : [1, 1 + Math.abs(wingFlap) * 0.002, 1],
+          }}
+          transition={{
+            scaleY: { duration: isSitting ? 1 : 0.12, repeat: Infinity, ease: 'easeInOut' },
+            scaleX: { duration: 0.1, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          draggable={false}
+        />
       </motion.div>
     </motion.div>
   );
