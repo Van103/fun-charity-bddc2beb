@@ -8,16 +8,25 @@ interface LiveStreamCountdownProps {
 
 export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdownProps) {
   const [count, setCount] = useState(3);
+  const [hasCompleted, setHasCompleted] = useState(false);
 
   useEffect(() => {
     if (!isActive) {
       setCount(3);
+      setHasCompleted(false);
       return;
     }
 
+    // Prevent double execution
+    if (hasCompleted) return;
+
     if (count === 0) {
-      onComplete();
-      return;
+      setHasCompleted(true);
+      // Small delay to show "GO!" before completing
+      const completeTimer = setTimeout(() => {
+        onComplete();
+      }, 500);
+      return () => clearTimeout(completeTimer);
     }
 
     const timer = setTimeout(() => {
@@ -25,7 +34,7 @@ export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdow
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [isActive, count, onComplete]);
+  }, [isActive, count, onComplete, hasCompleted]);
 
   if (!isActive) return null;
 
