@@ -73,6 +73,21 @@ const ANGEL_THEMES: Record<AngelStyle, {
   },
 };
 
+// Get CSS filter for color variation
+const getColorFilter = (style: AngelStyle): string => {
+  switch (style) {
+    case 'gold':
+      return 'hue-rotate(-30deg) saturate(1.3)';
+    case 'pink':
+      return 'hue-rotate(30deg) saturate(1.2)';
+    case 'blue':
+      return 'hue-rotate(-120deg) saturate(1.1)';
+    case 'purple':
+    default:
+      return '';
+  }
+};
+
 // Sound utilities using Web Audio API
 const createAudioContext = () => {
   return new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -566,9 +581,8 @@ const FlyingAngel = () => {
       <motion.div
         className="fixed pointer-events-none z-[9998]"
         style={{
-          left: position.x - 28,
-          top: position.y - 28,
-          transform: `scaleX(${direction === 'left' ? -1 : 1})`,
+          left: position.x - 32,
+          top: position.y - 32,
         }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ 
@@ -588,10 +602,10 @@ const FlyingAngel = () => {
           className="absolute rounded-full blur-2xl"
           style={{
             background: `radial-gradient(circle, ${theme.glow} 0%, ${theme.glow.replace('0.4', '0.2')} 30%, ${theme.glow.replace('0.4', '0.1')} 60%, transparent 80%)`,
-            width: 100,
-            height: 100,
-            left: -22,
-            top: -22,
+            width: 120,
+            height: 120,
+            left: -28,
+            top: -28,
           }}
         />
         
@@ -600,10 +614,10 @@ const FlyingAngel = () => {
           className="absolute rounded-full blur-xl"
           style={{
             background: `radial-gradient(circle, rgba(255,255,255,0.4) 0%, ${theme.glow} 40%, transparent 70%)`,
-            width: 70,
-            height: 70,
-            left: -7,
-            top: -7,
+            width: 90,
+            height: 90,
+            left: -13,
+            top: -13,
           }}
           animate={{
             scale: [1, 1.1, 1],
@@ -616,205 +630,57 @@ const FlyingAngel = () => {
           }}
         />
         
-        {/* Flying Angel SVG */}
-        <svg 
-          width="56" 
-          height="56" 
-          viewBox="0 0 64 64" 
-          className="drop-shadow-lg relative z-10"
+        {/* Angel image */}
+        <motion.img 
+          src="/cursors/angel-cute.png"
+          alt="Flying Angel"
+          className="relative z-10"
           style={{
-            filter: `drop-shadow(0 0 12px ${theme.glow}) drop-shadow(0 0 20px ${theme.glow.replace('0.4', '0.2')})`
+            width: 64,
+            height: 64,
+            transform: `scaleX(${direction === 'left' ? -1 : 1})`,
+            filter: `drop-shadow(0 0 12px ${theme.glow}) drop-shadow(0 0 20px ${theme.glow.replace('0.4', '0.2')}) ${getColorFilter(angelStyle)}`,
           }}
-        >
-          <defs>
-            <linearGradient id={`wingGradFly-${angelStyle}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor={theme.wing[0]} />
-              <stop offset="30%" stopColor={theme.wing[1]} />
-              <stop offset="60%" stopColor={theme.wing[2]} />
-              <stop offset="100%" stopColor={theme.wing[3]} />
-            </linearGradient>
-            <linearGradient id={`wingInnerGlow-${angelStyle}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
-              <stop offset="100%" stopColor={theme.glow} />
-            </linearGradient>
-            <linearGradient id={`dressGradFly-${angelStyle}`} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={theme.dress[0]} />
-              <stop offset="50%" stopColor={theme.dress[1]} />
-              <stop offset="100%" stopColor={theme.dress[2]} />
-            </linearGradient>
-            <linearGradient id="hairGradFly" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FDE68A" />
-              <stop offset="50%" stopColor="#FCD34D" />
-              <stop offset="100%" stopColor="#F59E0B" />
-            </linearGradient>
-            <radialGradient id={`haloGlow-${angelStyle}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor={theme.halo} stopOpacity="0.9" />
-              <stop offset="70%" stopColor={theme.halo} stopOpacity="0.5" />
-              <stop offset="100%" stopColor={theme.halo} stopOpacity="0" />
-            </radialGradient>
-            <filter id="angelGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="glow"/>
-              <feMerge>
-                <feMergeNode in="glow"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          {/* Left Wing */}
-          <g style={{ transform: `rotate(${-wingFlap}deg)`, transformOrigin: '32px 28px', transition: 'transform 0.05s ease-out' }}>
-            <ellipse
-              cx="14"
-              cy="25"
-              rx="13"
-              ry="20"
-              fill={`url(#wingGradFly-${angelStyle})`}
-              opacity="0.92"
-              filter="url(#angelGlow)"
-            />
-            <ellipse
-              cx="11"
-              cy="23"
-              rx="7"
-              ry="14"
-              fill={`url(#wingInnerGlow-${angelStyle})`}
-              opacity="0.7"
-            />
-            <ellipse cx="8" cy="18" rx="3" ry="8" fill="rgba(255,255,255,0.4)" />
-            <circle cx="8" cy="16" r="2" fill={theme.halo} opacity="0.9">
-              <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.5s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="16" cy="28" r="1.5" fill={theme.halo} opacity="0.7">
-              <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.2s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="12" cy="14" r="1.2" fill="#FFF" opacity="0.8">
-              <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1s" repeatCount="indefinite" />
-            </circle>
-          </g>
-          
-          {/* Right Wing */}
-          <g style={{ transform: `rotate(${wingFlap}deg)`, transformOrigin: '32px 28px', transition: 'transform 0.05s ease-out' }}>
-            <ellipse
-              cx="50"
-              cy="25"
-              rx="13"
-              ry="20"
-              fill={`url(#wingGradFly-${angelStyle})`}
-              opacity="0.92"
-              filter="url(#angelGlow)"
-            />
-            <ellipse
-              cx="53"
-              cy="23"
-              rx="7"
-              ry="14"
-              fill={`url(#wingInnerGlow-${angelStyle})`}
-              opacity="0.7"
-            />
-            <ellipse cx="56" cy="18" rx="3" ry="8" fill="rgba(255,255,255,0.4)" />
-            <circle cx="56" cy="16" r="2" fill={theme.halo} opacity="0.9">
-              <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.3s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="48" cy="28" r="1.5" fill={theme.halo} opacity="0.7">
-              <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.4s" repeatCount="indefinite" />
-            </circle>
-            <circle cx="52" cy="14" r="1.2" fill="#FFF" opacity="0.8">
-              <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.1s" repeatCount="indefinite" />
-            </circle>
-          </g>
-          
-          {/* Halo glow background */}
-          <ellipse cx="32" cy="11" rx="10" ry="4" fill={`url(#haloGlow-${angelStyle})`} />
-          
-          {/* Halo */}
-          <ellipse 
-            cx="32" 
-            cy="11" 
-            rx="7" 
-            ry="2.5" 
-            fill="none" 
-            stroke={theme.halo}
-            strokeWidth="2.5"
-            opacity="0.95"
-            filter="url(#angelGlow)"
-          />
-          
-          {/* Hair back */}
-          <ellipse cx="32" cy="21" rx="9" ry="7" fill="url(#hairGradFly)" />
-          
-          {/* Head */}
-          <circle cx="32" cy="21" r="7" fill="#FFDAB9" />
-          
-          {/* Hair front strands */}
-          <path d="M25 18 Q28 14 32 16 Q36 14 39 18" fill="url(#hairGradFly)" />
-          
-          {/* Face */}
-          <ellipse cx="29" cy="20" rx="1.2" ry="1.5" fill="#4A3728" />
-          <ellipse cx="35" cy="20" rx="1.2" ry="1.5" fill="#4A3728" />
-          <circle cx="29.5" cy="19.5" r="0.4" fill="#FFF" />
-          <circle cx="35.5" cy="19.5" r="0.4" fill="#FFF" />
-          <path d="M29.5 24 Q32 26.5 34.5 24" stroke="#E8A0A0" strokeWidth="1" fill="none" strokeLinecap="round" />
-          <circle cx="26" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" />
-          <circle cx="38" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" />
-          
-          {/* Body */}
-          <ellipse cx="32" cy="33" rx="5" ry="4" fill="#FFDAB9" />
-          
-          {/* Dress */}
-          <path
-            d="M25 35 Q32 32 39 35 L42 52 Q32 55 22 52 Z"
-            fill={`url(#dressGradFly-${angelStyle})`}
-          />
-          <path d="M28 40 Q32 42 36 40" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" fill="none" />
-          <path d="M26 46 Q32 48 38 46" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" fill="none" />
-          
-          {/* Arms - with waving animation */}
-          <g style={{ transform: `rotate(${-25}deg)`, transformOrigin: '22px 35px' }}>
-            <ellipse cx="22" cy="38" rx="3" ry="5" fill="#FFDAB9" />
-          </g>
-          
-          {/* Right arm - waves when resting */}
-          <g style={{ 
-            transform: `rotate(${25 - armWave}deg)`, 
-            transformOrigin: '42px 35px',
-            transition: isWaving ? 'none' : 'transform 0.3s ease-out'
-          }}>
-            <ellipse cx="42" cy="38" rx="3" ry="5" fill="#FFDAB9" />
-            {/* Right hand */}
-            <circle cx="45" cy="42" r="2" fill="#FFDAB9" />
-            {/* Wave sparkles when waving */}
-            {isWaving && (
-              <>
-                <circle cx="48" cy="38" r="1.5" fill={theme.halo} opacity="0.8">
-                  <animate attributeName="opacity" values="0.8;0.3;0.8" dur="0.3s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="50" cy="42" r="1" fill={theme.halo} opacity="0.6">
-                  <animate attributeName="opacity" values="0.6;0.2;0.6" dur="0.4s" repeatCount="indefinite" />
-                </circle>
-              </>
-            )}
-          </g>
-          
-          {/* Left hand */}
-          <circle cx="19" cy="42" r="2" fill="#FFDAB9" />
-          
-          {/* Legs */}
-          {isResting ? (
-            <>
-              <ellipse cx="28" cy="54" rx="3" ry="4" fill="#FFDAB9" transform="rotate(-15 28 54)" />
-              <ellipse cx="36" cy="54" rx="3" ry="4" fill="#FFDAB9" transform="rotate(15 36 54)" />
-            </>
-          ) : (
-            <>
-              <ellipse cx="29" cy="55" rx="2.5" ry="5" fill="#FFDAB9" />
-              <ellipse cx="35" cy="55" rx="2.5" ry="5" fill="#FFDAB9" />
-            </>
-          )}
-          
-          {/* Feet */}
-          <ellipse cx="29" cy="59" rx="3" ry="2" fill="#F8B4D9" />
-          <ellipse cx="35" cy="59" rx="3" ry="2" fill="#F8B4D9" />
-        </svg>
+          animate={{
+            rotate: isWaving ? [0, -5, 5, -5, 5, 0] : 0,
+          }}
+          transition={{
+            rotate: { duration: 0.5, repeat: isWaving ? Infinity : 0 }
+          }}
+          draggable={false}
+        />
+        
+        {/* Sparkles around angel when waving */}
+        {isWaving && (
+          <>
+            <motion.div
+              className="absolute w-3 h-3"
+              style={{ right: -5, top: 10 }}
+              animate={{ 
+                scale: [0, 1.2, 0],
+                opacity: [0, 1, 0]
+              }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+                <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" fill={theme.halo} />
+              </svg>
+            </motion.div>
+            <motion.div
+              className="absolute w-2 h-2"
+              style={{ right: 0, top: 20 }}
+              animate={{ 
+                scale: [0, 1, 0],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{ duration: 0.4, repeat: Infinity, delay: 0.2 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+                <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" fill={theme.halo} />
+              </svg>
+            </motion.div>
+          </>
+        )}
         
         {/* Waving indicator */}
         {isWaving && (

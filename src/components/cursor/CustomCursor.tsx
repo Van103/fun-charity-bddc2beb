@@ -230,8 +230,9 @@ const CustomCursor = () => {
     };
   }, [animate]);
 
-  // Only hide if particles are disabled or using default cursor
-  if (!particlesEnabled || cursorType === 'default') return null;
+  // Only hide if particles are disabled, using default cursor, or using angel cursor
+  const isAngelCursor = cursorType.startsWith('angel');
+  if (!particlesEnabled || cursorType === 'default' || isAngelCursor) return null;
 
   return (
     <canvas
