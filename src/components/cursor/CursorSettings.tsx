@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 const CursorSettings = () => {
   const { cursorType, setCursorType, particlesEnabled, setParticlesEnabled, fairyColor, setFairyColor } = useCursor();
 
-  const isAngelCursor = cursorType.startsWith('angel');
+  const isAngelCursor = cursorType === 'angel';
 
   return (
     <Popover>
@@ -59,14 +59,11 @@ const CursorSettings = () => {
                       <path d="M4 4l7 19 2-7 7-2z"/>
                     </svg>
                   </div>
-                ) : option.id.startsWith('angel') ? (
+                ) : option.id === 'angel' ? (
                   <div 
                     className="w-9 h-9 flex items-center justify-center rounded-full"
                     style={{
-                      background: option.id === 'angel' ? 'linear-gradient(135deg, #9333EA, #A855F7)' :
-                                 option.id === 'angel-gold' ? 'linear-gradient(135deg, #F59E0B, #FCD34D)' :
-                                 option.id === 'angel-pink' ? 'linear-gradient(135deg, #EC4899, #F472B6)' :
-                                 'linear-gradient(135deg, #3B82F6, #60A5FA)'
+                      background: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6)'
                     }}
                   >
                     <span className="text-lg">👼</span>
