@@ -6,8 +6,8 @@
       <stop offset="100%" style="stop-color:#9333EA"/>
     </linearGradient>
     <linearGradient id="dressGradP" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#C084FC"/>
-      <stop offset="100%" style="stop-color:#7C3AED"/>
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#4C1D95"/>
     </linearGradient>
     <linearGradient id="crownGradP" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#FFD700"/>
@@ -31,11 +31,15 @@
   <circle cx="4" cy="15" r="0.4" fill="#FFD700"/>
   <circle cx="28" cy="15" r="0.4" fill="#FFD700"/>
   
-  <!-- Flowing dress -->
-  <path d="M12 16 Q10 20 8 28 Q12 30 16 30 Q20 30 24 28 Q22 20 20 16 Q18 17 16 17 Q14 17 12 16" fill="url(#dressGradP)"/>
-  <!-- Dress folds -->
-  <path d="M13 20 Q14 24 12 28" stroke="#7C3AED" stroke-width="0.5" fill="none" opacity="0.5"/>
-  <path d="M19 20 Q18 24 20 28" stroke="#7C3AED" stroke-width="0.5" fill="none" opacity="0.5"/>
+  <!-- Flowing longer dress -->
+  <path d="M12 16 Q9 22 6 32 Q11 34 16 34 Q21 34 26 32 Q23 22 20 16 Q18 17 16 17 Q14 17 12 16" fill="url(#dressGradP)"/>
+  <!-- Dress layers -->
+  <path d="M11 20 Q9 26 7 32" stroke="#4C1D95" stroke-width="0.6" fill="none" opacity="0.6"/>
+  <path d="M14 19 Q12 25 10 32" stroke="#4C1D95" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <path d="M21 20 Q23 26 25 32" stroke="#4C1D95" stroke-width="0.6" fill="none" opacity="0.6"/>
+  <path d="M18 19 Q20 25 22 32" stroke="#4C1D95" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <!-- Dress bottom ruffle -->
+  <path d="M6 32 Q9 30 12 32 Q14 30 16 32 Q18 30 20 32 Q23 30 26 32" stroke="#5B21B6" stroke-width="0.8" fill="none" opacity="0.7"/>
   
   <!-- Body -->
   <ellipse cx="16" cy="14" rx="4" ry="3" fill="#FDE7F3"/>
