@@ -133,6 +133,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [activeVideoDeviceId, setActiveVideoDeviceId] = useState<string | null>(null);
   const [viewerCount, setViewerCount] = useState(0);
   const [peakViewers, setPeakViewers] = useState(0);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -235,14 +236,22 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const startCameraPreview = useCallback(async () => {
     try {
       setIsCameraReady(false);
-      console.log('[LiveStream] Starting camera preview with facingMode:', facingMode);
+      console.log('[LiveStream] Starting camera preview with facingMode:', facingMode, 'deviceId:', activeVideoDeviceId);
+
+      const videoConstraints: MediaTrackConstraints = activeVideoDeviceId
+        ? {
+            deviceId: { exact: activeVideoDeviceId },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          }
+        : {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          };
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: { ideal: facingMode }, 
-          width: { ideal: 1280 }, 
-          height: { ideal: 720 } 
-        },
+        video: videoConstraints,
         audio: true,
       });
 
@@ -261,7 +270,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       toast.error("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
       setIsCameraReady(false);
     }
-  }, [facingMode, attachStreamToVideo]);
+  }, [facingMode, activeVideoDeviceId, attachStreamToVideo]);
 
   // Re-attach stream when phase changes (video element may be remounted)
   useEffect(() => {
@@ -361,25 +370,29 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     };
   }, [open, startCameraPreview, stopStream, isRecording, stopRecording]);
 
-  // Handle camera switch - properly restart stream with new facing mode
+  // Handle camera switch - restart stream when target camera changes
   useEffect(() => {
     const switchCameraStream = async () => {
-      if (open && streamRef.current) {
-        console.log('[LiveStream] Switching camera to:', facingMode);
-        // Stop current stream completely
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
-          streamRef.current = null;
-        }
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
-        // Start new stream with updated facingMode
-        await startCameraPreview();
+      if (!open) return;
+
+      console.log('[LiveStream] Restarting camera. facingMode:', facingMode, 'deviceId:', activeVideoDeviceId);
+
+      // Stop current stream completely (if any)
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
       }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+
+      await startCameraPreview();
     };
-    switchCameraStream();
-  }, [facingMode, open, startCameraPreview]);
+
+    // Only restart when we already have a preview (or when switching while open)
+    // If there is no stream yet, startCameraPreview() will create it.
+    void switchCameraStream();
+  }, [activeVideoDeviceId, facingMode, open, startCameraPreview]);
 
   // Simulate viewers and chat when streaming
   useEffect(() => {
@@ -459,9 +472,63 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     }
   };
 
-  const switchCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
-  };
+  const switchCamera = useCallback(async () => {
+    const desired: 'user' | 'environment' = facingMode === 'user' ? 'environment' : 'user';
+
+    try {
+      if (!navigator.mediaDevices?.enumerateDevices) {
+        setActiveVideoDeviceId(null);
+        setFacingMode(desired);
+        return;
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter((d) => d.kind === 'videoinput');
+
+      if (videoInputs.length < 2) {
+        toast.info('Thiết bị của bạn chỉ có 1 camera nên không thể chuyển camera sau.');
+        return;
+      }
+
+      const currentTrack = streamRef.current?.getVideoTracks?.()[0];
+      const currentDeviceIdFromTrack = currentTrack?.getSettings?.().deviceId;
+      const currentDeviceId = currentDeviceIdFromTrack ?? activeVideoDeviceId ?? null;
+
+      const label = (d: MediaDeviceInfo) => (d.label || '').toLowerCase();
+      const pick = (re: RegExp) =>
+        videoInputs.find((d) => re.test(label(d)) && d.deviceId !== currentDeviceId)?.deviceId;
+
+      const preferredId =
+        desired === 'environment'
+          ? pick(/back|rear|environment|sau/)
+          : pick(/front|user|facetime|trước/);
+
+      let targetId =
+        preferredId ??
+        videoInputs.find((d) => d.deviceId !== currentDeviceId)?.deviceId ??
+        null;
+
+      // Some browsers don't expose current deviceId; fall back to common ordering
+      if (!targetId) {
+        targetId =
+          desired === 'environment'
+            ? videoInputs[videoInputs.length - 1]?.deviceId ?? null
+            : videoInputs[0]?.deviceId ?? null;
+      }
+
+      // Ensure we actually change device when possible
+      if (currentDeviceId && targetId === currentDeviceId) {
+        targetId = videoInputs.find((d) => d.deviceId !== currentDeviceId)?.deviceId ?? targetId;
+      }
+
+      setActiveVideoDeviceId(targetId);
+      setFacingMode(desired);
+    } catch (err) {
+      console.warn('[LiveStream] enumerateDevices failed, falling back to facingMode:', err);
+      setActiveVideoDeviceId(null);
+      setFacingMode(desired);
+    }
+  }, [facingMode, activeVideoDeviceId]);
 
   const goLive = () => {
     // Set default title if empty
@@ -867,7 +934,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
                       {/* Camera toggle - one button like Facebook */}
                       <button
-                        onClick={switchCamera}
+                        onClick={() => void switchCamera()}
                         className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
                         title={facingMode === 'user' ? 'Chuyển sang camera sau' : 'Chuyển sang camera trước'}
                       >
@@ -1297,7 +1364,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                       variant="ghost"
                       size="icon"
                       className="rounded-full bg-white/20 text-white"
-                      onClick={switchCamera}
+                      onClick={() => void switchCamera()}
                     >
                       <RotateCcw className="w-5 h-5" />
                     </Button>
