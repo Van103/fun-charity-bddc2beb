@@ -12,8 +12,9 @@ interface Particle {
   size: number;
   rotation: number;
   rotationSpeed: number;
-  type: 'diamond' | 'heart' | 'star' | 'circle';
+  type: 'fourPointStar';
   color: string;
+  twinklePhase: number;
 }
 
 const CustomCursor = () => {
@@ -26,98 +27,80 @@ const CustomCursor = () => {
   const { cursorType, particlesEnabled, currentCursor } = useCursor();
   const [isVisible, setIsVisible] = useState(false);
 
-  const getParticleType = (cursor: CursorType): Particle['type'] => {
-    switch (cursor) {
-      case 'diamond': return 'diamond';
-      case 'heart': return 'heart';
-      case 'star': return 'star';
-      default: return 'diamond';
-    }
-  };
-
   const createParticle = useCallback((x: number, y: number): Particle => {
-    const rand = Math.random();
-    // Gold color palette for falling particles
-    const goldColors = [
+    // Gold/yellow sparkle color palette
+    const sparkleColors = [
       'rgba(255, 215, 0, 1)',    // Gold
-      'rgba(255, 193, 7, 1)',    // Amber
-      'rgba(201, 162, 61, 1)',   // Dark gold
-      'rgba(255, 235, 59, 1)',   // Yellow
-      'rgba(255, 165, 0, 1)',    // Orange gold
+      'rgba(255, 236, 130, 1)',  // Light gold
+      'rgba(255, 255, 200, 1)',  // Pale yellow
+      'rgba(255, 200, 87, 1)',   // Warm gold
+      'rgba(255, 255, 255, 1)',  // White sparkle
     ];
-    const color = goldColors[Math.floor(rand * goldColors.length)];
+    const color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
     
     return {
       x,
       y,
-      vx: (Math.random() - 0.5) * 4,
-      vy: Math.random() * 3 + 2,
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 2 + 1,
       life: 1,
-      maxLife: 60 + Math.random() * 40,
-      size: 4 + Math.random() * 6,
+      maxLife: 40 + Math.random() * 30,
+      size: 3 + Math.random() * 5,
       rotation: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.2,
-      type: getParticleType(cursorType),
+      rotationSpeed: (Math.random() - 0.5) * 0.15,
+      type: 'fourPointStar',
       color,
+      twinklePhase: Math.random() * Math.PI * 2,
     };
-  }, [cursorType]);
+  }, []);
 
-  const drawParticle = useCallback((
+  const drawFourPointStar = useCallback((
     ctx: CanvasRenderingContext2D,
     particle: Particle
   ) => {
-    const { x, y, size, rotation, life, type, color } = particle;
-    const alpha = life * 0.8;
+    const { x, y, size, rotation, life, color, twinklePhase } = particle;
+    
+    // Twinkling effect - varies opacity over time
+    const twinkle = Math.sin(twinklePhase + Date.now() * 0.01) * 0.3 + 0.7;
+    const alpha = life * twinkle;
     const colorWithAlpha = color.replace(/[\d.]+\)$/, `${alpha})`);
 
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(rotation);
 
-    switch (type) {
-      case 'diamond':
-        ctx.beginPath();
-        ctx.moveTo(0, -size);
-        ctx.lineTo(size * 0.6, 0);
-        ctx.lineTo(0, size);
-        ctx.lineTo(-size * 0.6, 0);
-        ctx.closePath();
-        ctx.fillStyle = colorWithAlpha;
-        ctx.fill();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.5})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-        break;
+    // Draw 4-point star sparkle
+    const outerRadius = size;
+    const innerRadius = size * 0.3;
 
-      case 'heart':
-        ctx.beginPath();
-        const s = size * 0.5;
-        ctx.moveTo(0, s);
-        ctx.bezierCurveTo(-s * 2, -s, -s, -s * 2, 0, -s * 0.5);
-        ctx.bezierCurveTo(s, -s * 2, s * 2, -s, 0, s);
-        ctx.fillStyle = colorWithAlpha;
-        ctx.fill();
-        break;
-
-      case 'star':
-        ctx.beginPath();
-        for (let i = 0; i < 5; i++) {
-          const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
-          const r = i % 2 === 0 ? size : size * 0.4;
-          if (i === 0) ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
-          else ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
-        }
-        ctx.closePath();
-        ctx.fillStyle = colorWithAlpha;
-        ctx.fill();
-        break;
-
-      default:
-        ctx.beginPath();
-        ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2);
-        ctx.fillStyle = colorWithAlpha;
-        ctx.fill();
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * Math.PI) / 4;
+      const radius = i % 2 === 0 ? outerRadius : innerRadius;
+      const px = Math.cos(angle) * radius;
+      const py = Math.sin(angle) * radius;
+      if (i === 0) {
+        ctx.moveTo(px, py);
+      } else {
+        ctx.lineTo(px, py);
+      }
     }
+    ctx.closePath();
+
+    // Gradient fill for sparkle effect
+    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, outerRadius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, ' + alpha + ')');
+    gradient.addColorStop(0.5, colorWithAlpha);
+    gradient.addColorStop(1, colorWithAlpha.replace(/[\d.]+\)$/, '0)'));
+
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Add a small bright center
+    ctx.beginPath();
+    ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+    ctx.fill();
 
     ctx.restore();
   }, []);
@@ -135,26 +118,25 @@ const CustomCursor = () => {
     const dy = mouseRef.current.y - lastMouseRef.current.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Spawn gold particles based on movement - more particles falling everywhere
-    // Works with all cursor types including angel cursors when particles are enabled
+    // Spawn sparkles based on movement
     if (distance > 2 && particlesEnabled && cursorType !== 'default') {
-      const particleCount = Math.min(Math.floor(distance / 6), 5);
+      const particleCount = Math.min(Math.floor(distance / 8), 4);
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push(
           createParticle(
-            mouseRef.current.x + (Math.random() - 0.5) * 40,
-            mouseRef.current.y + (Math.random() - 0.5) * 30
+            mouseRef.current.x + (Math.random() - 0.5) * 30,
+            mouseRef.current.y + (Math.random() - 0.5) * 25
           )
         );
       }
     }
 
-    // Also spawn some particles even when moving slowly for continuous fairy dust effect
-    if (particlesEnabled && cursorType !== 'default' && Math.random() < 0.15) {
+    // Spawn some sparkles even when moving slowly
+    if (particlesEnabled && cursorType !== 'default' && Math.random() < 0.12) {
       particlesRef.current.push(
         createParticle(
-          mouseRef.current.x + (Math.random() - 0.5) * 50,
-          mouseRef.current.y - 10 + Math.random() * 20
+          mouseRef.current.x + (Math.random() - 0.5) * 40,
+          mouseRef.current.y - 5 + Math.random() * 15
         )
       );
     }
@@ -165,25 +147,25 @@ const CustomCursor = () => {
     particlesRef.current = particlesRef.current.filter(particle => {
       particle.x += particle.vx;
       particle.y += particle.vy;
-      particle.vy += 0.06;
-      particle.vx *= 0.99;
+      particle.vy += 0.04; // Slower falling
+      particle.vx *= 0.98;
       particle.rotation += particle.rotationSpeed;
       particle.life -= 1 / particle.maxLife;
 
       if (particle.life > 0) {
-        drawParticle(ctx, particle);
+        drawFourPointStar(ctx, particle);
         return true;
       }
       return false;
     });
 
-    // Limit particles for performance - increased for more sparkle effect
-    if (particlesRef.current.length > 80) {
-      particlesRef.current = particlesRef.current.slice(-80);
+    // Limit particles for performance
+    if (particlesRef.current.length > 60) {
+      particlesRef.current = particlesRef.current.slice(-60);
     }
 
     animationRef.current = requestAnimationFrame(animate);
-  }, [createParticle, drawParticle, particlesEnabled, cursorType]);
+  }, [createParticle, drawFourPointStar, particlesEnabled, cursorType]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
