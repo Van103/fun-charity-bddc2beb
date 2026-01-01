@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCursor } from '@/contexts/CursorContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const FAIRY_IMAGES = [
   '/cursors/fairy-pink.png',
@@ -8,9 +8,20 @@ const FAIRY_IMAGES = [
   '/cursors/fairy-purple.png',
 ];
 
+const SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#FFFACD', '#E6E6FA'];
+
 interface Position {
   x: number;
   y: number;
+}
+
+interface Sparkle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  rotation: number;
 }
 
 const BG_LUMA_MIN = 225;
@@ -127,12 +138,36 @@ const FlyingAngel = () => {
   const [hidePosition, setHidePosition] = useState<'left' | 'right' | 'top' | 'bottom'>('right');
   const [peekPhase, setPeekPhase] = useState(0);
 
+  const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const sparkleIdRef = useRef(0);
+
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
   const lastMouseMoveRef = useRef(Date.now());
   const idleCheckRef = useRef<number | null>(null);
   const sittingTimeoutRef = useRef<number | null>(null);
   const hideTimeoutRef = useRef<number | null>(null);
+  const sparkleIntervalRef = useRef<number | null>(null);
+
+  // Create sparkle
+  const createSparkle = useCallback((centerX: number, centerY: number) => {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 20 + Math.random() * 30;
+    const sparkle: Sparkle = {
+      id: sparkleIdRef.current++,
+      x: centerX + Math.cos(angle) * distance,
+      y: centerY + Math.sin(angle) * distance,
+      size: 6 + Math.random() * 10,
+      color: SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)],
+      rotation: Math.random() * 360,
+    };
+    setSparkles((prev) => [...prev.slice(-15), sparkle]);
+    
+    // Remove after animation
+    setTimeout(() => {
+      setSparkles((prev) => prev.filter((s) => s.id !== sparkle.id));
+    }, 1000);
+  }, []);
 
   // Make sure we always display a transparent sprite even if the source image has a baked checkerboard.
   useEffect(() => {
@@ -328,6 +363,31 @@ const FlyingAngel = () => {
     };
   }, [idleTarget, isIdle, isSitting, targetPos]);
 
+  // Sparkle generation
+  useEffect(() => {
+    if (!isAngelCursor || isHiding) {
+      if (sparkleIntervalRef.current) {
+        window.clearInterval(sparkleIntervalRef.current);
+        sparkleIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // More sparkles when sitting, less when moving fast
+    const interval = isSitting ? 300 : 150;
+    
+    sparkleIntervalRef.current = window.setInterval(() => {
+      createSparkle(position.x, position.y);
+    }, interval);
+
+    return () => {
+      if (sparkleIntervalRef.current) {
+        window.clearInterval(sparkleIntervalRef.current);
+        sparkleIntervalRef.current = null;
+      }
+    };
+  }, [createSparkle, isAngelCursor, isHiding, isSitting, position.x, position.y]);
+
   if (!isAngelCursor) return null;
 
   const wingFlap = Math.sin(wingPhase) * (isSitting ? 5 : 12);
@@ -348,56 +408,88 @@ const FlyingAngel = () => {
   const peekOffset = getPeekOffset();
 
   return (
-    <motion.div
-      className="fixed pointer-events-none z-[9999]"
-      style={{ left: position.x - 40 + peekOffset.x, top: position.y - 25 + peekOffset.y }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ 
-        opacity: isHiding && peekPhase % 2 === 0 ? 0.3 : 1, 
-        scale: isHiding ? 0.8 : 1,
-        rotate: isHiding ? (hidePosition === 'left' ? -20 : hidePosition === 'right' ? 20 : 0) : 0
-      }}
-      transition={{ duration: 0.3 }}
-    >
+    <>
+      {/* Sparkles */}
+      <AnimatePresence>
+        {sparkles.map((sparkle) => (
+          <motion.div
+            key={sparkle.id}
+            className="fixed pointer-events-none z-[9998]"
+            style={{
+              left: sparkle.x,
+              top: sparkle.y,
+              width: sparkle.size,
+              height: sparkle.size,
+            }}
+            initial={{ opacity: 1, scale: 0, rotate: sparkle.rotation }}
+            animate={{ 
+              opacity: [1, 1, 0],
+              scale: [0, 1.2, 0.5],
+              rotate: sparkle.rotation + 180,
+              y: [0, -20, -30],
+            }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+          >
+            <svg viewBox="0 0 24 24" fill={sparkle.color} className="w-full h-full drop-shadow-lg">
+              <path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" />
+            </svg>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Fairy */}
       <motion.div
-        style={{
-          width: 70,
-          height: 70,
-          transform: `scaleX(${direction === 'left' ? -1 : 1})`,
+        className="fixed pointer-events-none z-[9999]"
+        style={{ left: position.x - 40 + peekOffset.x, top: position.y - 25 + peekOffset.y }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ 
+          opacity: isHiding && peekPhase % 2 === 0 ? 0.3 : 1, 
+          scale: isHiding ? 0.8 : 1,
+          rotate: isHiding ? (hidePosition === 'left' ? -20 : hidePosition === 'right' ? 20 : 0) : 0
         }}
-        animate={{
-          rotate: isHiding 
-            ? [0, 5, 0, -5, 0] 
-            : isSitting 
-              ? [0, 2, 0, -2, 0] 
-              : [wingFlap * 0.12, -wingFlap * 0.12],
-          y: isHiding
-            ? [0, -2, 0, 2, 0]
-            : isSitting 
-              ? [0, -1, 0] 
-              : [0, -3, 0, 3, 0],
-        }}
-        transition={{
-          rotate: { duration: isHiding ? 0.5 : isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
-          y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
-        }}
+        transition={{ duration: 0.3 }}
       >
-        <motion.img
-          src={processedFairySrc ?? selectedFairy}
-          alt="Fairy cursor"
-          className="w-full h-full object-contain"
+        <motion.div
+          style={{
+            width: 70,
+            height: 70,
+            transform: `scaleX(${direction === 'left' ? -1 : 1})`,
+          }}
           animate={{
-            scaleY: isSitting ? [1, 1.02, 1] : [1, 1.01, 1, 0.99, 1],
-            scaleX: isSitting ? 1 : [1, 1 + Math.abs(wingFlap) * 0.002, 1],
+            rotate: isHiding 
+              ? [0, 5, 0, -5, 0] 
+              : isSitting 
+                ? [0, 2, 0, -2, 0] 
+                : [wingFlap * 0.12, -wingFlap * 0.12],
+            y: isHiding
+              ? [0, -2, 0, 2, 0]
+              : isSitting 
+                ? [0, -1, 0] 
+                : [0, -3, 0, 3, 0],
           }}
           transition={{
-            scaleY: { duration: isSitting ? 1 : 0.12, repeat: Infinity, ease: 'easeInOut' },
-            scaleX: { duration: 0.1, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { duration: isHiding ? 0.5 : isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
+            y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
           }}
-          draggable={false}
-        />
+        >
+          <motion.img
+            src={processedFairySrc ?? selectedFairy}
+            alt="Fairy cursor"
+            className="w-full h-full object-contain"
+            animate={{
+              scaleY: isSitting ? [1, 1.02, 1] : [1, 1.01, 1, 0.99, 1],
+              scaleX: isSitting ? 1 : [1, 1 + Math.abs(wingFlap) * 0.002, 1],
+            }}
+            transition={{
+              scaleY: { duration: isSitting ? 1 : 0.12, repeat: Infinity, ease: 'easeInOut' },
+              scaleX: { duration: 0.1, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            draggable={false}
+          />
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </>
   );
 };
 
