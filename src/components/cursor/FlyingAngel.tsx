@@ -125,17 +125,24 @@ const FlyingAngel = () => {
   const [targetPos, setTargetPos] = useState<Position>({ x: -100, y: -100 });
   const [isIdle, setIsIdle] = useState(false);
   const [isResting, setIsResting] = useState(false);
+  const [isWaving, setIsWaving] = useState(false);
+  const [wavePhase, setWavePhase] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [wingPhase, setWingPhase] = useState(0);
   const [trail, setTrail] = useState<Position[]>([]);
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [goldDust, setGoldDust] = useState<GoldDust[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [highlightedElement, setHighlightedElement] = useState<{
+    rect: DOMRect;
+    element: Element;
+  } | null>(null);
   
   const mouseRef = useRef<Position>({ x: 0, y: 0 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const restTimerRef = useRef<NodeJS.Timeout | null>(null);
   const flyIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const waveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const animationRef = useRef<number>();
   const lastTimeRef = useRef(0);
   const sparkleIdRef = useRef(0);
@@ -151,7 +158,7 @@ const FlyingAngel = () => {
   const isAngelCursor = cursorType.startsWith('angel');
 
   // Get random interactive element to fly to
-  const getRandomTarget = useCallback((): { pos: Position; label: string } | null => {
+  const getRandomTarget = useCallback((): { pos: Position; label: string; element: Element; rect: DOMRect } | null => {
     const selectors = [
       'button:not([disabled])',
       'a[href]',
@@ -192,7 +199,9 @@ const FlyingAngel = () => {
         x: rect.left + rect.width / 2,
         y: rect.top - 10
       },
-      label
+      label,
+      element: el,
+      rect
     };
   }, []);
 
@@ -226,6 +235,8 @@ const FlyingAngel = () => {
   const startIdleMode = useCallback(() => {
     setIsIdle(true);
     setIsResting(false);
+    setIsWaving(false);
+    setHighlightedElement(null);
     
     const flyToRandomTarget = () => {
       const target = getRandomTarget();
@@ -245,16 +256,32 @@ const FlyingAngel = () => {
           setIsResting(true);
           wasFlyingRef.current = false;
           
+          // Highlight the element
+          setHighlightedElement({ rect: target.rect, element: target.element });
+          
           // Play resting sound
           if (soundEnabled) {
             playRestingSound();
           }
           
+          // Start waving after a short delay
+          if (waveTimerRef.current) clearTimeout(waveTimerRef.current);
+          waveTimerRef.current = setTimeout(() => {
+            setIsWaving(true);
+            
+            // Stop waving after 2 seconds
+            setTimeout(() => {
+              setIsWaving(false);
+            }, 2000);
+          }, 500);
+          
           // After resting, fly to next target
           setTimeout(() => {
             setIsResting(false);
+            setIsWaving(false);
+            setHighlightedElement(null);
             flyToRandomTarget();
-          }, 2000 + Math.random() * 2000);
+          }, 3000 + Math.random() * 2000);
         }, 1500);
       }
     };
@@ -266,6 +293,8 @@ const FlyingAngel = () => {
   const stopIdleMode = useCallback(() => {
     setIsIdle(false);
     setIsResting(false);
+    setIsWaving(false);
+    setHighlightedElement(null);
     wasFlyingRef.current = false;
     if (flyIntervalRef.current) {
       clearInterval(flyIntervalRef.current);
@@ -274,6 +303,10 @@ const FlyingAngel = () => {
     if (restTimerRef.current) {
       clearTimeout(restTimerRef.current);
       restTimerRef.current = null;
+    }
+    if (waveTimerRef.current) {
+      clearTimeout(waveTimerRef.current);
+      waveTimerRef.current = null;
     }
   }, []);
 
@@ -318,6 +351,11 @@ const FlyingAngel = () => {
       // Wing flapping - slower when resting
       const wingSpeed = isResting ? 0.003 : 0.012;
       setWingPhase(prev => (prev + delta * wingSpeed) % (Math.PI * 2));
+      
+      // Wave animation
+      if (isWaving) {
+        setWavePhase(prev => (prev + delta * 0.015) % (Math.PI * 2));
+      }
       
       // Smooth follow with easing
       setPosition(prev => {
@@ -382,15 +420,76 @@ const FlyingAngel = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [targetPos, isIdle, isResting, direction, createSparkle, createGoldDust]);
+  }, [targetPos, isIdle, isResting, isWaving, direction, createSparkle, createGoldDust]);
 
   // Only show for angel cursor types and when particles are enabled
   if (!isAngelCursor || !particlesEnabled) return null;
 
   const wingFlap = isResting ? Math.sin(wingPhase) * 3 : Math.sin(wingPhase) * 18;
+  const armWave = isWaving ? Math.sin(wavePhase) * 35 : 0;
 
   return (
     <AnimatePresence>
+      {/* Element highlight effect */}
+      {highlightedElement && isResting && (
+        <motion.div
+          className="fixed pointer-events-none z-[9990]"
+          style={{
+            left: highlightedElement.rect.left - 8,
+            top: highlightedElement.rect.top - 8,
+            width: highlightedElement.rect.width + 16,
+            height: highlightedElement.rect.height + 16,
+            borderRadius: 12,
+            border: `2px solid ${theme.primary}`,
+            boxShadow: `0 0 20px ${theme.glow}, 0 0 40px ${theme.glow.replace('0.4', '0.2')}, inset 0 0 20px ${theme.glow.replace('0.4', '0.1')}`,
+            background: `linear-gradient(135deg, ${theme.glow.replace('0.4', '0.1')} 0%, transparent 50%, ${theme.glow.replace('0.4', '0.05')} 100%)`,
+          }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1,
+            boxShadow: [
+              `0 0 20px ${theme.glow}, 0 0 40px ${theme.glow.replace('0.4', '0.2')}`,
+              `0 0 30px ${theme.glow}, 0 0 60px ${theme.glow.replace('0.4', '0.3')}`,
+              `0 0 20px ${theme.glow}, 0 0 40px ${theme.glow.replace('0.4', '0.2')}`
+            ]
+          }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ 
+            duration: 0.3,
+            boxShadow: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          {/* Sparkle corners */}
+          {[
+            { left: -4, top: -4 },
+            { right: -4, top: -4 },
+            { left: -4, bottom: -4 },
+            { right: -4, bottom: -4 }
+          ].map((pos, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2"
+              style={{
+                ...pos,
+                background: theme.halo,
+                borderRadius: '50%',
+                boxShadow: `0 0 8px ${theme.halo}`
+              }}
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.8, 1, 0.8]
+              }}
+              transition={{
+                duration: 1,
+                delay: i * 0.2,
+                repeat: Infinity
+              }}
+            />
+          ))}
+        </motion.div>
+      )}
+      
       {/* Trail effect */}
       {trail.map((pos, i) => (
         <motion.div
@@ -669,13 +768,35 @@ const FlyingAngel = () => {
           <path d="M28 40 Q32 42 36 40" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" fill="none" />
           <path d="M26 46 Q32 48 38 46" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" fill="none" />
           
-          {/* Arms */}
-          <ellipse cx="22" cy="38" rx="3" ry="5" fill="#FFDAB9" transform="rotate(-25 22 38)" />
-          <ellipse cx="42" cy="38" rx="3" ry="5" fill="#FFDAB9" transform="rotate(25 42 38)" />
+          {/* Arms - with waving animation */}
+          <g style={{ transform: `rotate(${-25}deg)`, transformOrigin: '22px 35px' }}>
+            <ellipse cx="22" cy="38" rx="3" ry="5" fill="#FFDAB9" />
+          </g>
           
-          {/* Hands */}
+          {/* Right arm - waves when resting */}
+          <g style={{ 
+            transform: `rotate(${25 - armWave}deg)`, 
+            transformOrigin: '42px 35px',
+            transition: isWaving ? 'none' : 'transform 0.3s ease-out'
+          }}>
+            <ellipse cx="42" cy="38" rx="3" ry="5" fill="#FFDAB9" />
+            {/* Right hand */}
+            <circle cx="45" cy="42" r="2" fill="#FFDAB9" />
+            {/* Wave sparkles when waving */}
+            {isWaving && (
+              <>
+                <circle cx="48" cy="38" r="1.5" fill={theme.halo} opacity="0.8">
+                  <animate attributeName="opacity" values="0.8;0.3;0.8" dur="0.3s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="50" cy="42" r="1" fill={theme.halo} opacity="0.6">
+                  <animate attributeName="opacity" values="0.6;0.2;0.6" dur="0.4s" repeatCount="indefinite" />
+                </circle>
+              </>
+            )}
+          </g>
+          
+          {/* Left hand */}
           <circle cx="19" cy="42" r="2" fill="#FFDAB9" />
-          <circle cx="45" cy="42" r="2" fill="#FFDAB9" />
           
           {/* Legs */}
           {isResting ? (
@@ -695,8 +816,30 @@ const FlyingAngel = () => {
           <ellipse cx="35" cy="59" rx="3" ry="2" fill="#F8B4D9" />
         </svg>
         
-        {/* Resting indicator */}
-        {isResting && (
+        {/* Waving indicator */}
+        {isWaving && (
+          <motion.div
+            className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap font-medium"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              rotate: [-5, 5, -5]
+            }}
+            style={{
+              textShadow: `0 0 10px ${theme.glow}`,
+              color: theme.halo
+            }}
+            transition={{
+              rotate: { duration: 0.5, repeat: Infinity }
+            }}
+          >
+            👋 Xin chào! 👋
+          </motion.div>
+        )}
+        
+        {/* Resting indicator (when not waving) */}
+        {isResting && !isWaving && (
           <motion.div
             className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap font-medium"
             initial={{ opacity: 0, y: 5 }}
