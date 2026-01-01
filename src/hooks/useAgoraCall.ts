@@ -37,8 +37,28 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
   const screenTrackRef = useRef<ILocalVideoTrack | null>(null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
   const appIdRef = useRef<string>('');
+
+  // Internal flags to prevent race conditions
   const isLeavingRef = useRef<boolean>(false);
   const isJoiningRef = useRef<boolean>(false);
+
+  // Keep latest callbacks in refs so this hook stays stable across re-renders.
+  // (Otherwise, cleanup effects may run on every render and trigger unexpected leave())
+  const onRemoteUserJoinedRef = useRef<UseAgoraCallProps["onRemoteUserJoined"]>(onRemoteUserJoined);
+  const onRemoteUserLeftRef = useRef<UseAgoraCallProps["onRemoteUserLeft"]>(onRemoteUserLeft);
+  const onCallEndedRef = useRef<UseAgoraCallProps["onCallEnded"]>(onCallEnded);
+
+  useEffect(() => {
+    onRemoteUserJoinedRef.current = onRemoteUserJoined;
+  }, [onRemoteUserJoined]);
+
+  useEffect(() => {
+    onRemoteUserLeftRef.current = onRemoteUserLeft;
+  }, [onRemoteUserLeft]);
+
+  useEffect(() => {
+    onCallEndedRef.current = onCallEnded;
+  }, [onCallEnded]);
 
   // Initialize Agora client
   const initClient = useCallback(() => {
@@ -153,7 +173,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
             user.audioTrack?.play();
           }
           
-          onRemoteUserJoined?.(user);
+          onRemoteUserJoinedRef.current?.(user);
         } catch (subError) {
           if (!isLeavingRef.current) {
             console.error('[Agora] Failed to subscribe:', subError);
@@ -173,7 +193,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
         if (isLeavingRef.current) return;
         console.log('[Agora] Remote user left:', user.uid);
         setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
-        onRemoteUserLeft?.(user);
+        onRemoteUserLeftRef.current?.(user);
       });
 
       // Join the channel với uid = null để Agora tự gán (giống dự án FunProfile)
@@ -242,7 +262,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       toast.error(errorMsg);
       throw err;
     }
-  }, [initClient, getToken, onRemoteUserJoined, onRemoteUserLeft]);
+  }, [initClient, getToken]);
 
   // Leave channel
   const leaveChannel = useCallback(async () => {
@@ -327,8 +347,8 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     // Reset joining flag
     isJoiningRef.current = false;
 
-    onCallEnded?.();
-  }, [onCallEnded]);
+    onCallEndedRef.current?.();
+  }, []);
 
   // Toggle mute
   const toggleMute = useCallback(async () => {
