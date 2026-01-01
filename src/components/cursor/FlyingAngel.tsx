@@ -3,9 +3,7 @@ import { useCursor } from '@/contexts/CursorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FAIRY_IMAGES = [
-  '/cursors/fairy-pink.png',
-  '/cursors/fairy-yellow.png',
-  '/cursors/fairy-purple.png',
+  '/cursors/fairy-angel.png',
 ];
 
 const SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#FFFACD', '#E6E6FA'];
