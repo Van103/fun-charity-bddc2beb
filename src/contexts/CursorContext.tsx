@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type CursorType = 'angel' | 'diamond' | 'heart' | 'baby' | 'star' | 'crown' | 'default';
+export type CursorType = 'angel' | 'angel-gold' | 'angel-pink' | 'angel-blue' | 'diamond' | 'heart' | 'baby' | 'star' | 'crown' | 'default';
+
+export type AngelStyle = 'purple' | 'gold' | 'pink' | 'blue';
 
 interface CursorOption {
   id: CursorType;
@@ -10,6 +12,7 @@ interface CursorOption {
   cursorHover: string;
   particleColor: string;
   particleColorAlt: string;
+  angelStyle?: AngelStyle;
 }
 
 export const CURSOR_OPTIONS: CursorOption[] = [
@@ -19,8 +22,39 @@ export const CURSOR_OPTIONS: CursorOption[] = [
     nameVi: 'Thiên thần tím',
     cursor: '/cursors/angel-purple.svg',
     cursorHover: '/cursors/angel-gold.svg',
-    particleColor: 'rgba(201, 162, 61, 1)',
-    particleColorAlt: 'rgba(255, 215, 100, 1)',
+    particleColor: 'rgba(147, 51, 234, 1)',
+    particleColorAlt: 'rgba(168, 85, 247, 1)',
+    angelStyle: 'purple',
+  },
+  {
+    id: 'angel-gold',
+    name: 'Golden Angel',
+    nameVi: 'Thiên thần vàng',
+    cursor: '/cursors/angel-gold.svg',
+    cursorHover: '/cursors/angel-gold.svg',
+    particleColor: 'rgba(255, 215, 0, 1)',
+    particleColorAlt: 'rgba(255, 180, 0, 1)',
+    angelStyle: 'gold',
+  },
+  {
+    id: 'angel-pink',
+    name: 'Pink Angel',
+    nameVi: 'Thiên thần hồng',
+    cursor: '/cursors/angel-purple.svg',
+    cursorHover: '/cursors/angel-gold.svg',
+    particleColor: 'rgba(236, 72, 153, 1)',
+    particleColorAlt: 'rgba(244, 114, 182, 1)',
+    angelStyle: 'pink',
+  },
+  {
+    id: 'angel-blue',
+    name: 'Blue Angel',
+    nameVi: 'Thiên thần xanh',
+    cursor: '/cursors/angel-purple.svg',
+    cursorHover: '/cursors/angel-gold.svg',
+    particleColor: 'rgba(59, 130, 246, 1)',
+    particleColorAlt: 'rgba(96, 165, 250, 1)',
+    angelStyle: 'blue',
   },
   {
     id: 'diamond',

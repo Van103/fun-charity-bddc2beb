@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useCursor } from '@/contexts/CursorContext';
+import { useCursor, AngelStyle } from '@/contexts/CursorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Position {
@@ -25,8 +25,102 @@ interface GoldDust {
   drift: number;
 }
 
+// Angel color themes
+const ANGEL_THEMES: Record<AngelStyle, {
+  primary: string;
+  secondary: string;
+  glow: string;
+  dust: string;
+  dress: [string, string, string];
+  wing: [string, string, string, string];
+  halo: string;
+}> = {
+  purple: {
+    primary: '#9333EA',
+    secondary: '#A855F7',
+    glow: 'rgba(147,51,234,0.4)',
+    dust: '#9333EA',
+    dress: ['#A855F7', '#9333EA', '#7C3AED'],
+    wing: ['rgba(255,255,255,0.95)', 'rgba(255,240,200,0.9)', 'rgba(200,180,255,0.8)', 'rgba(147,51,234,0.6)'],
+    halo: '#FFD700',
+  },
+  gold: {
+    primary: '#F59E0B',
+    secondary: '#FCD34D',
+    glow: 'rgba(255,215,0,0.5)',
+    dust: '#FFD700',
+    dress: ['#FCD34D', '#F59E0B', '#D97706'],
+    wing: ['rgba(255,255,255,0.95)', 'rgba(255,240,200,0.95)', 'rgba(255,215,100,0.8)', 'rgba(255,180,0,0.6)'],
+    halo: '#FFD700',
+  },
+  pink: {
+    primary: '#EC4899',
+    secondary: '#F472B6',
+    glow: 'rgba(236,72,153,0.4)',
+    dust: '#F472B6',
+    dress: ['#F472B6', '#EC4899', '#DB2777'],
+    wing: ['rgba(255,255,255,0.95)', 'rgba(255,220,230,0.9)', 'rgba(255,182,193,0.8)', 'rgba(236,72,153,0.6)'],
+    halo: '#FFD700',
+  },
+  blue: {
+    primary: '#3B82F6',
+    secondary: '#60A5FA',
+    glow: 'rgba(59,130,246,0.4)',
+    dust: '#60A5FA',
+    dress: ['#60A5FA', '#3B82F6', '#2563EB'],
+    wing: ['rgba(255,255,255,0.95)', 'rgba(220,240,255,0.9)', 'rgba(180,220,255,0.8)', 'rgba(59,130,246,0.6)'],
+    halo: '#FFD700',
+  },
+};
+
+// Sound utilities using Web Audio API
+const createAudioContext = () => {
+  return new (window.AudioContext || (window as any).webkitAudioContext)();
+};
+
+const playChimeSound = (frequency: number = 800, duration: number = 0.3, volume: number = 0.1) => {
+  try {
+    const ctx = createAudioContext();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(frequency * 1.5, ctx.currentTime + duration * 0.1);
+    oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.8, ctx.currentTime + duration);
+    
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + duration);
+    
+    // Clean up
+    setTimeout(() => ctx.close(), duration * 1000 + 100);
+  } catch (e) {
+    // Silently fail if audio is not available
+  }
+};
+
+const playRestingSound = () => {
+  // Play a gentle descending chime when resting
+  playChimeSound(1200, 0.2, 0.08);
+  setTimeout(() => playChimeSound(900, 0.25, 0.06), 100);
+  setTimeout(() => playChimeSound(700, 0.3, 0.04), 200);
+};
+
+const playFlyingSound = () => {
+  // Play a gentle ascending sparkle sound
+  playChimeSound(600, 0.15, 0.05);
+  setTimeout(() => playChimeSound(800, 0.15, 0.04), 80);
+};
+
 const FlyingAngel = () => {
-  const { cursorType, particlesEnabled } = useCursor();
+  const { cursorType, particlesEnabled, currentCursor } = useCursor();
   const [position, setPosition] = useState<Position>({ x: -100, y: -100 });
   const [targetPos, setTargetPos] = useState<Position>({ x: -100, y: -100 });
   const [isIdle, setIsIdle] = useState(false);
@@ -36,7 +130,7 @@ const FlyingAngel = () => {
   const [trail, setTrail] = useState<Position[]>([]);
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [goldDust, setGoldDust] = useState<GoldDust[]>([]);
-  const [restingOnElement, setRestingOnElement] = useState<string>('');
+  const [soundEnabled, setSoundEnabled] = useState(true);
   
   const mouseRef = useRef<Position>({ x: 0, y: 0 });
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -46,6 +140,15 @@ const FlyingAngel = () => {
   const lastTimeRef = useRef(0);
   const sparkleIdRef = useRef(0);
   const dustIdRef = useRef(0);
+  const wasRestingRef = useRef(false);
+  const wasFlyingRef = useRef(false);
+
+  // Get angel style from cursor type
+  const angelStyle: AngelStyle = currentCursor.angelStyle || 'purple';
+  const theme = ANGEL_THEMES[angelStyle];
+
+  // Check if this is an angel cursor type
+  const isAngelCursor = cursorType.startsWith('angel');
 
   // Get random interactive element to fly to
   const getRandomTarget = useCallback((): { pos: Position; label: string } | null => {
@@ -129,12 +232,23 @@ const FlyingAngel = () => {
       if (target) {
         setDirection(target.pos.x > position.x ? 'right' : 'left');
         setTargetPos(target.pos);
-        setRestingOnElement(target.label);
+        
+        // Play flying sound
+        if (soundEnabled && !wasFlyingRef.current) {
+          playFlyingSound();
+          wasFlyingRef.current = true;
+        }
         
         // After reaching target, rest for a while
         if (restTimerRef.current) clearTimeout(restTimerRef.current);
         restTimerRef.current = setTimeout(() => {
           setIsResting(true);
+          wasFlyingRef.current = false;
+          
+          // Play resting sound
+          if (soundEnabled) {
+            playRestingSound();
+          }
           
           // After resting, fly to next target
           setTimeout(() => {
@@ -146,13 +260,13 @@ const FlyingAngel = () => {
     };
     
     flyToRandomTarget();
-  }, [getRandomTarget, position.x]);
+  }, [getRandomTarget, position.x, soundEnabled]);
 
   // Stop idle mode
   const stopIdleMode = useCallback(() => {
     setIsIdle(false);
     setIsResting(false);
-    setRestingOnElement('');
+    wasFlyingRef.current = false;
     if (flyIntervalRef.current) {
       clearInterval(flyIntervalRef.current);
       flyIntervalRef.current = null;
@@ -225,7 +339,7 @@ const FlyingAngel = () => {
         if (distance > 2 && !isResting) {
           setTrail(prevTrail => {
             const newTrail = [...prevTrail, { x: newX, y: newY }];
-            return newTrail.slice(-20); // Keep last 20 positions
+            return newTrail.slice(-20);
           });
           
           // Add sparkles occasionally
@@ -270,8 +384,8 @@ const FlyingAngel = () => {
     };
   }, [targetPos, isIdle, isResting, direction, createSparkle, createGoldDust]);
 
-  // Only show for 'angel' cursor type and when particles are enabled
-  if (cursorType !== 'angel' || !particlesEnabled) return null;
+  // Only show for angel cursor types and when particles are enabled
+  if (!isAngelCursor || !particlesEnabled) return null;
 
   const wingFlap = isResting ? Math.sin(wingPhase) * 3 : Math.sin(wingPhase) * 18;
 
@@ -287,7 +401,7 @@ const FlyingAngel = () => {
             top: pos.y,
             width: 4 + (i / trail.length) * 8,
             height: 4 + (i / trail.length) * 8,
-            background: `radial-gradient(circle, rgba(255,215,0,${0.1 + (i / trail.length) * 0.3}) 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${theme.glow.replace('0.4', String(0.1 + (i / trail.length) * 0.3))} 0%, transparent 70%)`,
             borderRadius: '50%',
             transform: 'translate(-50%, -50%)',
           }}
@@ -323,18 +437,9 @@ const FlyingAngel = () => {
           <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
             <path
               d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z"
-              fill="#FFD700"
+              fill={theme.halo}
               filter="url(#sparkle-glow)"
             />
-            <defs>
-              <filter id="sparkle-glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="1" result="glow"/>
-                <feMerge>
-                  <feMergeNode in="glow"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
           </svg>
         </motion.div>
       ))}
@@ -349,8 +454,8 @@ const FlyingAngel = () => {
             top: dust.y,
             width: dust.size,
             height: dust.size,
-            background: `radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)`,
-            boxShadow: '0 0 4px #FFD700',
+            background: `radial-gradient(circle, ${theme.dust} 0%, ${theme.primary} 50%, transparent 100%)`,
+            boxShadow: `0 0 4px ${theme.dust}`,
           }}
           initial={{ opacity: 0.8 }}
           animate={{ opacity: 0 }}
@@ -383,7 +488,7 @@ const FlyingAngel = () => {
         <div 
           className="absolute rounded-full blur-2xl"
           style={{
-            background: 'radial-gradient(circle, rgba(255,215,0,0.35) 0%, rgba(255,180,0,0.2) 30%, rgba(147,51,234,0.15) 60%, transparent 80%)',
+            background: `radial-gradient(circle, ${theme.glow} 0%, ${theme.glow.replace('0.4', '0.2')} 30%, ${theme.glow.replace('0.4', '0.1')} 60%, transparent 80%)`,
             width: 100,
             height: 100,
             left: -22,
@@ -395,7 +500,7 @@ const FlyingAngel = () => {
         <motion.div 
           className="absolute rounded-full blur-xl"
           style={{
-            background: 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,215,0,0.3) 40%, transparent 70%)',
+            background: `radial-gradient(circle, rgba(255,255,255,0.4) 0%, ${theme.glow} 40%, transparent 70%)`,
             width: 70,
             height: 70,
             left: -7,
@@ -419,34 +524,34 @@ const FlyingAngel = () => {
           viewBox="0 0 64 64" 
           className="drop-shadow-lg relative z-10"
           style={{
-            filter: 'drop-shadow(0 0 12px rgba(255,215,0,0.6)) drop-shadow(0 0 20px rgba(255,180,0,0.3))'
+            filter: `drop-shadow(0 0 12px ${theme.glow}) drop-shadow(0 0 20px ${theme.glow.replace('0.4', '0.2')})`
           }}
         >
           <defs>
-            <linearGradient id="wingGradFly" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
-              <stop offset="30%" stopColor="rgba(255,240,200,0.9)" />
-              <stop offset="60%" stopColor="rgba(200,180,255,0.8)" />
-              <stop offset="100%" stopColor="rgba(147,51,234,0.6)" />
+            <linearGradient id={`wingGradFly-${angelStyle}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={theme.wing[0]} />
+              <stop offset="30%" stopColor={theme.wing[1]} />
+              <stop offset="60%" stopColor={theme.wing[2]} />
+              <stop offset="100%" stopColor={theme.wing[3]} />
             </linearGradient>
-            <linearGradient id="wingInnerGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id={`wingInnerGlow-${angelStyle}`} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
-              <stop offset="100%" stopColor="rgba(255,215,0,0.4)" />
+              <stop offset="100%" stopColor={theme.glow} />
             </linearGradient>
-            <linearGradient id="dressGradFly" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#A855F7" />
-              <stop offset="50%" stopColor="#9333EA" />
-              <stop offset="100%" stopColor="#7C3AED" />
+            <linearGradient id={`dressGradFly-${angelStyle}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={theme.dress[0]} />
+              <stop offset="50%" stopColor={theme.dress[1]} />
+              <stop offset="100%" stopColor={theme.dress[2]} />
             </linearGradient>
             <linearGradient id="hairGradFly" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#FDE68A" />
               <stop offset="50%" stopColor="#FCD34D" />
               <stop offset="100%" stopColor="#F59E0B" />
             </linearGradient>
-            <radialGradient id="haloGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFD700" stopOpacity="0.9" />
-              <stop offset="70%" stopColor="#FFA500" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+            <radialGradient id={`haloGlow-${angelStyle}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={theme.halo} stopOpacity="0.9" />
+              <stop offset="70%" stopColor={theme.halo} stopOpacity="0.5" />
+              <stop offset="100%" stopColor={theme.halo} stopOpacity="0" />
             </radialGradient>
             <filter id="angelGlow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="2" result="glow"/>
@@ -464,7 +569,7 @@ const FlyingAngel = () => {
               cy="25"
               rx="13"
               ry="20"
-              fill="url(#wingGradFly)"
+              fill={`url(#wingGradFly-${angelStyle})`}
               opacity="0.92"
               filter="url(#angelGlow)"
             />
@@ -473,23 +578,19 @@ const FlyingAngel = () => {
               cy="23"
               rx="7"
               ry="14"
-              fill="url(#wingInnerGlow)"
+              fill={`url(#wingInnerGlow-${angelStyle})`}
               opacity="0.7"
             />
-            {/* Wing feather details */}
             <ellipse cx="8" cy="18" rx="3" ry="8" fill="rgba(255,255,255,0.4)" />
-            {/* Wing sparkles */}
-            <circle cx="8" cy="16" r="2" fill="#FFD700" opacity="0.9">
+            <circle cx="8" cy="16" r="2" fill={theme.halo} opacity="0.9">
               <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.5s" repeatCount="indefinite" />
             </circle>
-            <circle cx="16" cy="28" r="1.5" fill="#FFD700" opacity="0.7">
+            <circle cx="16" cy="28" r="1.5" fill={theme.halo} opacity="0.7">
               <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.2s" repeatCount="indefinite" />
             </circle>
             <circle cx="12" cy="14" r="1.2" fill="#FFF" opacity="0.8">
               <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1s" repeatCount="indefinite" />
             </circle>
-            <circle cx="6" cy="24" r="1" fill="#FFE4B5" opacity="0.6" />
-            <circle cx="18" cy="20" r="0.8" fill="#FFD700" opacity="0.5" />
           </g>
           
           {/* Right Wing */}
@@ -499,7 +600,7 @@ const FlyingAngel = () => {
               cy="25"
               rx="13"
               ry="20"
-              fill="url(#wingGradFly)"
+              fill={`url(#wingGradFly-${angelStyle})`}
               opacity="0.92"
               filter="url(#angelGlow)"
             />
@@ -508,27 +609,23 @@ const FlyingAngel = () => {
               cy="23"
               rx="7"
               ry="14"
-              fill="url(#wingInnerGlow)"
+              fill={`url(#wingInnerGlow-${angelStyle})`}
               opacity="0.7"
             />
-            {/* Wing feather details */}
             <ellipse cx="56" cy="18" rx="3" ry="8" fill="rgba(255,255,255,0.4)" />
-            {/* Wing sparkles */}
-            <circle cx="56" cy="16" r="2" fill="#FFD700" opacity="0.9">
+            <circle cx="56" cy="16" r="2" fill={theme.halo} opacity="0.9">
               <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.3s" repeatCount="indefinite" />
             </circle>
-            <circle cx="48" cy="28" r="1.5" fill="#FFD700" opacity="0.7">
+            <circle cx="48" cy="28" r="1.5" fill={theme.halo} opacity="0.7">
               <animate attributeName="opacity" values="0.7;0.3;0.7" dur="1.4s" repeatCount="indefinite" />
             </circle>
             <circle cx="52" cy="14" r="1.2" fill="#FFF" opacity="0.8">
               <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.1s" repeatCount="indefinite" />
             </circle>
-            <circle cx="58" cy="24" r="1" fill="#FFE4B5" opacity="0.6" />
-            <circle cx="46" cy="20" r="0.8" fill="#FFD700" opacity="0.5" />
           </g>
           
           {/* Halo glow background */}
-          <ellipse cx="32" cy="11" rx="10" ry="4" fill="url(#haloGlow)" />
+          <ellipse cx="32" cy="11" rx="10" ry="4" fill={`url(#haloGlow-${angelStyle})`} />
           
           {/* Halo */}
           <ellipse 
@@ -537,7 +634,7 @@ const FlyingAngel = () => {
             rx="7" 
             ry="2.5" 
             fill="none" 
-            stroke="#FFD700" 
+            stroke={theme.halo}
             strokeWidth="2.5"
             opacity="0.95"
             filter="url(#angelGlow)"
@@ -553,13 +650,13 @@ const FlyingAngel = () => {
           <path d="M25 18 Q28 14 32 16 Q36 14 39 18" fill="url(#hairGradFly)" />
           
           {/* Face */}
-          <ellipse cx="29" cy="20" rx="1.2" ry="1.5" fill="#4A3728" /> {/* Left eye */}
-          <ellipse cx="35" cy="20" rx="1.2" ry="1.5" fill="#4A3728" /> {/* Right eye */}
-          <circle cx="29.5" cy="19.5" r="0.4" fill="#FFF" /> {/* Eye shine */}
-          <circle cx="35.5" cy="19.5" r="0.4" fill="#FFF" /> {/* Eye shine */}
-          <path d="M29.5 24 Q32 26.5 34.5 24" stroke="#E8A0A0" strokeWidth="1" fill="none" strokeLinecap="round" /> {/* Smile */}
-          <circle cx="26" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" /> {/* Blush */}
-          <circle cx="38" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" /> {/* Blush */}
+          <ellipse cx="29" cy="20" rx="1.2" ry="1.5" fill="#4A3728" />
+          <ellipse cx="35" cy="20" rx="1.2" ry="1.5" fill="#4A3728" />
+          <circle cx="29.5" cy="19.5" r="0.4" fill="#FFF" />
+          <circle cx="35.5" cy="19.5" r="0.4" fill="#FFF" />
+          <path d="M29.5 24 Q32 26.5 34.5 24" stroke="#E8A0A0" strokeWidth="1" fill="none" strokeLinecap="round" />
+          <circle cx="26" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" />
+          <circle cx="38" cy="22" r="1.5" fill="#FFB6C1" opacity="0.5" />
           
           {/* Body */}
           <ellipse cx="32" cy="33" rx="5" ry="4" fill="#FFDAB9" />
@@ -567,9 +664,8 @@ const FlyingAngel = () => {
           {/* Dress */}
           <path
             d="M25 35 Q32 32 39 35 L42 52 Q32 55 22 52 Z"
-            fill="url(#dressGradFly)"
+            fill={`url(#dressGradFly-${angelStyle})`}
           />
-          {/* Dress details */}
           <path d="M28 40 Q32 42 36 40" stroke="rgba(255,255,255,0.3)" strokeWidth="0.8" fill="none" />
           <path d="M26 46 Q32 48 38 46" stroke="rgba(255,255,255,0.2)" strokeWidth="0.8" fill="none" />
           
@@ -581,7 +677,7 @@ const FlyingAngel = () => {
           <circle cx="19" cy="42" r="2" fill="#FFDAB9" />
           <circle cx="45" cy="42" r="2" fill="#FFDAB9" />
           
-          {/* Legs - adjusted for resting pose */}
+          {/* Legs */}
           {isResting ? (
             <>
               <ellipse cx="28" cy="54" rx="3" ry="4" fill="#FFDAB9" transform="rotate(-15 28 54)" />
@@ -602,17 +698,28 @@ const FlyingAngel = () => {
         {/* Resting indicator */}
         {isResting && (
           <motion.div
-            className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-gold-shimmer whitespace-nowrap"
+            className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs whitespace-nowrap font-medium"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             style={{
-              textShadow: '0 0 10px rgba(255,215,0,0.8)',
-              color: '#FFD700'
+              textShadow: `0 0 10px ${theme.glow}`,
+              color: theme.halo
             }}
           >
             ✨ đang nghỉ ✨
           </motion.div>
         )}
+        
+        {/* Sound toggle button (invisible, click area) */}
+        <div 
+          className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-4 cursor-pointer pointer-events-auto opacity-0 hover:opacity-100 transition-opacity"
+          onClick={() => setSoundEnabled(!soundEnabled)}
+          title={soundEnabled ? "Tắt âm thanh" : "Bật âm thanh"}
+        >
+          <span className="text-[8px] text-muted-foreground">
+            {soundEnabled ? "🔊" : "🔇"}
+          </span>
+        </div>
       </motion.div>
     </AnimatePresence>
   );
