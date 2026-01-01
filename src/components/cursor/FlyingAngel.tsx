@@ -260,21 +260,48 @@ const FlyingAngel = () => {
   }, []);
 
   const getRandomIdleTarget = useCallback((): Position => {
-    const targets = document.querySelectorAll('button, [role="button"], a, .cursor-pointer');
-    const valid: Position[] = [];
+    // Tìm các chữ (headings, paragraphs, spans, labels) và cả buttons/links
+    const textElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, label, .text-lg, .text-xl, .text-2xl, .text-3xl, .font-bold, .font-semibold');
+    const interactiveElements = document.querySelectorAll('button, [role="button"], a, .cursor-pointer');
+    
+    const textTargets: Position[] = [];
+    const interactiveTargets: Position[] = [];
 
-    targets.forEach((el) => {
+    // Thu thập các vị trí chữ - đậu trên đầu chữ
+    textElements.forEach((el) => {
       const rect = el.getBoundingClientRect();
-      if (rect.width > 20 && rect.height > 20 && rect.top >= 0 && rect.left >= 0) {
-        valid.push({ x: rect.left + rect.width / 2, y: Math.max(20, rect.top - 18) });
+      const text = el.textContent?.trim() || '';
+      // Chỉ chọn các element có text thực sự và kích thước hợp lý
+      if (text.length > 2 && rect.width > 30 && rect.height > 10 && 
+          rect.top >= 50 && rect.left >= 0 && 
+          rect.top < window.innerHeight - 50 && rect.right < window.innerWidth) {
+        textTargets.push({ 
+          x: rect.left + rect.width / 2, 
+          y: Math.max(30, rect.top - 15) // Đậu ngay trên đầu chữ
+        });
       }
     });
 
-    // Prefer sitting on buttons
-    if (valid.length && Math.random() > 0.3) {
-      return valid[Math.floor(Math.random() * valid.length)];
+    // Thu thập các vị trí interactive
+    interactiveElements.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 20 && rect.height > 20 && rect.top >= 0 && rect.left >= 0) {
+        interactiveTargets.push({ x: rect.left + rect.width / 2, y: Math.max(20, rect.top - 18) });
+      }
+    });
+
+    // 70% chọn chữ, 30% chọn buttons/links
+    const allTargets = [...textTargets, ...interactiveTargets];
+    
+    if (textTargets.length > 0 && Math.random() > 0.3) {
+      return textTargets[Math.floor(Math.random() * textTargets.length)];
+    }
+    
+    if (allTargets.length > 0) {
+      return allTargets[Math.floor(Math.random() * allTargets.length)];
     }
 
+    // Fallback nếu không tìm thấy gì
     const corners = [
       { x: 100, y: 100 },
       { x: window.innerWidth - 100, y: 100 },
