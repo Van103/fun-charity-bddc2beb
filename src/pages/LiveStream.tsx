@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -21,7 +21,7 @@ import {
   Radio,
   Send
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { LiveStreamSharePanel } from "@/components/social/LiveStreamSharePanel";
 
@@ -41,6 +41,14 @@ interface LiveStreamData {
   } | null;
 }
 
+interface FloatingReaction {
+  id: string;
+  emoji: string;
+  x: number;
+}
+
+const REACTION_EMOJIS = ['❤️', '😂', '😮', '😢', '👏', '🔥'];
+
 export default function LiveStream() {
   const { streamId } = useParams<{ streamId: string }>();
   const navigate = useNavigate();
@@ -49,8 +57,11 @@ export default function LiveStream() {
   const [error, setError] = useState<string | null>(null);
   const [showSharePanel, setShowSharePanel] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [floatingReactions, setFloatingReactions] = useState<FloatingReaction[]>([]);
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const reactionChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   // Real-time comments hook
   const { comments, sendComment, isLoading: commentsLoading } = useLiveComments({
@@ -65,12 +76,71 @@ export default function LiveStream() {
     }
   }, [comments]);
 
+  // Subscribe to real-time reactions
+  useEffect(() => {
+    if (!streamId) return;
+
+    const channel = supabase.channel(`live-reactions-${streamId}`);
+    
+    channel
+      .on('broadcast', { event: 'reaction' }, (payload) => {
+        const { emoji, id, x } = payload.payload;
+        addFloatingReaction(emoji, id, x);
+      })
+      .subscribe();
+
+    reactionChannelRef.current = channel;
+
+    return () => {
+      if (reactionChannelRef.current) {
+        supabase.removeChannel(reactionChannelRef.current);
+      }
+    };
+  }, [streamId]);
+
   useEffect(() => {
     if (streamId) {
       fetchStreamData();
       subscribeToStream();
     }
   }, [streamId]);
+
+  // Add floating reaction to UI
+  const addFloatingReaction = useCallback((emoji: string, id?: string, x?: number) => {
+    const reactionId = id || `${Date.now()}-${Math.random()}`;
+    const posX = x || Math.random() * 60 + 20;
+    
+    const newReaction: FloatingReaction = {
+      id: reactionId,
+      emoji,
+      x: posX
+    };
+    
+    setFloatingReactions(prev => [...prev, newReaction]);
+    
+    // Remove after animation completes
+    setTimeout(() => {
+      setFloatingReactions(prev => prev.filter(r => r.id !== reactionId));
+    }, 3000);
+  }, []);
+
+  // Send reaction to all viewers
+  const sendReaction = useCallback(async (emoji: string) => {
+    if (!streamId || !reactionChannelRef.current) return;
+
+    const reactionId = `${Date.now()}-${Math.random()}`;
+    const x = Math.random() * 60 + 20;
+
+    // Show locally immediately
+    addFloatingReaction(emoji, reactionId, x);
+
+    // Broadcast to others
+    await reactionChannelRef.current.send({
+      type: 'broadcast',
+      event: 'reaction',
+      payload: { emoji, id: reactionId, x }
+    });
+  }, [streamId, addFloatingReaction]);
 
   const fetchStreamData = async () => {
     try {
@@ -255,7 +325,7 @@ export default function LiveStream() {
               className="glass-card rounded-2xl overflow-hidden"
             >
               {/* Video/Stream Area */}
-              <div className="relative aspect-video bg-black">
+              <div className="relative aspect-video bg-black overflow-hidden">
                 {stream.media_urls && Array.isArray(stream.media_urls) && stream.media_urls.length > 0 ? (
                   <video
                     ref={videoRef}
@@ -272,6 +342,75 @@ export default function LiveStream() {
                       <p className="text-white text-lg font-medium">
                         {isLive ? "Đang phát trực tiếp..." : "Live stream đã kết thúc"}
                       </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Floating Reactions Animation */}
+                <AnimatePresence>
+                  {floatingReactions.map(reaction => (
+                    <motion.div
+                      key={reaction.id}
+                      initial={{ bottom: 20, opacity: 1, scale: 1 }}
+                      animate={{ bottom: 400, opacity: 0, scale: 1.5 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 3, ease: 'easeOut' }}
+                      className="absolute text-4xl pointer-events-none z-30"
+                      style={{ left: `${reaction.x}%` }}
+                    >
+                      {reaction.emoji}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {/* Reaction Buttons - Right Side (for live streams) */}
+                {isLive && (
+                  <div className="absolute right-3 bottom-20 z-20">
+                    <div className="relative">
+                      {/* Quick Heart Button */}
+                      <motion.button
+                        whileTap={{ scale: 1.3 }}
+                        onClick={() => sendReaction('❤️')}
+                        className="w-12 h-12 bg-red-500/80 hover:bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg backdrop-blur-sm transition-all"
+                      >
+                        <Heart className="w-6 h-6 fill-white" />
+                      </motion.button>
+
+                      {/* Reaction Picker Toggle */}
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowReactionPicker(!showReactionPicker)}
+                        className="mt-2 w-12 h-12 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-2xl shadow-lg backdrop-blur-sm transition-all"
+                      >
+                        🎉
+                      </motion.button>
+
+                      {/* Reaction Picker */}
+                      <AnimatePresence>
+                        {showReactionPicker && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, x: 10 }}
+                            className="absolute right-14 bottom-0 bg-black/80 backdrop-blur-md rounded-2xl p-2 flex flex-col gap-1 shadow-xl"
+                          >
+                            {REACTION_EMOJIS.map(emoji => (
+                              <motion.button
+                                key={emoji}
+                                whileHover={{ scale: 1.2 }}
+                                whileTap={{ scale: 1.4 }}
+                                onClick={() => {
+                                  sendReaction(emoji);
+                                  setShowReactionPicker(false);
+                                }}
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-2xl hover:bg-white/20 transition-colors"
+                              >
+                                {emoji}
+                              </motion.button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 )}
@@ -416,14 +555,30 @@ export default function LiveStream() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-4 pt-4 border-t border-border">
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <Heart className="w-5 h-5" />
-                    Thích
-                  </Button>
+                  {isLive ? (
+                    <div className="flex items-center gap-2">
+                      {REACTION_EMOJIS.slice(0, 4).map(emoji => (
+                        <motion.button
+                          key={emoji}
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 1.3 }}
+                          onClick={() => sendReaction(emoji)}
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-xl bg-muted hover:bg-muted/80 transition-colors"
+                        >
+                          {emoji}
+                        </motion.button>
+                      ))}
+                    </div>
+                  ) : (
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <Heart className="w-5 h-5" />
+                      Thích
+                    </Button>
+                  )}
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="gap-2"
+                    className="gap-2 ml-auto"
                     onClick={() => setShowSharePanel(true)}
                   >
                     <Share2 className="w-5 h-5" />
