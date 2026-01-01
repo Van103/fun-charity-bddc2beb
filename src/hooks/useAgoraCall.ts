@@ -115,8 +115,10 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       return;
     }
     
-    isJoiningRef.current = true;
+    // CRITICAL: Reset leaving flag when starting a new join
+    // This fixes the race condition where previous leave state blocks new calls
     isLeavingRef.current = false;
+    isJoiningRef.current = true;
     
     try {
       console.log('[Agora] Joining channel:', channelName, 'isVideoCall:', isVideoCall);
@@ -179,11 +181,11 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       await client.join(appIdRef.current, channelName, token, null);
       console.log('[Agora] Successfully joined channel:', channelName);
 
-      // Check if we're still supposed to be in the call
-      if (isLeavingRef.current) {
+      // Only check leave flag if it was set AFTER we started joining
+      // This prevents race conditions from previous modal close events
+      if (isLeavingRef.current && !isJoiningRef.current) {
         console.log('[Agora] Leave was requested during join, leaving now...');
         await client.leave();
-        isJoiningRef.current = false;
         return;
       }
 
@@ -244,13 +246,15 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
 
   // Leave channel
   const leaveChannel = useCallback(async () => {
-    // Prevent multiple leave calls
+    // Prevent multiple leave calls, but reset joining flag
     if (isLeavingRef.current) {
       console.log('[Agora] Already leaving, skipping...');
       return;
     }
     
+    // Set leaving flag and reset joining flag
     isLeavingRef.current = true;
+    isJoiningRef.current = false;
     console.log('[Agora] Leaving channel...');
     
     // Stop call timer
