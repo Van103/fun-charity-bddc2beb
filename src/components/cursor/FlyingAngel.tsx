@@ -24,6 +24,13 @@ interface Sparkle {
   rotation: number;
 }
 
+interface TrailPoint {
+  id: number;
+  x: number;
+  y: number;
+  opacity: number;
+}
+
 const BG_LUMA_MIN = 225;
 const BG_MAX_CHROMA = 18;
 
@@ -139,7 +146,11 @@ const FlyingAngel = () => {
   const [peekPhase, setPeekPhase] = useState(0);
 
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
+  const [trail, setTrail] = useState<TrailPoint[]>([]);
+  const [isMovingFast, setIsMovingFast] = useState(false);
   const sparkleIdRef = useRef(0);
+  const trailIdRef = useRef(0);
+  const lastPosRef = useRef<Position>({ x: 0, y: 0 });
 
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
@@ -148,6 +159,7 @@ const FlyingAngel = () => {
   const sittingTimeoutRef = useRef<number | null>(null);
   const hideTimeoutRef = useRef<number | null>(null);
   const sparkleIntervalRef = useRef<number | null>(null);
+  const trailIntervalRef = useRef<number | null>(null);
 
   // Create sparkle
   const createSparkle = useCallback((centerX: number, centerY: number) => {
@@ -167,6 +179,22 @@ const FlyingAngel = () => {
     setTimeout(() => {
       setSparkles((prev) => prev.filter((s) => s.id !== sparkle.id));
     }, 1000);
+  }, []);
+
+  // Create trail point
+  const createTrailPoint = useCallback((x: number, y: number) => {
+    const trailPoint: TrailPoint = {
+      id: trailIdRef.current++,
+      x,
+      y,
+      opacity: 0.8,
+    };
+    setTrail((prev) => [...prev.slice(-12), trailPoint]);
+    
+    // Remove after animation
+    setTimeout(() => {
+      setTrail((prev) => prev.filter((t) => t.id !== trailPoint.id));
+    }, 400);
   }, []);
 
   // Make sure we always display a transparent sprite even if the source image has a baked checkerboard.
@@ -363,6 +391,41 @@ const FlyingAngel = () => {
     };
   }, [idleTarget, isIdle, isSitting, targetPos]);
 
+  // Trail generation when moving fast
+  useEffect(() => {
+    if (!isAngelCursor || isHiding || isSitting || isIdle) {
+      if (trailIntervalRef.current) {
+        window.clearInterval(trailIntervalRef.current);
+        trailIntervalRef.current = null;
+      }
+      setIsMovingFast(false);
+      return;
+    }
+
+    trailIntervalRef.current = window.setInterval(() => {
+      const dx = position.x - lastPosRef.current.x;
+      const dy = position.y - lastPosRef.current.y;
+      const speed = Math.hypot(dx, dy);
+      
+      lastPosRef.current = { x: position.x, y: position.y };
+      
+      // Only create trail when moving fast enough
+      if (speed > 8) {
+        setIsMovingFast(true);
+        createTrailPoint(position.x, position.y);
+      } else {
+        setIsMovingFast(false);
+      }
+    }, 30);
+
+    return () => {
+      if (trailIntervalRef.current) {
+        window.clearInterval(trailIntervalRef.current);
+        trailIntervalRef.current = null;
+      }
+    };
+  }, [createTrailPoint, isAngelCursor, isHiding, isIdle, isSitting, position.x, position.y]);
+
   // Sparkle generation
   useEffect(() => {
     if (!isAngelCursor || isHiding) {
@@ -409,6 +472,63 @@ const FlyingAngel = () => {
 
   return (
     <>
+      {/* Trail effect */}
+      <AnimatePresence>
+        {trail.map((point, index) => (
+          <motion.div
+            key={point.id}
+            className="fixed pointer-events-none z-[9996]"
+            style={{
+              left: point.x - 15,
+              top: point.y - 10,
+              width: 30 - index * 1.5,
+              height: 30 - index * 1.5,
+            }}
+            initial={{ opacity: 0.7, scale: 1 }}
+            animate={{ 
+              opacity: [0.6, 0.3, 0],
+              scale: [1, 0.6, 0.2],
+            }}
+            exit={{ opacity: 0, scale: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <div 
+              className="w-full h-full rounded-full"
+              style={{
+                background: `radial-gradient(circle, rgba(255,182,193,0.8) 0%, rgba(255,105,180,0.4) 40%, rgba(147,112,219,0.2) 70%, transparent 100%)`,
+                filter: 'blur(3px)',
+              }}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* Glow effect when moving fast */}
+      {isMovingFast && (
+        <motion.div
+          className="fixed pointer-events-none z-[9997]"
+          style={{
+            left: position.x - 50,
+            top: position.y - 35,
+            width: 100,
+            height: 80,
+          }}
+          animate={{
+            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 0.3, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <div 
+            className="w-full h-full rounded-full"
+            style={{
+              background: `radial-gradient(ellipse, rgba(255,215,0,0.4) 0%, rgba(255,182,193,0.3) 30%, transparent 70%)`,
+              filter: 'blur(8px)',
+            }}
+          />
+        </motion.div>
+      )}
+
       {/* Sparkles */}
       <AnimatePresence>
         {sparkles.map((sparkle) => (
