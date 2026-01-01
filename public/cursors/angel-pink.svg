@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="wingGradPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FBCFE8"/>
+      <stop offset="50%" style="stop-color:#F472B6"/>
+      <stop offset="100%" style="stop-color:#DB2777"/>
+    </linearGradient>
+    <linearGradient id="dressGradPink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#DB2777"/>
+      <stop offset="100%" style="stop-color:#9D174D"/>
+    </linearGradient>
+    <linearGradient id="crownGradPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#FFA500"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Left butterfly wing (upper) -->
+  <path d="M6 10 Q2 6 4 2 Q8 4 10 8 Q8 10 6 10" fill="url(#wingGradPink)" opacity="0.9"/>
+  <!-- Left butterfly wing (lower) -->
+  <path d="M6 12 Q1 14 2 18 Q6 16 8 13 Q7 12 6 12" fill="url(#wingGradPink)" opacity="0.8"/>
+  
+  <!-- Right butterfly wing (upper) -->
+  <path d="M26 10 Q30 6 28 2 Q24 4 22 8 Q24 10 26 10" fill="url(#wingGradPink)" opacity="0.9"/>
+  <!-- Right butterfly wing (lower) -->
+  <path d="M26 12 Q31 14 30 18 Q26 16 24 13 Q25 12 26 12" fill="url(#wingGradPink)" opacity="0.8"/>
+  
+  <!-- Wing sparkles -->
+  <circle cx="5" cy="5" r="0.5" fill="#FFD700"/>
+  <circle cx="27" cy="5" r="0.5" fill="#FFD700"/>
+  <circle cx="4" cy="15" r="0.4" fill="#FFD700"/>
+  <circle cx="28" cy="15" r="0.4" fill="#FFD700"/>
+  
+  <!-- Flowing longer dress -->
+  <path d="M12 16 Q9 22 6 32 Q11 34 16 34 Q21 34 26 32 Q23 22 20 16 Q18 17 16 17 Q14 17 12 16" fill="url(#dressGradPink)"/>
+  <!-- Dress layers -->
+  <path d="M11 20 Q9 26 7 32" stroke="#9D174D" stroke-width="0.6" fill="none" opacity="0.6"/>
+  <path d="M14 19 Q12 25 10 32" stroke="#9D174D" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <path d="M21 20 Q23 26 25 32" stroke="#9D174D" stroke-width="0.6" fill="none" opacity="0.6"/>
+  <path d="M18 19 Q20 25 22 32" stroke="#9D174D" stroke-width="0.5" fill="none" opacity="0.4"/>
+  <!-- Dress bottom ruffle -->
+  <path d="M6 32 Q9 30 12 32 Q14 30 16 32 Q18 30 20 32 Q23 30 26 32" stroke="#BE185D" stroke-width="0.8" fill="none" opacity="0.7"/>
+  
+  <!-- Body -->
+  <ellipse cx="16" cy="14" rx="4" ry="3" fill="#FDE7F3"/>
+  
+  <!-- Head -->
+  <circle cx="16" cy="8" r="4" fill="#FDE7F3"/>
+  
+  <!-- Crown -->
+  <path d="M11 5 L12 2 L14 4 L16 1 L18 4 L20 2 L21 5 L20 6 L12 6 Z" fill="url(#crownGradPink)"/>
+  <circle cx="16" cy="3" r="0.8" fill="#EC4899"/>
+  <circle cx="13" cy="4" r="0.5" fill="#F472B6"/>
+  <circle cx="19" cy="4" r="0.5" fill="#F472B6"/>
+  
+  <!-- Face -->
+  <circle cx="14.5" cy="7.5" r="0.6" fill="#DB2777"/>
+  <circle cx="17.5" cy="7.5" r="0.6" fill="#DB2777"/>
+  <path d="M15 9.5 Q16 10.5 17 9.5" stroke="#EC4899" stroke-width="0.5" fill="none"/>
+  
+  <!-- Halo -->
+  <ellipse cx="16" cy="0" rx="3" ry="0.8" fill="none" stroke="#FFD700" stroke-width="0.8" opacity="0.8"/>
+</svg>
