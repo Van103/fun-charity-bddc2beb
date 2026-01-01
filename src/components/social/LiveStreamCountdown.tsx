@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface LiveStreamCountdownProps {
   isActive: boolean;
@@ -8,25 +8,30 @@ interface LiveStreamCountdownProps {
 
 export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdownProps) {
   const [count, setCount] = useState(3);
-  const [hasCompleted, setHasCompleted] = useState(false);
+  const hasCompletedRef = useRef(false);
+  const completeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isActive) {
       setCount(3);
-      setHasCompleted(false);
+      hasCompletedRef.current = false;
+      if (completeTimerRef.current) {
+        clearTimeout(completeTimerRef.current);
+        completeTimerRef.current = null;
+      }
       return;
     }
 
     // Prevent double execution
-    if (hasCompleted) return;
+    if (hasCompletedRef.current) return;
 
     if (count === 0) {
-      setHasCompleted(true);
+      hasCompletedRef.current = true;
       // Small delay to show "GO!" before completing
-      const completeTimer = setTimeout(() => {
+      completeTimerRef.current = setTimeout(() => {
         onComplete();
-      }, 500);
-      return () => clearTimeout(completeTimer);
+      }, 600);
+      return;
     }
 
     const timer = setTimeout(() => {
@@ -34,7 +39,16 @@ export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdow
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [isActive, count, onComplete, hasCompleted]);
+  }, [isActive, count, onComplete]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (completeTimerRef.current) {
+        clearTimeout(completeTimerRef.current);
+      }
+    };
+  }, []);
 
   if (!isActive) return null;
 
