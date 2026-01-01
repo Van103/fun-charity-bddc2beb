@@ -631,24 +631,63 @@ const FlyingAngel = () => {
         />
         
         {/* Angel image */}
-        <motion.img 
-          src="/cursors/angel-cute.png"
-          alt="Flying Angel"
+        <motion.div
           className="relative z-10"
           style={{
-            width: 64,
-            height: 64,
+            width: 80,
+            height: 80,
             transform: `scaleX(${direction === 'left' ? -1 : 1})`,
-            filter: `drop-shadow(0 0 12px ${theme.glow}) drop-shadow(0 0 20px ${theme.glow.replace('0.4', '0.2')}) ${getColorFilter(angelStyle)}`,
           }}
           animate={{
-            rotate: isWaving ? [0, -5, 5, -5, 5, 0] : 0,
+            rotate: isResting 
+              ? [0, -3, 0, 3, 0] // nhẹ nhàng khi đậu
+              : isWaving 
+                ? [0, -8, 8, -8, 8, 0] 
+                : wingFlap * 0.3, // nghiêng theo cánh vẫy khi bay
+            y: isResting ? [0, -3, 0] : 0,
           }}
           transition={{
-            rotate: { duration: 0.5, repeat: isWaving ? Infinity : 0 }
+            rotate: { 
+              duration: isResting ? 3 : isWaving ? 0.5 : 0.2, 
+              repeat: Infinity,
+              ease: "easeInOut"
+            },
+            y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
           }}
-          draggable={false}
-        />
+        >
+          <motion.img 
+            src="/cursors/angel-cute.png"
+            alt="Flying Angel"
+            className="w-full h-full object-contain"
+            style={{
+              filter: `drop-shadow(0 0 15px ${theme.glow}) drop-shadow(0 0 30px ${theme.glow.replace('0.4', '0.3')}) ${getColorFilter(angelStyle)}`,
+            }}
+            animate={{
+              scale: isResting ? [1, 1.02, 1] : [1, 1 + Math.abs(wingFlap) * 0.002, 1],
+            }}
+            transition={{
+              scale: { duration: isResting ? 2 : 0.3, repeat: Infinity, ease: "easeInOut" }
+            }}
+            draggable={false}
+          />
+          
+          {/* Wing flap effect - shimmering glow on sides */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(ellipse at ${direction === 'left' ? '80%' : '20%'} 50%, ${theme.glow.replace('0.4', '0.3')} 0%, transparent 50%)`,
+            }}
+            animate={{
+              opacity: isResting ? [0.2, 0.4, 0.2] : [0.3, 0.6, 0.3],
+              scale: isResting ? 1 : [1, 1.1, 1],
+            }}
+            transition={{
+              duration: isResting ? 2 : 0.3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
         
         {/* Sparkles around angel when waving */}
         {isWaving && (
