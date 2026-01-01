@@ -155,7 +155,8 @@ export const AgoraGroupCallModal = ({
       const channelName = getChannelName();
       await createCallSession(channelName);
 
-      const uid = Math.abs(currentUserId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 10000000;
+      // uid = 0 để Agora tự gán (giống dự án FunProfile đang hoạt động)
+      const uid = 0;
       
       await joinChannel(channelName, uid, callType === 'video');
       setInternalCallStatus('active');
@@ -202,7 +203,8 @@ export const AgoraGroupCallModal = ({
       const channelName = (session?.signaling_data as any)?.agora_channel;
       if (!channelName) throw new Error('No channel name found');
 
-      const uid = Math.abs(currentUserId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 10000000;
+      // uid = 0 để Agora tự gán (giống dự án FunProfile đang hoạt động)
+      const uid = 0;
 
       await updateCallStatus('active');
       await joinChannel(channelName, uid, callType === 'video');

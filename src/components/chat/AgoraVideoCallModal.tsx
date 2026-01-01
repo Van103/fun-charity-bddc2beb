@@ -256,8 +256,8 @@ export const AgoraVideoCallModal = ({
       const channelName = getChannelName();
       await createCallSession(channelName);
 
-      // Generate uid from current user id
-      const uid = Math.abs(currentUserId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 10000000;
+      // uid = 0 để Agora tự gán (giống dự án FunProfile đang hoạt động)
+      const uid = 0;
       
       // Join Agora channel
       await joinChannel(channelName, uid, callType === 'video');
@@ -337,8 +337,8 @@ export const AgoraVideoCallModal = ({
         throw new Error('Không tìm thấy kênh cuộc gọi');
       }
 
-      // Generate uid
-      const uid = Math.abs(currentUserId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 10000000;
+      // uid = 0 để Agora tự gán (giống dự án FunProfile đang hoạt động)
+      const uid = 0;
       console.log('Joining channel with uid:', uid);
 
       // Update session ref for future use

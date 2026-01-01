@@ -73,22 +73,29 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     return clientRef.current;
   }, []);
 
-  // Get token from edge function
-  const getToken = useCallback(async (channelName: string, uid: number) => {
-    console.log('[Agora] Fetching token for channel:', channelName, 'uid:', uid);
+  // Vercel Token Server (đã hoạt động ổn định từ dự án FunProfile)
+  const VERCEL_TOKEN_SERVER = "https://mkdir-agora-token-server.vercel.app/api/agora-token";
+
+  // Get token from Vercel Token Server
+  const getToken = useCallback(async (channelName: string) => {
+    console.log('[Agora] Fetching token from Vercel server for channel:', channelName);
     
-    const { data, error } = await supabase.functions.invoke('agora-token', {
-      body: { channelName, uid, role: 1 }
+    const response = await fetch(VERCEL_TOKEN_SERVER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channelName, uid: 0 }), // uid: 0 để Agora tự gán
     });
 
-    if (error) {
-      console.error('[Agora] Error fetching token:', error);
-      throw new Error(`Không thể lấy token: ${error.message}`);
+    if (!response.ok) {
+      console.error('[Agora] Token server error:', response.status);
+      throw new Error(`Token server error: ${response.status}`);
     }
 
-    if (data.error) {
-      console.error('[Agora] Token API error:', data.error);
-      throw new Error(`Token error: ${data.error}`);
+    const data = await response.json();
+    
+    if (!data.token || !data.appId) {
+      console.error('[Agora] Invalid token response:', data);
+      throw new Error('Invalid token response');
     }
 
     console.log('[Agora] Token received successfully, appId:', data.appId?.substring(0, 8) + '...');
@@ -99,7 +106,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
   // Join channel
   const joinChannel = useCallback(async (
     channelName: string,
-    uid: number,
+    uid: number, // Giữ tham số để tương thích, nhưng sẽ dùng null khi join
     isVideoCall: boolean
   ) => {
     // Prevent double join
@@ -112,12 +119,12 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     isLeavingRef.current = false;
     
     try {
-      console.log('[Agora] Joining channel:', channelName, 'uid:', uid, 'isVideoCall:', isVideoCall);
+      console.log('[Agora] Joining channel:', channelName, 'isVideoCall:', isVideoCall);
       setCallStatus('connecting');
       setError(null);
 
       const client = initClient();
-      const token = await getToken(channelName, uid);
+      const token = await getToken(channelName);
 
       // Remove existing listeners before adding new ones
       client.removeAllListeners('user-published');
@@ -167,9 +174,9 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
         onRemoteUserLeft?.(user);
       });
 
-      // Join the channel
+      // Join the channel với uid = null để Agora tự gán (giống dự án FunProfile)
       console.log('[Agora] Calling client.join with appId:', appIdRef.current?.substring(0, 8) + '...');
-      await client.join(appIdRef.current, channelName, token, uid);
+      await client.join(appIdRef.current, channelName, token, null);
       console.log('[Agora] Successfully joined channel:', channelName);
 
       // Check if we're still supposed to be in the call
