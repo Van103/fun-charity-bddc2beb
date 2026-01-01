@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const FAIRY_IMAGES = [
   '/cursors/fairy-angel.png',
+  '/cursors/fairy-angel-purple.png',
+  '/cursors/fairy-angel-yellow.png',
+  '/cursors/fairy-angel-blue.png',
 ];
 
 const SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#FFFACD', '#E6E6FA'];
