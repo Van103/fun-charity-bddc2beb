@@ -37,7 +37,7 @@ const CursorSettings = () => {
           </div>
 
           {/* Cursor Options Grid */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {CURSOR_OPTIONS.map((option) => (
               <button
                 key={option.id}
@@ -52,23 +52,35 @@ const CursorSettings = () => {
                 title={option.nameVi}
               >
                 {option.id === 'default' ? (
-                  <div className="w-8 h-8 flex items-center justify-center text-muted-foreground">
-                    <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+                  <div className="w-7 h-7 flex items-center justify-center text-muted-foreground">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
                       <path d="M4 4l7 19 2-7 7-2z"/>
                     </svg>
+                  </div>
+                ) : option.id.startsWith('angel') ? (
+                  <div 
+                    className="w-7 h-7 flex items-center justify-center rounded-full"
+                    style={{
+                      background: option.id === 'angel' ? 'linear-gradient(135deg, #9333EA, #A855F7)' :
+                                 option.id === 'angel-gold' ? 'linear-gradient(135deg, #F59E0B, #FCD34D)' :
+                                 option.id === 'angel-pink' ? 'linear-gradient(135deg, #EC4899, #F472B6)' :
+                                 'linear-gradient(135deg, #3B82F6, #60A5FA)'
+                    }}
+                  >
+                    <span className="text-sm">👼</span>
                   </div>
                 ) : (
                   <img 
                     src={`${option.cursor}?v=${Date.now()}`} 
                     alt={option.nameVi} 
-                    className="w-8 h-8 object-contain"
+                    className="w-7 h-7 object-contain"
                   />
                 )}
-                <span className="text-[10px] mt-1 text-muted-foreground truncate w-full text-center">
+                <span className="text-[9px] mt-1 text-muted-foreground truncate w-full text-center">
                   {option.nameVi}
                 </span>
                 {cursorType === option.id && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-secondary rounded-full" />
+                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full" />
                 )}
               </button>
             ))}
