@@ -934,6 +934,44 @@ export type Database = {
         }
         Relationships: []
       }
+      live_comments: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          live_id: string
+          message: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          live_id: string
+          message: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          live_id?: string
+          message?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_comments_live_id_fkey"
+            columns: ["live_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_reactions: {
         Row: {
           created_at: string

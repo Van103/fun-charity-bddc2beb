@@ -4,9 +4,12 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
+import { useLiveComments } from "@/hooks/useLiveComments";
 import { Helmet } from "react-helmet-async";
 import { 
   ArrowLeft, 
@@ -15,7 +18,8 @@ import {
   MessageCircle, 
   Share2, 
   Users,
-  Radio
+  Radio,
+  Send
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -44,7 +48,22 @@ export default function LiveStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showSharePanel, setShowSharePanel] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const commentsEndRef = useRef<HTMLDivElement>(null);
+
+  // Real-time comments hook
+  const { comments, sendComment, isLoading: commentsLoading } = useLiveComments({
+    liveId: streamId || null,
+    enabled: !!streamId
+  });
+
+  // Auto-scroll to bottom when new comments arrive
+  useEffect(() => {
+    if (commentsEndRef.current) {
+      commentsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [comments]);
 
   useEffect(() => {
     if (streamId) {
@@ -144,6 +163,15 @@ export default function LiveStream() {
 
   const handleGoToFeed = () => {
     navigate("/social");
+  };
+
+  const handleSendComment = async () => {
+    if (!newComment.trim()) return;
+    
+    const success = await sendComment(newComment.trim());
+    if (success) {
+      setNewComment("");
+    }
   };
 
   if (loading) {
@@ -314,15 +342,83 @@ export default function LiveStream() {
                   </p>
                 )}
 
+                {/* Live Comments Section */}
+                <div className="border-t border-border pt-4">
+                  <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5" />
+                    Bình luận ({comments.length})
+                  </h3>
+                  
+                  {/* Comments List */}
+                  <ScrollArea className="h-64 mb-4 pr-4">
+                    <div className="space-y-3">
+                      {comments.length === 0 ? (
+                        <p className="text-muted-foreground text-sm text-center py-8">
+                          {isLive ? "Chưa có bình luận nào. Hãy là người đầu tiên!" : "Không có bình luận nào."}
+                        </p>
+                      ) : (
+                        comments.map((comment) => (
+                          <motion.div
+                            key={comment.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-start gap-3"
+                          >
+                            <Avatar className="w-8 h-8 flex-shrink-0">
+                              <AvatarImage src={comment.avatar_url || undefined} />
+                              <AvatarFallback className="text-xs bg-primary/20">
+                                {comment.username.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-baseline gap-2">
+                                <span className="font-semibold text-sm text-foreground">
+                                  {comment.username}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(comment.created_at).toLocaleTimeString('vi-VN', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </span>
+                              </div>
+                              <p className="text-sm text-foreground break-words">
+                                {comment.message}
+                              </p>
+                            </div>
+                          </motion.div>
+                        ))
+                      )}
+                      <div ref={commentsEndRef} />
+                    </div>
+                  </ScrollArea>
+
+                  {/* Comment Input */}
+                  {isLive && (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
+                        placeholder="Viết bình luận..."
+                        className="flex-1"
+                      />
+                      <Button
+                        size="icon"
+                        onClick={handleSendComment}
+                        disabled={!newComment.trim()}
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Actions */}
                 <div className="flex items-center gap-4 pt-4 border-t border-border">
                   <Button variant="ghost" size="sm" className="gap-2">
                     <Heart className="w-5 h-5" />
                     Thích
-                  </Button>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <MessageCircle className="w-5 h-5" />
-                    Bình luận
                   </Button>
                   <Button 
                     variant="ghost" 

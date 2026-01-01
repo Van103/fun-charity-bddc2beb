@@ -50,6 +50,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useCreateFeedPost } from "@/hooks/useFeedPosts";
 import { useLiveGifts } from "@/hooks/useLiveGifts";
+import { useLiveComments } from "@/hooks/useLiveComments";
 import { FriendExcludeSelector } from "./FriendExcludeSelector";
 import { LiveStreamMusicPanel } from "./LiveStreamMusicPanel";
 import { LiveStreamQAPanel, PinnedCommentDisplay, Question, PinnedComment } from "./LiveStreamQAPanel";
@@ -136,10 +137,16 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [activeVideoDeviceId, setActiveVideoDeviceId] = useState<string | null>(null);
   const [viewerCount, setViewerCount] = useState(0);
   const [peakViewers, setPeakViewers] = useState(0);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [reactions, setReactions] = useState<LiveReaction[]>([]);
   const [streamDuration, setStreamDuration] = useState(0);
+  const [livePostId, setLivePostId] = useState<string | null>(null);
+  
+  // Real-time comments hook
+  const { comments: liveComments, sendComment, clearComments } = useLiveComments({
+    liveId: livePostId,
+    enabled: phase === 'live'
+  });
   
   // Recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -357,7 +364,8 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       setPhase('setup');
       setStreamTitle("");
       setStreamDescription("");
-      setMessages([]);
+      clearComments();
+      setLivePostId(null);
       setViewerCount(0);
       setPeakViewers(0);
       setStreamDuration(0);
@@ -368,7 +376,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
         stopRecording();
       }
     };
-  }, [open, startCameraPreview, stopStream, isRecording, stopRecording]);
+  }, [open, startCameraPreview, stopStream, isRecording, stopRecording, clearComments]);
 
   // Handle camera switch - restart stream when target camera changes
   useEffect(() => {
@@ -394,7 +402,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     void switchCameraStream();
   }, [activeVideoDeviceId, facingMode, open, startCameraPreview]);
 
-  // Simulate viewers and chat when streaming
+  // Simulate viewers when streaming (keep viewer simulation for demo, but remove fake chat)
   useEffect(() => {
     if (phase !== 'live') return;
 
@@ -403,7 +411,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       setStreamDuration(prev => prev + 1);
     }, 1000);
 
-    // Viewer simulation
+    // Viewer simulation (for demo purposes)
     viewerIntervalRef.current = setInterval(() => {
       setViewerCount(prev => {
         const newCount = Math.max(1, prev + Math.floor(Math.random() * 7) - 3);
@@ -412,42 +420,8 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       });
     }, 3000);
 
-    const demoUsers = [
-      { name: 'Nguyễn Văn A', avatar: null },
-      { name: 'Trần Thị B', avatar: null },
-      { name: 'Lê Văn C', avatar: null },
-      { name: 'Phạm Thị D', avatar: null },
-      { name: 'User123', avatar: null }
-    ];
-    const demoMessages = [
-      'Xin chào! 👋',
-      'Live hay quá! ❤️',
-      'Chào mọi người!',
-      'Đang xem nè 👀',
-      '🔥🔥🔥',
-      'Tuyệt vời!',
-      'Ủng hộ bạn nè 💪',
-      'Chất lượng tốt quá!',
-      'Cố lên nhé ❤️',
-      'Hi hi 😄',
-    ];
-
-    chatIntervalRef.current = setInterval(() => {
-      const user = demoUsers[Math.floor(Math.random() * demoUsers.length)];
-      const newMsg: ChatMessage = {
-        id: Date.now().toString(),
-        user: user.name,
-        avatar: user.avatar || undefined,
-        text: demoMessages[Math.floor(Math.random() * demoMessages.length)],
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev.slice(-50), newMsg]);
-    }, 3500);
-
     return () => {
       if (viewerIntervalRef.current) clearInterval(viewerIntervalRef.current);
-      if (chatIntervalRef.current) clearInterval(chatIntervalRef.current);
       if (durationIntervalRef.current) clearInterval(durationIntervalRef.current);
     };
   }, [phase]);
@@ -539,8 +513,38 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     setShowCountdown(true);
   };
 
-  const handleCountdownComplete = () => {
+  const handleCountdownComplete = async () => {
     setShowCountdown(false);
+    
+    // Create live post in database to get livePostId for comments
+    try {
+      const title = streamTitle.trim() || `${profile?.full_name || 'Người dùng'} đang phát trực tiếp`;
+      
+      const { data, error } = await supabase
+        .from('feed_posts')
+        .insert({
+          user_id: profile?.user_id,
+          post_type: 'update',
+          title: title,
+          content: streamDescription || `🔴 Đang phát trực tiếp: ${title}`,
+          is_live_video: true,
+          is_active: true,
+          live_viewer_count: 1,
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+      
+      setLivePostId(data.id);
+      console.log('[LiveStream] Created live post with ID:', data.id);
+    } catch (err) {
+      console.error('[LiveStream] Failed to create live post:', err);
+      toast.error('Không thể bắt đầu phát trực tiếp');
+      setShowCountdown(false);
+      return;
+    }
+    
     setPhase('live');
     setViewerCount(1);
     startRecording();
@@ -578,17 +582,12 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     }
   };
 
-  const sendMessage = () => {
-    if (newMessage.trim()) {
-      const msg: ChatMessage = {
-        id: Date.now().toString(),
-        user: profile?.full_name || "Bạn",
-        avatar: profile?.avatar_url || undefined,
-        text: newMessage,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, msg]);
-      setNewMessage("");
+  const sendMessage = async () => {
+    if (newMessage.trim() && livePostId) {
+      const success = await sendComment(newMessage.trim());
+      if (success) {
+        setNewMessage("");
+      }
     }
   };
 
@@ -1263,40 +1262,40 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 )}
               </div>
 
-              {/* Live Chat (during streaming) */}
+              {/* Live Chat (during streaming) - Real-time comments */}
               <div className="absolute bottom-24 left-4 right-20 z-20">
                 <ScrollArea className="h-36 mb-2">
                   <div className="space-y-2">
-                    {messages.slice(-15).map((msg) => {
-                      const isQuestion = msg.text.includes('?');
+                    {liveComments.slice(-15).map((comment) => {
+                      const isQuestion = comment.message.includes('?');
                       return (
                         <motion.div 
-                          key={msg.id} 
+                          key={comment.id} 
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           className="flex items-start gap-2 group"
                         >
                           <Avatar className="w-6 h-6 flex-shrink-0">
-                            <AvatarImage src={msg.avatar} />
+                            <AvatarImage src={comment.avatar_url || undefined} />
                             <AvatarFallback className="text-xs bg-primary/50">
-                              {msg.user.charAt(0)}
+                              {comment.username.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <span className="text-primary text-xs font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{msg.user}</span>
+                            <span className="text-primary text-xs font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{comment.username}</span>
                             {isQuestion && (
                               <Badge className="bg-yellow-500 text-black text-[10px] px-1 py-0 ml-1">Q&A</Badge>
                             )}
-                            <p className="text-white text-sm break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{msg.text}</p>
+                            <p className="text-white text-sm break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{comment.message}</p>
                           </div>
                           {/* Pin button for host */}
                           <button
                             onClick={() => setPinnedComment({
-                              id: msg.id,
-                              user: msg.user,
-                              avatar: msg.avatar,
-                              text: msg.text,
-                              timestamp: msg.timestamp
+                              id: comment.id,
+                              user: comment.username,
+                              avatar: comment.avatar_url || undefined,
+                              text: comment.message,
+                              timestamp: new Date(comment.created_at)
                             })}
                             className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white flex-shrink-0"
                           >
