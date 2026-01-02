@@ -12,6 +12,7 @@ import CustomCursor from "@/components/cursor/CustomCursor";
 import FlyingAngel from "@/components/cursor/FlyingAngel";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
+import { GlobalEmailVerificationBanner } from "@/components/layout/GlobalEmailVerificationBanner";
 import { usePushNotification } from "@/hooks/usePushNotification";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useCallback } from "react";
@@ -138,6 +139,7 @@ const App = () => (
               <BackgroundWithVariant />
               <EnergyBokeh />
               <IncomingCallListener />
+              <GlobalEmailVerificationBanner />
               <Routes>
               <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
