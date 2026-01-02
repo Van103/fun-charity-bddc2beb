@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 export type CursorType = 'angel' | 'diamond' | 'heart' | 'baby' | 'star' | 'crown' | 'wand' | 'butterfly' | 'moon' | 'arrow-blue' | 'arrow-purple' | 'default';
 
-export type AngelStyle = 'pink' | 'purple' | 'yellow' | 'blue' | 'green' | 'random';
+export type AngelStyle = 'pink' | 'purple' | 'yellow' | 'blue' | 'green' | 'orange' | 'red' | 'random';
 
 export const FAIRY_COLOR_OPTIONS = [
   { id: 'pink' as const, name: 'Hồng', image: '/cursors/fairy-angel.png', color: '#FF69B4' },
@@ -10,7 +10,9 @@ export const FAIRY_COLOR_OPTIONS = [
   { id: 'yellow' as const, name: 'Vàng', image: '/cursors/fairy-angel-yellow.png', color: '#F59E0B' },
   { id: 'blue' as const, name: 'Xanh dương', image: '/cursors/fairy-angel-blue.png', color: '#3B82F6' },
   { id: 'green' as const, name: 'Xanh lá', image: '/cursors/fairy-angel-green.png', color: '#22C55E' },
-  { id: 'random' as const, name: 'Ngẫu nhiên', image: '', color: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6, #22C55E)' },
+  { id: 'orange' as const, name: 'Cam', image: '/cursors/fairy-angel-orange.png', color: '#F97316' },
+  { id: 'red' as const, name: 'Đỏ', image: '/cursors/fairy-angel-red.png', color: '#EF4444' },
+  { id: 'random' as const, name: 'Ngẫu nhiên', image: '', color: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6, #22C55E, #F97316, #EF4444)' },
 ];
 
 interface CursorOption {

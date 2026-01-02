@@ -8,6 +8,8 @@ const FAIRY_IMAGES: Record<Exclude<AngelStyle, 'random'>, string> = {
   yellow: '/cursors/fairy-angel-yellow.png',
   blue: '/cursors/fairy-angel-blue.png',
   green: '/cursors/fairy-angel-green.png',
+  orange: '/cursors/fairy-angel-orange.png',
+  red: '/cursors/fairy-angel-red.png',
 };
 
 const ALL_FAIRY_IMAGES = Object.values(FAIRY_IMAGES);
@@ -19,6 +21,8 @@ const SPARKLE_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, string[]> =
   yellow: ['#FFD700', '#FFA500', '#FFEC8B', '#F0E68C', '#FFE4B5', '#FFFACD'], // Yellow fairy - golden sunshine
   blue: ['#3B82F6', '#60A5FA', '#87CEEB', '#00BFFF', '#ADD8E6', '#E0FFFF'], // Blue fairy - ocean dreams
   green: ['#22C55E', '#4ADE80', '#86EFAC', '#10B981', '#A7F3D0', '#D1FAE5'], // Green fairy - nature magic
+  orange: ['#F97316', '#FB923C', '#FDBA74', '#FF6B35', '#FFA07A', '#FFE4C4'], // Orange fairy - sunset fire
+  red: ['#EF4444', '#F87171', '#FCA5A5', '#DC2626', '#FF6B6B', '#FFB3B3'], // Red fairy - passionate flames
 };
 
 // Trail glow colors for each fairy
@@ -28,6 +32,8 @@ const TRAIL_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, { primary: st
   yellow: { primary: 'rgba(255,215,0,0.8)', secondary: 'rgba(255,165,0,0.4)', tertiary: 'rgba(255,193,7,0.2)' },
   blue: { primary: 'rgba(96,165,250,0.8)', secondary: 'rgba(59,130,246,0.4)', tertiary: 'rgba(37,99,235,0.2)' },
   green: { primary: 'rgba(74,222,128,0.8)', secondary: 'rgba(34,197,94,0.4)', tertiary: 'rgba(22,163,74,0.2)' },
+  orange: { primary: 'rgba(251,146,60,0.8)', secondary: 'rgba(249,115,22,0.4)', tertiary: 'rgba(234,88,12,0.2)' },
+  red: { primary: 'rgba(248,113,113,0.8)', secondary: 'rgba(239,68,68,0.4)', tertiary: 'rgba(220,38,38,0.2)' },
 };
 
 // Glow colors when moving fast
@@ -37,6 +43,8 @@ const GLOW_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, { inner: strin
   yellow: { inner: 'rgba(255,215,0,0.5)', outer: 'rgba(255,193,7,0.3)' },
   blue: { inner: 'rgba(59,130,246,0.5)', outer: 'rgba(96,165,250,0.3)' },
   green: { inner: 'rgba(34,197,94,0.5)', outer: 'rgba(74,222,128,0.3)' },
+  orange: { inner: 'rgba(249,115,22,0.5)', outer: 'rgba(251,146,60,0.3)' },
+  red: { inner: 'rgba(239,68,68,0.5)', outer: 'rgba(248,113,113,0.3)' },
 };
 
 // Default sparkle colors for random mode
