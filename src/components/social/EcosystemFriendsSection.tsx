@@ -81,13 +81,13 @@ const ECOSYSTEM_PLATFORMS = [
   },
 ];
 
-// Mock ecosystem friends data
+// Mock ecosystem friends data with real avatars from FUN platforms
 const ECOSYSTEM_FRIENDS = [
   // From Fun Farm
   {
     id: "farm-1",
     name: "Nông Dân Vui Vẻ",
-    avatar: "🧑‍🌾",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunFarm1&backgroundColor=b6e3f4",
     platform: "farm",
     badges: ["top_farmer", "eco_friendly"],
     bio: "Yêu cây cối, thích làm vườn! 🌱",
@@ -98,7 +98,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "farm-2", 
     name: "Chị Hai Lúa",
-    avatar: "👩‍🌾",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunFarm2&backgroundColor=d1d4f9",
     platform: "farm",
     badges: ["harvest_master"],
     bio: "Mùa màng bội thu! 🌾",
@@ -109,7 +109,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "farm-3",
     name: "Bác Nông Nghiệp",
-    avatar: "👨‍🌾",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunFarm3&backgroundColor=c0aede",
     platform: "farm",
     badges: ["veteran_farmer"],
     bio: "30 năm kinh nghiệm canh tác 🚜",
@@ -121,7 +121,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "planet-1",
     name: "Nhà Thám Hiểm Sao",
-    avatar: "🧑‍🚀",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunPlanet1&backgroundColor=ffd5dc",
     platform: "planet",
     badges: ["explorer", "pioneer"],
     bio: "Bay xa hơn, khám phá nhiều hơn! 🚀",
@@ -132,7 +132,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "planet-2",
     name: "Captain Galaxy",
-    avatar: "👨‍🚀",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunPlanet2&backgroundColor=96e6a1",
     platform: "planet",
     badges: ["commander"],
     bio: "Đội trưởng phi đội Alpha 🌌",
@@ -143,7 +143,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "planet-3",
     name: "Star Seeker",
-    avatar: "👩‍🚀",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunPlanet3&backgroundColor=ffeaa7",
     platform: "planet",
     badges: ["scientist"],
     bio: "Nghiên cứu các vì sao ⭐",
@@ -155,7 +155,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "play-1",
     name: "Pro Gamer VN",
-    avatar: "🎮",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunPlay1&backgroundColor=dfe6e9",
     platform: "play",
     badges: ["esports_pro", "streamer"],
     bio: "Top 1 rank mùa này! 🏆",
@@ -166,7 +166,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "play-2",
     name: "Game Master",
-    avatar: "🕹️",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunPlay2&backgroundColor=fab1a0",
     platform: "play",
     badges: ["achievement_hunter"],
     bio: "100% hoàn thành mọi game 🎯",
@@ -178,7 +178,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "charity-1",
     name: "Thiên Sứ Nhỏ",
-    avatar: "👼",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunCharity1&backgroundColor=fdcb6e",
     platform: "charity",
     badges: ["donor_gold", "volunteer_hero"],
     bio: "Lan tỏa yêu thương mỗi ngày 💕",
@@ -189,7 +189,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "charity-2",
     name: "Mạnh Thường Quân",
-    avatar: "🤝",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunCharity2&backgroundColor=a29bfe",
     platform: "charity",
     badges: ["donor_diamond", "verified_ngo"],
     bio: "Cùng nhau xây dựng cộng đồng 🏠",
@@ -201,7 +201,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "profile-1",
     name: "FUN Ambassador",
-    avatar: "🌟",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunProfile1&backgroundColor=ff7675",
     platform: "profile",
     badges: ["early_adopter", "community_leader"],
     bio: "Đại sứ FUN Ecosystem chính thức ✨",
@@ -212,7 +212,7 @@ const ECOSYSTEM_FRIENDS = [
   {
     id: "profile-2",
     name: "NFT Collector",
-    avatar: "🎨",
+    avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=FunProfile2&backgroundColor=74b9ff",
     platform: "profile",
     badges: ["nft_whale", "art_lover"],
     bio: "Sưu tầm NFT độc đáo 🖼️",
@@ -391,9 +391,10 @@ export function EcosystemFriendsSection({ showCompact = false }: EcosystemFriend
                   {/* Avatar */}
                   <div className="flex flex-col items-center text-center">
                     <div className={`p-0.5 rounded-full bg-gradient-to-br ${platform.color} mb-2`}>
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white dark:bg-background flex items-center justify-center text-2xl sm:text-3xl">
-                        {friend.avatar}
-                      </div>
+                      <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-2 border-white dark:border-background">
+                        <AvatarImage src={friend.avatar} alt={friend.name} />
+                        <AvatarFallback className="text-lg">{friend.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
                     </div>
                     
                     {/* Name & Platform */}
