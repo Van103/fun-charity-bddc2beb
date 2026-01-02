@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
@@ -34,6 +34,7 @@ export function FeedReactionPicker({
 }: FeedReactionPickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const activeReaction = REACTIONS.find((r) => r.type === currentReaction);
 
@@ -54,56 +55,86 @@ export function FeedReactionPicker({
     }
   };
 
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setShowPicker(true);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setShowPicker(false);
+      setHoveredReaction(null);
+    }, 300);
+  };
+
   return (
     <div 
       className="relative flex-1"
-      onMouseEnter={() => setShowPicker(true)}
-      onMouseLeave={() => {
-        setShowPicker(false);
-        setHoveredReaction(null);
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Reaction Picker Popup */}
       <AnimatePresence>
         {showPicker && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            initial={{ opacity: 0, y: 10, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="absolute bottom-full left-0 mb-2 bg-background/95 backdrop-blur-md rounded-full shadow-lg border border-border px-2 py-1.5 flex items-center gap-1 z-50"
+            exit={{ opacity: 0, y: 10, scale: 0.8 }}
+            transition={{ type: "spring", damping: 25, stiffness: 400 }}
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-card/98 backdrop-blur-xl rounded-full shadow-xl border border-border/50 px-2 py-1.5 flex items-center gap-0.5 z-50"
+            onMouseEnter={() => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            }}
+            onMouseLeave={handleMouseLeave}
           >
             {REACTIONS.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20, scale: 0 }}
                 animate={{ 
                   opacity: 1, 
                   y: 0,
-                  scale: hoveredReaction === reaction.type ? 1.3 : 1,
+                  scale: hoveredReaction === reaction.type ? 1.4 : 1,
+                  translateY: hoveredReaction === reaction.type ? -8 : 0,
                 }}
                 transition={{ 
-                  delay: index * 0.03,
-                  scale: { type: "spring", stiffness: 400, damping: 10 }
+                  delay: index * 0.04,
+                  scale: { type: "spring", stiffness: 500, damping: 15 },
+                  translateY: { type: "spring", stiffness: 500, damping: 15 }
                 }}
                 onClick={() => handleReactionClick(reaction.type)}
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
-                className={`relative text-2xl hover:scale-125 transition-transform duration-150 p-1 ${
-                  currentReaction === reaction.type ? "scale-110" : ""
+                className={`relative text-2xl sm:text-3xl transition-all duration-150 p-1.5 rounded-full hover:bg-muted/50 ${
+                  currentReaction === reaction.type ? "bg-primary/10" : ""
                 }`}
                 disabled={isLoading}
               >
-                <span className="block transform-gpu">{reaction.emoji}</span>
+                <motion.span 
+                  className="block transform-gpu"
+                  animate={{
+                    rotate: hoveredReaction === reaction.type ? [0, -10, 10, -5, 5, 0] : 0,
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
+                  {reaction.emoji}
+                </motion.span>
                 
                 {/* Tooltip */}
                 <AnimatePresence>
                   {hoveredReaction === reaction.type && (
                     <motion.span
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-xs px-2 py-1 rounded-md whitespace-nowrap"
+                      initial={{ opacity: 0, y: 8, scale: 0.8 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.8 }}
+                      className="absolute -top-9 left-1/2 -translate-x-1/2 bg-foreground text-background text-[11px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap shadow-lg"
                     >
                       {reaction.label}
                     </motion.span>
@@ -118,10 +149,10 @@ export function FeedReactionPicker({
       {/* Main Button */}
       <Button
         variant="ghost"
-        className={`w-full gap-2 transition-colors ${
+        className={`w-full gap-2 transition-all duration-200 ${
           activeReaction 
-            ? `${activeReaction.color} hover:${activeReaction.color}` 
-            : "text-muted-foreground hover:text-secondary"
+            ? `${activeReaction.color} hover:${activeReaction.color} font-medium` 
+            : "text-muted-foreground hover:text-foreground"
         }`}
         onClick={handleButtonClick}
         disabled={isLoading}
@@ -129,9 +160,10 @@ export function FeedReactionPicker({
         {activeReaction ? (
           <motion.span
             key={activeReaction.type}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="text-lg"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            className="text-xl"
           >
             {activeReaction.emoji}
           </motion.span>
