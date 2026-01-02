@@ -1598,39 +1598,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_security_settings: {
-        Row: {
-          biometric_credential_id: string | null
-          biometric_public_key: string | null
-          created_at: string
-          id: string
-          is_2fa_enabled: boolean | null
-          pin_hash: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          biometric_credential_id?: string | null
-          biometric_public_key?: string | null
-          created_at?: string
-          id?: string
-          is_2fa_enabled?: boolean | null
-          pin_hash?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          biometric_credential_id?: string | null
-          biometric_public_key?: string | null
-          created_at?: string
-          id?: string
-          is_2fa_enabled?: boolean | null
-          pin_hash?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       wallets: {
         Row: {
           created_at: string

@@ -13,7 +13,6 @@ import FlyingAngel from "@/components/cursor/FlyingAngel";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
 import { GlobalEmailVerificationBanner } from "@/components/layout/GlobalEmailVerificationBanner";
-import { TwoFactorGate } from "@/components/auth/TwoFactorGate";
 import { usePushNotification } from "@/hooks/usePushNotification";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useCallback } from "react";
@@ -47,7 +46,6 @@ import NotFound from "./pages/NotFound";
 import VerifyEmail from "./pages/VerifyEmail";
 import AuthCallback from "./pages/AuthCallback";
 import LiveStream from "./pages/LiveStream";
-import SecuritySettings from "./pages/SecuritySettings";
 
 const queryClient = new QueryClient();
 
@@ -138,46 +136,43 @@ const App = () => (
             <CustomCursor />
             <FlyingAngel />
             <BrowserRouter>
-              <TwoFactorGate>
-                <BackgroundWithVariant />
-                <EnergyBokeh />
-                <IncomingCallListener />
-                <GlobalEmailVerificationBanner />
-                <Routes>
-                <Route path="/" element={<Index />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/campaigns" element={<Campaigns />} />
-                  <Route path="/campaigns/:id" element={<CampaignDetail />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/needs-map" element={<NeedsMap />} />
-                  <Route path="/profiles" element={<Profiles />} />
-                  <Route path="/reviews" element={<Reviews />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/user/:userId" element={<PublicProfile />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/feed" element={<SocialFeed />} />
-                  <Route path="/social" element={<SocialFeed />} />
-                  <Route path="/life" element={<Life />} />
-                  <Route path="/academy" element={<Academy />} />
-                  <Route path="/trading" element={<Trading />} />
-                  <Route path="/investment" element={<Investment />} />
-                  <Route path="/farm" element={<Farm />} />
-                  <Route path="/play" element={<Play />} />
-                  <Route path="/legal" element={<Legal />} />
-                  <Route path="/planet" element={<Planet />} />
-                  <Route path="/friends" element={<Friends />} />
-                  <Route path="/my-campaigns" element={<MyCampaigns />} />
-                  <Route path="/admin/verify" element={<AdminVerify />} />
-                  <Route path="/volunteer" element={<Volunteer />} />
-                  <Route path="/install" element={<Install />} />
-                  <Route path="/live/:streamId" element={<LiveStream />} />
-                  <Route path="/security" element={<SecuritySettings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </TwoFactorGate>
+              <BackgroundWithVariant />
+              <EnergyBokeh />
+              <IncomingCallListener />
+              <GlobalEmailVerificationBanner />
+              <Routes>
+              <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/campaigns" element={<Campaigns />} />
+                <Route path="/campaigns/:id" element={<CampaignDetail />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/needs-map" element={<NeedsMap />} />
+                <Route path="/profiles" element={<Profiles />} />
+                <Route path="/reviews" element={<Reviews />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/user/:userId" element={<PublicProfile />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/feed" element={<SocialFeed />} />
+                <Route path="/social" element={<SocialFeed />} />
+                <Route path="/life" element={<Life />} />
+                <Route path="/academy" element={<Academy />} />
+                <Route path="/trading" element={<Trading />} />
+                <Route path="/investment" element={<Investment />} />
+                <Route path="/farm" element={<Farm />} />
+                <Route path="/play" element={<Play />} />
+                <Route path="/legal" element={<Legal />} />
+                <Route path="/planet" element={<Planet />} />
+                <Route path="/friends" element={<Friends />} />
+                <Route path="/my-campaigns" element={<MyCampaigns />} />
+                <Route path="/admin/verify" element={<AdminVerify />} />
+                <Route path="/volunteer" element={<Volunteer />} />
+                <Route path="/install" element={<Install />} />
+                <Route path="/live/:streamId" element={<LiveStream />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </BrowserRouter>
           </TooltipProvider>
         </CursorProvider>
