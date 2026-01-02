@@ -23,6 +23,8 @@ import {
   Shield,
   Sparkles,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 const Auth = () => {
@@ -32,6 +34,10 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -51,6 +57,44 @@ const Auth = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast({
+        title: "Lỗi",
+        description: "Vui lòng nhập email của bạn",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    const redirectUrl = `${window.location.origin}/auth`;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: redirectUrl,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      toast({
+        title: "Lỗi",
+        description: "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResetEmailSent(true);
+    toast({
+      title: "Email đã được gửi!",
+      description: "Vui lòng kiểm tra hộp thư của bạn để đặt lại mật khẩu.",
+    });
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,57 +293,136 @@ const Auth = () => {
 
               {/* Login Form */}
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        autoComplete="email"
-                        placeholder="email@example.com"
-                        className="pl-10"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value.trim())}
-                        disabled={loading}
-                      />
+                {forgotPasswordMode ? (
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div className="text-center mb-4">
+                      <h3 className="text-lg font-semibold">Quên Mật Khẩu</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {resetEmailSent 
+                          ? "Kiểm tra hộp thư của bạn để đặt lại mật khẩu"
+                          : "Nhập email để nhận link đặt lại mật khẩu"}
+                      </p>
                     </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="password">Mật Khẩu</Label>
-                    <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        className="pl-10"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
-
-                  <Button variant="hero" className="w-full" type="submit" disabled={loading}>
-                    {loading ? (
+                    
+                    {!resetEmailSent && (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Đang xử lý...
-                      </>
-                    ) : (
-                      <>
-                        Đăng Nhập
-                        <ArrowRight className="w-4 h-4" />
+                        <div>
+                          <Label htmlFor="reset-email">Email</Label>
+                          <div className="relative mt-1">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Input
+                              id="reset-email"
+                              type="email"
+                              name="reset-email"
+                              autoComplete="email"
+                              placeholder="email@example.com"
+                              className="pl-10"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value.trim())}
+                              disabled={loading}
+                            />
+                          </div>
+                        </div>
+
+                        <Button variant="hero" className="w-full" type="submit" disabled={loading}>
+                          {loading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Đang gửi...
+                            </>
+                          ) : (
+                            <>
+                              Gửi Link Đặt Lại
+                              <Mail className="w-4 h-4" />
+                            </>
+                          )}
+                        </Button>
                       </>
                     )}
-                  </Button>
-                </form>
+
+                    <Button 
+                      type="button"
+                      variant="ghost" 
+                      className="w-full" 
+                      onClick={() => {
+                        setForgotPasswordMode(false);
+                        setResetEmailSent(false);
+                      }}
+                    >
+                      <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
+                      Quay lại Đăng Nhập
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                      <Label htmlFor="email">Email</Label>
+                      <div className="relative mt-1">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          name="email"
+                          autoComplete="email"
+                          placeholder="email@example.com"
+                          className="pl-10"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value.trim())}
+                          disabled={loading}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="password">Mật Khẩu</Label>
+                      <div className="relative mt-1">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          className="pl-10 pr-10"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          disabled={loading}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setForgotPasswordMode(true)}
+                        className="text-sm text-secondary hover:text-secondary/80 transition-colors"
+                      >
+                        Quên mật khẩu?
+                      </button>
+                    </div>
+
+                    <Button variant="hero" className="w-full" type="submit" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Đang xử lý...
+                        </>
+                      ) : (
+                        <>
+                          Đăng Nhập
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
               </TabsContent>
 
               {/* Signup Form */}
@@ -352,15 +475,22 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
-                        type="password"
+                        type={showSignupPassword ? "text" : "password"}
                         name="signup-password"
                         autoComplete="new-password"
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="pl-10 pr-10"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowSignupPassword(!showSignupPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showSignupPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
                     <PasswordStrengthIndicator password={password} />
                   </div>
