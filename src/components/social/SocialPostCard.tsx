@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FeedPost } from "@/hooks/useFeedPosts";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
+import { formatDistanceToNow, Locale } from "date-fns";
+import { vi, enUS, zhCN, ja, ko, th, fr, de, es, pt, ru, ar, hi } from "date-fns/locale";
 import { FeedReactionPicker, REACTIONS } from "./FeedReactionPicker";
 import { SharedPostPreview } from "./SharedPostPreview";
 import { usePostReactions } from "@/hooks/useFeedReactions";
@@ -30,6 +30,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { formatPostContent } from "@/lib/formatContent";
+import { useLanguage, Language } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +47,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+const localeMap: Record<Language, Locale> = {
+  en: enUS, vi, zh: zhCN, ja, ko, th, fr, de, es, pt, ru, ar, hi
+};
 
 interface MentionedUser {
   user_id: string;
@@ -91,6 +96,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t, language } = useLanguage();
 
   // Fetch mentioned users for this post
   const { data: mentionedUsers = [] } = useQuery({
@@ -168,10 +174,10 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
 
   const timeAgo = formatDistanceToNow(new Date(post.created_at), { 
     addSuffix: false, 
-    locale: vi 
+    locale: localeMap[language] 
   });
 
-  const userName = post.profiles?.full_name || "Người dùng";
+  const userName = post.profiles?.full_name || t("social.user");
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -183,12 +189,12 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
 
       if (error) throw error;
 
-      toast({ title: "Đã xóa bài viết" });
+      toast({ title: t("social.deleted") });
       queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể xóa bài viết",
+        title: t("common.error"),
+        description: error.message || t("social.deleteError"),
         variant: "destructive"
       });
     } finally {
@@ -232,15 +238,15 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                 </Link>
                 {mentionedUsers.length > 0 && (
                   <span className="text-muted-foreground text-sm">
-                    cùng với{" "}
+                    {t("social.with")}{" "}
                     <Link 
                       to={`/user/${mentionedUsers[0].user_id}`}
                       className="text-primary font-medium hover:underline"
                     >
-                      {mentionedUsers[0].full_name || "Người dùng"}
+                      {mentionedUsers[0].full_name || t("social.user")}
                     </Link>
                     {mentionedUsers.length > 1 && (
-                      <span> và {mentionedUsers.length - 1} người khác</span>
+                      <span> {t("social.andOthers").replace("{count}", String(mentionedUsers.length - 1))}</span>
                     )}
                   </span>
                 )}
@@ -249,7 +255,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                 )}
                 {post.location && (
                   <>
-                    <span className="text-muted-foreground text-sm">tại</span>
+                    <span className="text-muted-foreground text-sm">{t("post.at")}</span>
                     <span className="text-primary text-sm font-medium flex items-center gap-1 hover:underline cursor-pointer">
                       <MapPin className="w-3 h-3" />
                       {post.location}
@@ -262,7 +268,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                 {isLiveVideo && (
                   <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-1 bg-red-500/10 text-red-500 border-red-500/20">
                     <Video className="w-2.5 h-2.5" />
-                    Đã phát trực tiếp
+                    {t("social.wasLive")}
                   </Badge>
                 )}
               </div>
@@ -297,14 +303,14 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                     onClick={() => setShowEditModal(true)}
                   >
                     <Pencil className="w-4 h-4" />
-                    Chỉnh sửa
+                    {t("common.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className="gap-2 cursor-pointer text-destructive focus:text-destructive"
                     onClick={() => setShowDeleteDialog(true)}
                   >
                     <Trash2 className="w-4 h-4" />
-                    Xóa bài
+                    {t("social.deletePost")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -450,13 +456,13 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
               </div>
             )}
             <span className="text-xs hover:underline no-tap-highlight">
-              {(totalReactions || post.reactions_count || 0).toLocaleString()} người
+              {(totalReactions || post.reactions_count || 0).toLocaleString()} {t("post.people")}
             </span>
           </div>
         </ReactionUsersTooltip>
         <div className="flex items-center gap-3 sm:gap-4 text-xs">
-          <span className="hover:underline cursor-pointer no-tap-highlight">{(post.comments_count || 0).toLocaleString()} bình luận</span>
-          <span className="hover:underline cursor-pointer no-tap-highlight">{((post as any).shares_count || 0).toLocaleString()} chia sẻ</span>
+          <span className="hover:underline cursor-pointer no-tap-highlight">{(post.comments_count || 0).toLocaleString()} {t("post.comments")}</span>
+          <span className="hover:underline cursor-pointer no-tap-highlight">{((post as any).shares_count || 0).toLocaleString()} {t("post.shares")}</span>
         </div>
       </div>
 
@@ -475,7 +481,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
           onClick={() => setShowComments(!showComments)}
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="hidden xs:inline">Bình luận</span>
+          <span className="hidden xs:inline">{t("post.comment")}</span>
         </Button>
         <GiftDonateModal post={post} />
         <SharePopover post={post} currentUserAvatar={currentUserAvatar} />
@@ -507,20 +513,20 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa bài viết?</AlertDialogTitle>
+            <AlertDialogTitle>{t("social.deletePost")}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.
+              {t("social.confirmDelete")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Hủy</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
               className="bg-destructive hover:bg-destructive/90"
             >
               {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Xóa
+              {t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

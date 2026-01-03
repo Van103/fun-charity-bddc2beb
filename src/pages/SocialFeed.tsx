@@ -6,6 +6,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SwipeIndicator } from "@/components/layout/SwipeIndicator";
 import { LeftSidebar } from "@/components/social/LeftSidebar";
 import { RightSidebar } from "@/components/social/RightSidebar";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
@@ -37,6 +38,7 @@ export default function SocialFeed() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
 
   // Get scrollToPostId from navigation state
   useEffect(() => {
@@ -119,8 +121,8 @@ export default function SocialFeed() {
   return (
     <>
       <Helmet>
-        <title>Bảng Tin - FUN Charity</title>
-        <meta name="description" content="Xem bảng tin xã hội, kết nối với cộng đồng từ thiện minh bạch trên FUN Charity" />
+        <title>{t("social.pageTitle")}</title>
+        <meta name="description" content={t("social.pageDesc")} />
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -165,7 +167,7 @@ export default function SocialFeed() {
                             )}
                             {!hasNextPage && posts.length > 0 && (
                               <p className="text-center text-sm text-muted-foreground">
-                                Bạn đã xem hết tất cả bài viết 🎉
+                                {t("social.allViewed")}
                               </p>
                             )}
                           </div>
@@ -173,7 +175,7 @@ export default function SocialFeed() {
                       ) : (
                         <div className="mobile-card p-6 sm:p-12 text-center">
                           <p className="text-muted-foreground text-sm sm:text-base">
-                            Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!
+                            {t("social.noPosts")}
                           </p>
                         </div>
                       )}

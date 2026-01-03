@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Video } from "lucide-react";
 import { FacebookCreatePostModal } from "./FacebookCreatePostModal";
 import { LiveStreamModal } from "./LiveStreamModal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface CreatePostBoxProps {
   profile?: {
@@ -29,6 +30,7 @@ const getAvatarGradient = (name: string) => {
 export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const [showFacebookModal, setShowFacebookModal] = useState(false);
   const [showLiveModal, setShowLiveModal] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <>
@@ -52,7 +54,7 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
               onClick={() => setShowFacebookModal(true)}
               className="flex-1 bg-muted/30 border border-border rounded-full px-4 py-3 text-sm sm:text-base text-muted-foreground text-left hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer touch-target no-tap-highlight"
             >
-              Bạn đang nghĩ gì?
+              {t("post.thinking")}
             </button>
 
             {/* Live Button - touch-friendly */}

@@ -209,7 +209,7 @@ export function RightSidebar() {
             </div>
           ) : contacts.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-2">
-              Chưa có bạn bè
+              {t("social.noFriends")}
             </p>
           ) : (
             contacts.map((contact) => (
@@ -226,7 +226,7 @@ export function RightSidebar() {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <span className="text-sm text-foreground truncate">{contact.full_name || "Người dùng"}</span>
+                <span className="text-sm text-foreground truncate">{contact.full_name || t("social.user")}</span>
                 <div className="ml-auto w-2 h-2 rounded-full bg-success" />
               </Link>
             ))
@@ -247,7 +247,7 @@ export function RightSidebar() {
             </div>
           ) : groups.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-2">
-              Chưa có nhóm chat
+              {t("social.noGroups")}
             </p>
           ) : (
             groups.map((group) => (
@@ -262,8 +262,8 @@ export function RightSidebar() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm text-foreground truncate block">{group.name || "Nhóm chat"}</span>
-                  <span className="text-xs text-muted-foreground">{group.participant_count} thành viên</span>
+                  <span className="text-sm text-foreground truncate block">{group.name || t("social.groupChat")}</span>
+                  <span className="text-xs text-muted-foreground">{group.participant_count} {t("social.members")}</span>
                 </div>
               </Link>
             ))

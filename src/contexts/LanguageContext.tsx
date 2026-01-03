@@ -807,10 +807,102 @@ export const translations: Translations = {
     th: "สร้างด้วยความรักและเทคโนโลยีบล็อกเชน", fr: "Construit avec amour et technologie blockchain.", de: "Mit Liebe und Blockchain-Technologie gebaut.", es: "Construido con amor y tecnología blockchain.",
     pt: "Construído com amor e tecnologia blockchain.", ru: "Создано с любовью и технологией блокчейн.", ar: "بُني بالحب وتقنية البلوكتشين.", hi: "प्यार और ब्लॉकचेन तकनीक से बनाया गया।"
   },
-  "footer.transparency100": {
+"footer.transparency100": {
     en: "✨ 100% Transparent • Love Spreading • Community Connected", vi: "✨ Minh Bạch 100% • Yêu Thương Lan Tỏa • Cộng Đồng Kết Nối", zh: "✨ 100%透明 • 爱心传播 • 社区连接", ja: "✨ 100%透明 • 愛の広がり • コミュニティ接続", ko: "✨ 100% 투명 • 사랑 확산 • 커뮤니티 연결",
     th: "✨ โปร่งใส 100% • ความรักแผ่ขยาย • ชุมชนเชื่อมต่อ", fr: "✨ 100% Transparent • Amour répandu • Communauté connectée", de: "✨ 100% Transparent • Liebe verbreiten • Gemeinschaft verbunden", es: "✨ 100% Transparente • Amor difundido • Comunidad conectada",
     pt: "✨ 100% Transparente • Amor espalhado • Comunidade conectada", ru: "✨ 100% Прозрачность • Любовь распространяется • Сообщество связано", ar: "✨ شفافية 100% • نشر الحب • مجتمع متصل", hi: "✨ 100% पारदर्शी • प्यार फैलाना • समुदाय जुड़ा"
+  },
+
+  // Social Feed Page
+  "social.pageTitle": {
+    en: "News Feed - FUN Charity", vi: "Bảng Tin - FUN Charity", zh: "新闻动态 - FUN Charity", ja: "ニュースフィード - FUN Charity", ko: "뉴스 피드 - FUN Charity",
+    th: "ฟีดข่าว - FUN Charity", fr: "Fil d'actualité - FUN Charity", de: "Neuigkeiten - FUN Charity", es: "Noticias - FUN Charity",
+    pt: "Feed de Notícias - FUN Charity", ru: "Лента новостей - FUN Charity", ar: "آخر الأخبار - FUN Charity", hi: "न्यूज़ फ़ीड - FUN Charity"
+  },
+  "social.pageDesc": {
+    en: "View social feed, connect with transparent charity community on FUN Charity", vi: "Xem bảng tin xã hội, kết nối với cộng đồng từ thiện minh bạch trên FUN Charity", zh: "查看社交动态，与FUN Charity上的透明慈善社区建立联系", ja: "ソーシャルフィードを見て、FUN Charityの透明な慈善コミュニティとつながる", ko: "소셜 피드 보기, FUN Charity의 투명한 자선 커뮤니티와 연결",
+    th: "ดูฟีดสังคม เชื่อมต่อกับชุมชนการกุศลที่โปร่งใสบน FUN Charity", fr: "Voir le fil social, se connecter avec la communauté caritative transparente sur FUN Charity", de: "Social Feed ansehen, mit der transparenten Wohltätigkeitsgemeinschaft auf FUN Charity verbinden", es: "Ver el feed social, conectar con la comunidad benéfica transparente en FUN Charity",
+    pt: "Ver feed social, conectar-se com a comunidade de caridade transparente no FUN Charity", ru: "Смотреть социальную ленту, связаться с прозрачным благотворительным сообществом на FUN Charity", ar: "عرض الموجز الاجتماعي، والتواصل مع مجتمع الأعمال الخيرية الشفاف على FUN Charity", hi: "सोशल फ़ीड देखें, FUN Charity पर पारदर्शी चैरिटी समुदाय से जुड़ें"
+  },
+  "social.allViewed": {
+    en: "You've seen all posts 🎉", vi: "Bạn đã xem hết tất cả bài viết 🎉", zh: "您已看完所有帖子 🎉", ja: "すべての投稿を見ました 🎉", ko: "모든 게시물을 확인했습니다 🎉",
+    th: "คุณดูโพสต์ทั้งหมดแล้ว 🎉", fr: "Vous avez vu tous les posts 🎉", de: "Sie haben alle Beiträge gesehen 🎉", es: "Has visto todas las publicaciones 🎉",
+    pt: "Você viu todas as postagens 🎉", ru: "Вы просмотрели все публикации 🎉", ar: "لقد شاهدت جميع المنشورات 🎉", hi: "आपने सभी पोस्ट देख लिए हैं 🎉"
+  },
+  "social.noPosts": {
+    en: "No posts yet. Be the first to share!", vi: "Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!", zh: "还没有帖子。成为第一个分享的人！", ja: "まだ投稿がありません。最初に共有しましょう！", ko: "아직 게시물이 없습니다. 첫 번째로 공유하세요!",
+    th: "ยังไม่มีโพสต์ มาเป็นคนแรกที่แชร์!", fr: "Pas encore de posts. Soyez le premier à partager !", de: "Noch keine Beiträge. Seien Sie der Erste, der teilt!", es: "Aún no hay publicaciones. ¡Sé el primero en compartir!",
+    pt: "Nenhuma postagem ainda. Seja o primeiro a compartilhar!", ru: "Пока нет публикаций. Будьте первым, кто поделится!", ar: "لا توجد منشورات بعد. كن أول من يشارك!", hi: "अभी तक कोई पोस्ट नहीं। पहले शेयर करने वाले बनें!"
+  },
+  "social.noFriends": {
+    en: "No friends yet", vi: "Chưa có bạn bè", zh: "还没有好友", ja: "まだ友達がいません", ko: "아직 친구가 없습니다",
+    th: "ยังไม่มีเพื่อน", fr: "Pas encore d'amis", de: "Noch keine Freunde", es: "Aún no hay amigos",
+    pt: "Nenhum amigo ainda", ru: "Пока нет друзей", ar: "لا يوجد أصدقاء بعد", hi: "अभी तक कोई दोस्त नहीं"
+  },
+  "social.noGroups": {
+    en: "No group chats", vi: "Chưa có nhóm chat", zh: "没有群聊", ja: "グループチャットがありません", ko: "그룹 채팅이 없습니다",
+    th: "ไม่มีแชทกลุ่ม", fr: "Pas de discussions de groupe", de: "Keine Gruppenchats", es: "Sin chats grupales",
+    pt: "Sem conversas em grupo", ru: "Нет групповых чатов", ar: "لا توجد محادثات جماعية", hi: "कोई ग्रुप चैट नहीं"
+  },
+  "social.user": {
+    en: "User", vi: "Người dùng", zh: "用户", ja: "ユーザー", ko: "사용자",
+    th: "ผู้ใช้", fr: "Utilisateur", de: "Benutzer", es: "Usuario",
+    pt: "Usuário", ru: "Пользователь", ar: "مستخدم", hi: "उपयोगकर्ता"
+  },
+  "social.members": {
+    en: "members", vi: "thành viên", zh: "成员", ja: "メンバー", ko: "멤버",
+    th: "สมาชิก", fr: "membres", de: "Mitglieder", es: "miembros",
+    pt: "membros", ru: "участников", ar: "أعضاء", hi: "सदस्य"
+  },
+  "social.groupChat": {
+    en: "Group chat", vi: "Nhóm chat", zh: "群聊", ja: "グループチャット", ko: "그룹 채팅",
+    th: "แชทกลุ่ม", fr: "Discussion de groupe", de: "Gruppenchat", es: "Chat grupal",
+    pt: "Conversa em grupo", ru: "Групповой чат", ar: "محادثة جماعية", hi: "ग्रुप चैट"
+  },
+  "social.with": {
+    en: "with", vi: "cùng với", zh: "与", ja: "と一緒に", ko: "함께",
+    th: "กับ", fr: "avec", de: "mit", es: "con",
+    pt: "com", ru: "вместе с", ar: "مع", hi: "के साथ"
+  },
+  "social.andOthers": {
+    en: "and {count} others", vi: "và {count} người khác", zh: "和其他{count}人", ja: "と他{count}人", ko: "및 {count}명",
+    th: "และอีก {count} คน", fr: "et {count} autres", de: "und {count} andere", es: "y {count} más",
+    pt: "e mais {count}", ru: "и ещё {count}", ar: "و{count} آخرون", hi: "और {count} अन्य"
+  },
+  "social.wasLive": {
+    en: "Was live", vi: "Đã phát trực tiếp", zh: "曾直播", ja: "ライブ配信しました", ko: "라이브 방송함",
+    th: "เคยถ่ายทอดสด", fr: "Était en direct", de: "War live", es: "Estuvo en vivo",
+    pt: "Estava ao vivo", ru: "Был в эфире", ar: "كان مباشراً", hi: "लाइव था"
+  },
+  "social.deletePost": {
+    en: "Delete post", vi: "Xóa bài", zh: "删除帖子", ja: "投稿を削除", ko: "게시물 삭제",
+    th: "ลบโพสต์", fr: "Supprimer le post", de: "Beitrag löschen", es: "Eliminar publicación",
+    pt: "Excluir postagem", ru: "Удалить пост", ar: "حذف المنشور", hi: "पोस्ट हटाएं"
+  },
+  "social.deleted": {
+    en: "Post deleted", vi: "Đã xóa bài viết", zh: "帖子已删除", ja: "投稿が削除されました", ko: "게시물이 삭제되었습니다",
+    th: "ลบโพสต์แล้ว", fr: "Post supprimé", de: "Beitrag gelöscht", es: "Publicación eliminada",
+    pt: "Postagem excluída", ru: "Пост удалён", ar: "تم حذف المنشور", hi: "पोस्ट हटा दी गई"
+  },
+  "social.deleteError": {
+    en: "Cannot delete post", vi: "Không thể xóa bài viết", zh: "无法删除帖子", ja: "投稿を削除できません", ko: "게시물을 삭제할 수 없습니다",
+    th: "ไม่สามารถลบโพสต์ได้", fr: "Impossible de supprimer le post", de: "Beitrag kann nicht gelöscht werden", es: "No se puede eliminar la publicación",
+    pt: "Não foi possível excluir a postagem", ru: "Не удалось удалить пост", ar: "لا يمكن حذف المنشور", hi: "पोस्ट नहीं हटाई जा सकती"
+  },
+  "social.confirmDelete": {
+    en: "Are you sure you want to delete this post? This action cannot be undone.", vi: "Bạn có chắc chắn muốn xóa bài viết này? Hành động này không thể hoàn tác.", zh: "您确定要删除这篇帖子吗？此操作无法撤消。", ja: "この投稿を削除してもよろしいですか？この操作は元に戻せません。", ko: "이 게시물을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+    th: "คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้? การดำเนินการนี้ไม่สามารถเลิกทำได้", fr: "Êtes-vous sûr de vouloir supprimer ce post ? Cette action est irréversible.", de: "Sind Sie sicher, dass Sie diesen Beitrag löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.", es: "¿Estás seguro de que quieres eliminar esta publicación? Esta acción no se puede deshacer.",
+    pt: "Tem certeza de que deseja excluir esta postagem? Esta ação não pode ser desfeita.", ru: "Вы уверены, что хотите удалить этот пост? Это действие нельзя отменить.", ar: "هل أنت متأكد أنك تريد حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.", hi: "क्या आप वाकई इस पोस्ट को हटाना चाहते हैं? इस क्रिया को पूर्ववत नहीं किया जा सकता।"
+  },
+  "social.share": {
+    en: "Share", vi: "Chia sẻ", zh: "分享", ja: "シェア", ko: "공유",
+    th: "แชร์", fr: "Partager", de: "Teilen", es: "Compartir",
+    pt: "Compartilhar", ru: "Поделиться", ar: "مشاركة", hi: "शेयर करें"
+  },
+  "social.gift": {
+    en: "Gift", vi: "Tặng quà", zh: "送礼", ja: "ギフト", ko: "선물",
+    th: "ของขวัญ", fr: "Cadeau", de: "Geschenk", es: "Regalo",
+    pt: "Presente", ru: "Подарок", ar: "هدية", hi: "उपहार"
   },
 };
 
