@@ -509,6 +509,309 @@ export const translations: Translations = {
     th: "ออกจากระบบ", fr: "Déconnexion", de: "Abmelden", es: "Cerrar sesión",
     pt: "Sair", ru: "Выйти", ar: "تسجيل الخروج", hi: "लॉगआउट"
   },
+
+  // Hero Section
+  "hero.badge": {
+    en: "Transparent Charity Platform 💛", vi: "Nền Tảng Từ Thiện Minh Bạch 💛", zh: "透明慈善平台 💛", ja: "透明なチャリティプラットフォーム 💛", ko: "투명한 자선 플랫폼 💛",
+    th: "แพลตฟอร์มการกุศลที่โปร่งใส 💛", fr: "Plateforme Caritative Transparente 💛", de: "Transparente Wohltätigkeitsplattform 💛", es: "Plataforma Benéfica Transparente 💛",
+    pt: "Plataforma de Caridade Transparente 💛", ru: "Прозрачная благотворительная платформа 💛", ar: "منصة خيرية شفافة 💛", hi: "पारदर्शी दान मंच 💛"
+  },
+  "hero.quote": {
+    en: "Where every heart is recognized, every help is pure and touches the soul.", vi: "Nơi mỗi tấm lòng đều được ghi nhận, mỗi sự giúp đỡ đều trong sáng và chạm đến trái tim.", zh: "每一颗心都被铭记，每一份帮助都纯粹而触动灵魂。", ja: "すべての心が認められ、すべての助けが純粋で魂に触れる場所。", ko: "모든 마음이 인정받고, 모든 도움이 순수하며 영혼에 닿는 곳.",
+    th: "ที่ซึ่งทุกหัวใจได้รับการยอมรับ ทุกความช่วยเหลือบริสุทธิ์และสัมผัสจิตวิญญาณ", fr: "Où chaque cœur est reconnu, chaque aide est pure et touche l'âme.", de: "Wo jedes Herz anerkannt wird, jede Hilfe rein ist und die Seele berührt.", es: "Donde cada corazón es reconocido, cada ayuda es pura y toca el alma.",
+    pt: "Onde cada coração é reconhecido, cada ajuda é pura e toca a alma.", ru: "Где каждое сердце признано, каждая помощь чиста и трогает душу.", ar: "حيث يُعترف بكل قلب، وكل مساعدة نقية وتلامس الروح.", hi: "जहां हर दिल को पहचाना जाता है, हर मदद शुद्ध है और आत्मा को छूती है।"
+  },
+  "hero.slogan": {
+    en: "💖 Giving is happiness. Transparency is trust. 💖", vi: "💖 Cho đi là hạnh phúc. Minh bạch là niềm tin. 💖", zh: "💖 给予就是幸福。透明就是信任。💖", ja: "💖 与えることは幸せ。透明性は信頼。💖", ko: "💖 나눔은 행복입니다. 투명성은 신뢰입니다. 💖",
+    th: "💖 การให้คือความสุข ความโปร่งใสคือความไว้วางใจ 💖", fr: "💖 Donner c'est le bonheur. La transparence c'est la confiance. 💖", de: "💖 Geben ist Glück. Transparenz ist Vertrauen. 💖", es: "💖 Dar es felicidad. Transparencia es confianza. 💖",
+    pt: "💖 Dar é felicidade. Transparência é confiança. 💖", ru: "💖 Давать — это счастье. Прозрачность — это доверие. 💖", ar: "💖 العطاء سعادة. الشفافية ثقة. 💖", hi: "💖 देना खुशी है। पारदर्शिता विश्वास है। 💖"
+  },
+  "hero.spreadLove": {
+    en: "Spread Love", vi: "Lan Tỏa Yêu Thương", zh: "传播爱心", ja: "愛を広げる", ko: "사랑을 나누다",
+    th: "เผยแพร่ความรัก", fr: "Répandre l'amour", de: "Liebe verbreiten", es: "Difundir amor",
+    pt: "Espalhar amor", ru: "Распространяйте любовь", ar: "انشر الحب", hi: "प्यार फैलाएं"
+  },
+  "hero.signUpLogin": {
+    en: "Sign Up / Login", vi: "Đăng Ký / Đăng Nhập", zh: "注册 / 登录", ja: "登録 / ログイン", ko: "가입 / 로그인",
+    th: "สมัคร / เข้าสู่ระบบ", fr: "S'inscrire / Connexion", de: "Registrieren / Anmelden", es: "Registrarse / Iniciar sesión",
+    pt: "Cadastrar / Entrar", ru: "Регистрация / Вход", ar: "التسجيل / الدخول", hi: "साइन अप / लॉगिन"
+  },
+  "hero.pillar1Title": {
+    en: "💞 Love Connection", vi: "💞 Kết Nối Yêu Thương", zh: "💞 爱心连接", ja: "💞 愛のつながり", ko: "💞 사랑의 연결",
+    th: "💞 เชื่อมต่อด้วยความรัก", fr: "💞 Connexion d'amour", de: "💞 Liebesverbindung", es: "💞 Conexión de amor",
+    pt: "💞 Conexão de amor", ru: "💞 Связь любви", ar: "💞 ربط المحبة", hi: "💞 प्रेम का संबंध"
+  },
+  "hero.pillar1Desc": {
+    en: "We connect kind hearts with those in need – instantly, warmly", vi: "Mình kết nối những tấm lòng nhân ái với những hoàn cảnh cần giúp đỡ – tức thì, ấm áp", zh: "我们将善心与需要帮助的人连接起来 – 即时、温暖", ja: "私たちは優しい心を必要とする人々とつなげます – 即座に、温かく", ko: "우리는 따뜻한 마음을 도움이 필요한 사람들과 연결합니다 – 즉시, 따뜻하게",
+    th: "เราเชื่อมต่อหัวใจที่ดีกับผู้ที่ต้องการความช่วยเหลือ – ทันที อบอุ่น", fr: "Nous connectons les cœurs généreux avec ceux qui en ont besoin – instantanément, chaleureusement", de: "Wir verbinden freundliche Herzen mit Bedürftigen – sofort, herzlich", es: "Conectamos corazones bondadosos con quienes lo necesitan – instantáneamente, cálidamente",
+    pt: "Conectamos corações bondosos com quem precisa – instantaneamente, acolhedoramente", ru: "Мы связываем добрые сердца с нуждающимися – мгновенно, тепло", ar: "نربط القلوب الطيبة بمن يحتاجون – فورياً، بدفء", hi: "हम दयालु दिलों को जरूरतमंदों से जोड़ते हैं – तुरंत, गर्मजोशी से"
+  },
+  "hero.pillar2Title": {
+    en: "🤝 Sharing Community", vi: "🤝 Cộng Đồng Chia Sẻ", zh: "🤝 分享社区", ja: "🤝 共有コミュニティ", ko: "🤝 나눔 커뮤니티",
+    th: "🤝 ชุมชนแห่งการแบ่งปัน", fr: "🤝 Communauté de partage", de: "🤝 Teilen-Gemeinschaft", es: "🤝 Comunidad de compartir",
+    pt: "🤝 Comunidade de compartilhamento", ru: "🤝 Сообщество обмена", ar: "🤝 مجتمع المشاركة", hi: "🤝 साझा करने का समुदाय"
+  },
+  "hero.pillar2Desc": {
+    en: "Share together, encourage and spread beautiful stories every day", vi: "Cùng nhau chia sẻ, động viên và lan tỏa những câu chuyện đẹp mỗi ngày", zh: "一起分享、鼓励并每天传播美丽的故事", ja: "一緒に共有し、励まし、毎日美しい物語を広めましょう", ko: "함께 나누고, 격려하고, 매일 아름다운 이야기를 전파합니다",
+    th: "แบ่งปันด้วยกัน ให้กำลังใจ และเผยแพร่เรื่องราวดีๆ ทุกวัน", fr: "Partageons ensemble, encourageons et répandons de belles histoires chaque jour", de: "Gemeinsam teilen, ermutigen und jeden Tag schöne Geschichten verbreiten", es: "Compartir juntos, animar y difundir historias hermosas cada día",
+    pt: "Compartilhar juntos, encorajar e espalhar histórias bonitas todos os dias", ru: "Делимся вместе, вдохновляем и распространяем красивые истории каждый день", ar: "نتشارك معاً، نشجع وننشر القصص الجميلة كل يوم", hi: "साथ मिलकर साझा करें, प्रोत्साहित करें और हर दिन सुंदर कहानियां फैलाएं"
+  },
+  "hero.pillar3Title": {
+    en: "✨ Absolute Transparency", vi: "✨ Minh Bạch Tuyệt Đối", zh: "✨ 绝对透明", ja: "✨ 完全な透明性", ko: "✨ 완전한 투명성",
+    th: "✨ ความโปร่งใสอย่างแท้จริง", fr: "✨ Transparence absolue", de: "✨ Absolute Transparenz", es: "✨ Transparencia absoluta",
+    pt: "✨ Transparência absoluta", ru: "✨ Абсолютная прозрачность", ar: "✨ شفافية مطلقة", hi: "✨ पूर्ण पारदर्शिता"
+  },
+  "hero.pillar3Desc": {
+    en: "Every penny is recorded clearly – you feel secure, recipients feel warm", vi: "Mọi đồng tiền đều được ghi nhận rõ ràng – bạn yên tâm, người nhận được ấm lòng", zh: "每一分钱都清晰记录 – 您安心，受助者温暖", ja: "すべてのお金は明確に記録されます – あなたは安心、受け取る人は温かい", ko: "모든 금액이 명확하게 기록됩니다 – 당신은 안심, 받는 사람은 따뜻함",
+    th: "ทุกบาททุกสตางค์ถูกบันทึกอย่างชัดเจน – คุณมั่นใจ ผู้รับอบอุ่นใจ", fr: "Chaque centime est enregistré clairement – vous êtes en sécurité, les bénéficiaires sont réchauffés", de: "Jeder Cent wird klar aufgezeichnet – Sie fühlen sich sicher, Empfänger fühlen sich warm", es: "Cada centavo se registra claramente – te sientes seguro, los receptores se sienten cálidos",
+    pt: "Cada centavo é registrado claramente – você se sente seguro, os destinatários se sentem acolhidos", ru: "Каждая копейка четко записывается – вы спокойны, получатели чувствуют тепло", ar: "كل قرش مسجل بوضوح – تشعر بالأمان، والمستفيدون يشعرون بالدفء", hi: "हर पैसे को स्पष्ट रूप से दर्ज किया जाता है – आप सुरक्षित महसूस करते हैं, प्राप्तकर्ता गर्माहट महसूस करते हैं"
+  },
+  "hero.stat1": {
+    en: "Love Spread", vi: "Yêu Thương Lan Tỏa", zh: "爱心传播", ja: "愛の広がり", ko: "사랑 확산",
+    th: "ความรักแผ่ขยาย", fr: "Amour répandu", de: "Liebe verbreitet", es: "Amor difundido",
+    pt: "Amor espalhado", ru: "Распространённая любовь", ar: "الحب المنتشر", hi: "प्यार फैला"
+  },
+  "hero.stat2": {
+    en: "Dreams Fulfilled", vi: "Ước Mơ Được Chắp Cánh", zh: "梦想实现", ja: "夢の実現", ko: "꿈 실현",
+    th: "ความฝันที่เป็นจริง", fr: "Rêves réalisés", de: "Träume erfüllt", es: "Sueños cumplidos",
+    pt: "Sonhos realizados", ru: "Мечты исполнены", ar: "تحقيق الأحلام", hi: "सपने पूरे हुए"
+  },
+  "hero.stat3": {
+    en: "Golden Hearts", vi: "Tấm Lòng Vàng", zh: "金心", ja: "ゴールデンハート", ko: "황금 마음",
+    th: "หัวใจทอง", fr: "Cœurs d'or", de: "Goldene Herzen", es: "Corazones de oro",
+    pt: "Corações de ouro", ru: "Золотые сердца", ar: "قلوب ذهبية", hi: "सुनहरे दिल"
+  },
+  "hero.stat4": {
+    en: "Countries Connected", vi: "Quốc Gia Kết Nối", zh: "连接国家", ja: "接続された国", ko: "연결된 국가",
+    th: "ประเทศที่เชื่อมต่อ", fr: "Pays connectés", de: "Verbundene Länder", es: "Países conectados",
+    pt: "Países conectados", ru: "Связанные страны", ar: "الدول المتصلة", hi: "जुड़े देश"
+  },
+
+  // About Section
+  "about.fromOurHeart": {
+    en: "From Our Heart", vi: "Từ Trái Tim Chúng Mình", zh: "来自我们的心", ja: "私たちの心から", ko: "우리 마음에서",
+    th: "จากใจเรา", fr: "De notre cœur", de: "Von unserem Herzen", es: "Desde nuestro corazón",
+    pt: "Do nosso coração", ru: "От нашего сердца", ar: "من قلوبنا", hi: "हमारे दिल से"
+  },
+  "about.title": {
+    en: "About Fun Charity", vi: "Về Fun Charity", zh: "关于Fun Charity", ja: "Fun Charityについて", ko: "Fun Charity 소개",
+    th: "เกี่ยวกับ Fun Charity", fr: "À propos de Fun Charity", de: "Über Fun Charity", es: "Sobre Fun Charity",
+    pt: "Sobre Fun Charity", ru: "О Fun Charity", ar: "عن Fun Charity", hi: "Fun Charity के बारे में"
+  },
+  "about.description": {
+    en: "Fun Charity is the home of loving hearts — where humanity, joy and happiness are shared. We believe that when you give from the heart, you not only help others but also receive true happiness. Every small action can create miracles! ✨", 
+    vi: "Fun Charity là ngôi nhà của những trái tim yêu thương — nơi tình người, niềm vui và hạnh phúc được sẻ chia. Chúng mình tin rằng khi cho đi bằng cả trái tim, bạn không chỉ giúp đỡ người khác mà còn nhận lại niềm hạnh phúc thật sự. Mỗi hành động nhỏ đều có thể tạo nên điều kỳ diệu! ✨", 
+    zh: "Fun Charity是爱心之家——在这里，人性、欢乐和幸福得以分享。我们相信，当你用心给予时，你不仅帮助他人，也获得真正的幸福。每一个小行动都能创造奇迹！✨", 
+    ja: "Fun Charityは愛する心の家です — 人間性、喜び、幸せが分かち合われる場所。心から与えると、他の人を助けるだけでなく、本当の幸せを受け取ることができると信じています。すべての小さな行動が奇跡を起こすことができます！✨", 
+    ko: "Fun Charity는 사랑하는 마음의 집입니다 — 인류애, 기쁨, 행복이 나눠지는 곳. 마음에서 우러나와 베풀 때, 다른 사람을 도울 뿐만 아니라 진정한 행복도 받게 된다고 믿습니다. 모든 작은 행동이 기적을 만들 수 있습니다! ✨",
+    th: "Fun Charity คือบ้านของหัวใจที่เปี่ยมด้วยความรัก — ที่ซึ่งความเป็นมนุษย์ ความสุข และความเบิกบานถูกแบ่งปัน เราเชื่อว่าเมื่อคุณให้จากใจ คุณไม่เพียงช่วยเหลือผู้อื่น แต่ยังได้รับความสุขที่แท้จริง ทุกการกระทำเล็กๆ สามารถสร้างปาฏิหาริย์ได้! ✨", 
+    fr: "Fun Charity est le foyer des cœurs aimants — où l'humanité, la joie et le bonheur sont partagés. Nous croyons que lorsque vous donnez du fond du cœur, vous n'aidez pas seulement les autres mais recevez aussi le vrai bonheur. Chaque petite action peut créer des miracles ! ✨", 
+    de: "Fun Charity ist das Zuhause liebender Herzen — wo Menschlichkeit, Freude und Glück geteilt werden. Wir glauben, dass wenn Sie von Herzen geben, Sie nicht nur anderen helfen, sondern auch wahres Glück empfangen. Jede kleine Handlung kann Wunder bewirken! ✨", 
+    es: "Fun Charity es el hogar de corazones amorosos — donde la humanidad, la alegría y la felicidad se comparten. Creemos que cuando das desde el corazón, no solo ayudas a otros sino que también recibes verdadera felicidad. ¡Cada pequeña acción puede crear milagros! ✨",
+    pt: "Fun Charity é o lar dos corações amorosos — onde humanidade, alegria e felicidade são compartilhados. Acreditamos que quando você dá do coração, não apenas ajuda outros, mas também recebe verdadeira felicidade. Cada pequena ação pode criar milagres! ✨", 
+    ru: "Fun Charity — это дом любящих сердец — где человечность, радость и счастье разделяются. Мы верим, что когда вы отдаете от сердца, вы не только помогаете другим, но и получаете настоящее счастье. Каждое маленькое действие может творить чудеса! ✨", 
+    ar: "Fun Charity هو بيت القلوب المحبة — حيث يتم مشاركة الإنسانية والفرح والسعادة. نؤمن أنه عندما تعطي من قلبك، فأنت لا تساعد الآخرين فحسب، بل تتلقى السعادة الحقيقية أيضاً. كل عمل صغير يمكن أن يخلق المعجزات! ✨", 
+    hi: "Fun Charity प्यार करने वाले दिलों का घर है — जहां मानवता, खुशी और सुख साझा किए जाते हैं। हम मानते हैं कि जब आप दिल से देते हैं, तो आप न केवल दूसरों की मदद करते हैं बल्कि सच्ची खुशी भी पाते हैं। हर छोटा कार्य चमत्कार पैदा कर सकता है! ✨"
+  },
+  "about.ourWish": {
+    en: "Our Wish", vi: "Chúng Mình Mong Muốn", zh: "我们的愿望", ja: "私たちの願い", ko: "우리의 소망",
+    th: "ความปรารถนาของเรา", fr: "Notre souhait", de: "Unser Wunsch", es: "Nuestro deseo",
+    pt: "Nosso desejo", ru: "Наше желание", ar: "أمنيتنا", hi: "हमारी इच्छा"
+  },
+  "about.ourDream": {
+    en: "Our Dream", vi: "Ước Mơ Của Chúng Mình", zh: "我们的梦想", ja: "私たちの夢", ko: "우리의 꿈",
+    th: "ความฝันของเรา", fr: "Notre rêve", de: "Unser Traum", es: "Nuestro sueño",
+    pt: "Nosso sonho", ru: "Наша мечта", ar: "حلمنا", hi: "हमारा सपना"
+  },
+
+  // CTA Section
+  "cta.wantToShare": {
+    en: "Want to Share? 💕", vi: "Bạn Muốn Sẻ Chia? 💕", zh: "想要分享？💕", ja: "シェアしたいですか？💕", ko: "나누고 싶으세요? 💕",
+    th: "อยากแบ่งปันไหม? 💕", fr: "Vous voulez partager ? 💕", de: "Möchten Sie teilen? 💕", es: "¿Quieres compartir? 💕",
+    pt: "Quer compartilhar? 💕", ru: "Хотите поделиться? 💕", ar: "تريد المشاركة؟ 💕", hi: "साझा करना चाहते हैं? 💕"
+  },
+  "cta.shareDesc": {
+    en: "Send love and see every smile created. Receive joy and cute badges!", vi: "Gửi đi yêu thương và xem từng nụ cười được tạo ra. Nhận lại niềm vui và huy hiệu dễ thương!", zh: "送出爱心，看到每一个微笑被创造。收获快乐和可爱的徽章！", ja: "愛を送り、作られた笑顔を見てください。喜びとかわいいバッジを受け取りましょう！", ko: "사랑을 보내고 만들어진 모든 미소를 보세요. 기쁨과 귀여운 배지를 받으세요!",
+    th: "ส่งความรักและเห็นทุกรอยยิ้มที่สร้างขึ้น รับความสุขและป้ายน่ารัก!", fr: "Envoyez de l'amour et voyez chaque sourire créé. Recevez de la joie et des badges mignons !", de: "Senden Sie Liebe und sehen Sie jedes Lächeln, das entsteht. Erhalten Sie Freude und süße Abzeichen!", es: "Envía amor y ve cada sonrisa creada. ¡Recibe alegría e insignias lindas!",
+    pt: "Envie amor e veja cada sorriso criado. Receba alegria e distintivos fofos!", ru: "Отправляйте любовь и смотрите на каждую созданную улыбку. Получайте радость и милые значки!", ar: "أرسل الحب وشاهد كل ابتسامة تُصنع. احصل على الفرح والشارات اللطيفة!", hi: "प्यार भेजें और बनाई गई हर मुस्कान देखें। खुशी और प्यारे बैज पाएं!"
+  },
+  "cta.startGiving": {
+    en: "Start Giving", vi: "Bắt Đầu Cho Đi", zh: "开始给予", ja: "与え始める", ko: "나눔 시작하기",
+    th: "เริ่มต้นให้", fr: "Commencer à donner", de: "Anfangen zu geben", es: "Empezar a dar",
+    pt: "Começar a dar", ru: "Начать давать", ar: "ابدأ العطاء", hi: "देना शुरू करें"
+  },
+  "cta.haveTime": {
+    en: "Have Time? ✨", vi: "Bạn Có Thời Gian? ✨", zh: "有时间吗？✨", ja: "時間がありますか？✨", ko: "시간이 있으세요? ✨",
+    th: "มีเวลาไหม? ✨", fr: "Vous avez du temps ? ✨", de: "Haben Sie Zeit? ✨", es: "¿Tienes tiempo? ✨",
+    pt: "Tem tempo? ✨", ru: "Есть время? ✨", ar: "لديك وقت؟ ✨", hi: "समय है? ✨"
+  },
+  "cta.volunteerDesc": {
+    en: "Volunteer with us! Learn new things, make new friends and create beautiful memories.", vi: "Cùng mình làm tình nguyện nhé! Học thêm điều mới, có thêm bạn bè và tạo kỷ niệm đẹp.", zh: "和我们一起做志愿者！学习新事物，结交新朋友，创造美好回忆。", ja: "私たちと一緒にボランティアしましょう！新しいことを学び、新しい友達を作り、美しい思い出を作りましょう。", ko: "우리와 함께 자원봉사하세요! 새로운 것을 배우고, 새 친구를 사귀고, 아름다운 추억을 만드세요.",
+    th: "มาเป็นอาสาสมัครกับเรา! เรียนรู้สิ่งใหม่ หาเพื่อนใหม่ และสร้างความทรงจำที่สวยงาม", fr: "Faites du bénévolat avec nous ! Apprenez de nouvelles choses, faites-vous de nouveaux amis et créez de beaux souvenirs.", de: "Werden Sie Freiwilliger bei uns! Lernen Sie neue Dinge, finden Sie neue Freunde und schaffen Sie schöne Erinnerungen.", es: "¡Sé voluntario con nosotros! Aprende cosas nuevas, haz nuevos amigos y crea hermosos recuerdos.",
+    pt: "Seja voluntário conosco! Aprenda coisas novas, faça novos amigos e crie belas memórias.", ru: "Станьте волонтером вместе с нами! Узнавайте новое, заводите новых друзей и создавайте прекрасные воспоминания.", ar: "تطوع معنا! تعلم أشياء جديدة، كوّن صداقات جديدة واصنع ذكريات جميلة.", hi: "हमारे साथ स्वयंसेवक बनें! नई चीजें सीखें, नए दोस्त बनाएं और सुंदर यादें बनाएं।"
+  },
+  "cta.joinUs": {
+    en: "Join Us", vi: "Tham Gia Cùng Mình", zh: "加入我们", ja: "参加する", ko: "함께하기",
+    th: "เข้าร่วมกับเรา", fr: "Rejoignez-nous", de: "Machen Sie mit", es: "Únete a nosotros",
+    pt: "Junte-se a nós", ru: "Присоединяйтесь к нам", ar: "انضم إلينا", hi: "हमसे जुड़ें"
+  },
+  "cta.areOrganization": {
+    en: "Are You an Organization? 🏢", vi: "Bạn Là Tổ Chức? 🏢", zh: "您是组织吗？🏢", ja: "あなたは組織ですか？🏢", ko: "조직이세요? 🏢",
+    th: "คุณเป็นองค์กรหรือไม่? 🏢", fr: "Êtes-vous une organisation ? 🏢", de: "Sind Sie eine Organisation? 🏢", es: "¿Eres una organización? 🏢",
+    pt: "Você é uma organização? 🏢", ru: "Вы организация? 🏢", ar: "هل أنت منظمة؟ 🏢", hi: "क्या आप एक संगठन हैं? 🏢"
+  },
+  "cta.orgDesc": {
+    en: "Create campaigns, build trust with the community. Together we spread greater love!", vi: "Tạo chiến dịch, xây dựng niềm tin với cộng đồng. Cùng nhau lan tỏa yêu thương lớn hơn!", zh: "创建活动，与社区建立信任。一起传播更大的爱！", ja: "キャンペーンを作成し、コミュニティとの信頼を築きましょう。一緒により大きな愛を広げましょう！", ko: "캠페인을 만들고 커뮤니티와 신뢰를 구축하세요. 함께 더 큰 사랑을 전파합시다!",
+    th: "สร้างแคมเปญ สร้างความไว้วางใจกับชุมชน ร่วมกันเผยแพร่ความรักที่ยิ่งใหญ่กว่า!", fr: "Créez des campagnes, établissez la confiance avec la communauté. Ensemble, répandons un amour plus grand !", de: "Erstellen Sie Kampagnen, bauen Sie Vertrauen in der Gemeinschaft auf. Zusammen verbreiten wir größere Liebe!", es: "Crea campañas, construye confianza con la comunidad. ¡Juntos difundimos un amor mayor!",
+    pt: "Crie campanhas, construa confiança com a comunidade. Juntos espalhamos um amor maior!", ru: "Создавайте кампании, стройте доверие с сообществом. Вместе мы распространяем большую любовь!", ar: "أنشئ حملات، ابنِ الثقة مع المجتمع. معاً ننشر حباً أكبر!", hi: "अभियान बनाएं, समुदाय के साथ विश्वास बनाएं। साथ मिलकर हम बड़ा प्यार फैलाते हैं!"
+  },
+  "cta.registerNow": {
+    en: "Register Now", vi: "Đăng Ký Ngay", zh: "立即注册", ja: "今すぐ登録", ko: "지금 등록",
+    th: "ลงทะเบียนเลย", fr: "S'inscrire maintenant", de: "Jetzt registrieren", es: "Regístrate ahora",
+    pt: "Cadastre-se agora", ru: "Зарегистрироваться сейчас", ar: "سجل الآن", hi: "अभी पंजीकरण करें"
+  },
+  "cta.ready": {
+    en: "Hey, Ready to Spread Love? 💖", vi: "Bạn Ơi, Sẵn Sàng Lan Tỏa Yêu Thương Chưa? 💖", zh: "嘿，准备好传播爱了吗？💖", ja: "ねえ、愛を広げる準備はできましたか？💖", ko: "준비됐나요, 사랑을 나눌? 💖",
+    th: "เฮ้ พร้อมเผยแพร่ความรักหรือยัง? 💖", fr: "Hé, prêt à répandre l'amour ? 💖", de: "Hey, bereit Liebe zu verbreiten? 💖", es: "Oye, ¿listo para difundir amor? 💖",
+    pt: "Ei, pronto para espalhar amor? 💖", ru: "Эй, готовы распространять любовь? 💖", ar: "مرحباً، مستعد لنشر الحب؟ 💖", hi: "अरे, प्यार फैलाने के लिए तैयार? 💖"
+  },
+  "cta.thousandHearts": {
+    en: "Thousands of warm hearts are waiting for you! Together, we will create miracles every day.", vi: "Hàng nghìn trái tim ấm áp đang chờ đón bạn! Cùng nhau, chúng ta sẽ tạo nên những điều kỳ diệu mỗi ngày.", zh: "成千上万颗温暖的心在等着你！我们一起，每天创造奇迹。", ja: "何千もの温かい心があなたを待っています！一緒に、毎日奇跡を起こしましょう。", ko: "수천 개의 따뜻한 마음이 당신을 기다리고 있습니다! 함께, 우리는 매일 기적을 만들 것입니다.",
+    th: "หัวใจอบอุ่นหลายพันดวงกำลังรอคุณอยู่! ด้วยกัน เราจะสร้างปาฏิหาริย์ทุกวัน", fr: "Des milliers de cœurs chaleureux vous attendent ! Ensemble, nous créerons des miracles chaque jour.", de: "Tausende warme Herzen warten auf Sie! Zusammen werden wir jeden Tag Wunder schaffen.", es: "¡Miles de corazones cálidos te esperan! Juntos, crearemos milagros cada día.",
+    pt: "Milhares de corações calorosos estão esperando por você! Juntos, criaremos milagres todos os dias.", ru: "Тысячи теплых сердец ждут вас! Вместе мы будем творить чудеса каждый день.", ar: "آلاف القلوب الدافئة تنتظرك! معاً، سنصنع المعجزات كل يوم.", hi: "हजारों गर्मजोशी भरे दिल आपका इंतजार कर रहे हैं! साथ मिलकर, हम हर दिन चमत्कार करेंगे।"
+  },
+  "cta.givingIsReceiving": {
+    en: "Giving is receiving. Loving is happiness. ✨", vi: "Cho đi là nhận lại. Yêu thương là hạnh phúc. ✨", zh: "给予就是获得。爱就是幸福。✨", ja: "与えることは受け取ること。愛することは幸せ。✨", ko: "나눔은 받는 것입니다. 사랑은 행복입니다. ✨",
+    th: "การให้คือการรับ รักคือความสุข ✨", fr: "Donner c'est recevoir. Aimer c'est le bonheur. ✨", de: "Geben ist Empfangen. Lieben ist Glück. ✨", es: "Dar es recibir. Amar es felicidad. ✨",
+    pt: "Dar é receber. Amar é felicidade. ✨", ru: "Давать — значит получать. Любить — значит быть счастливым. ✨", ar: "العطاء هو الأخذ. الحب هو السعادة. ✨", hi: "देना पाना है। प्यार करना खुशी है। ✨"
+  },
+  "cta.exploreCampaigns": {
+    en: "Explore Campaigns", vi: "Khám Phá Chiến Dịch", zh: "探索活动", ja: "キャンペーンを探す", ko: "캠페인 탐색",
+    th: "สำรวจแคมเปญ", fr: "Explorer les campagnes", de: "Kampagnen erkunden", es: "Explorar campañas",
+    pt: "Explorar campanhas", ru: "Изучить кампании", ar: "استكشف الحملات", hi: "अभियान देखें"
+  },
+  "cta.connectWallet": {
+    en: "Connect Wallet", vi: "Kết Nối Ví", zh: "连接钱包", ja: "ウォレットを接続", ko: "지갑 연결",
+    th: "เชื่อมต่อกระเป๋าเงิน", fr: "Connecter le portefeuille", de: "Wallet verbinden", es: "Conectar billetera",
+    pt: "Conectar carteira", ru: "Подключить кошелек", ar: "ربط المحفظة", hi: "वॉलेट कनेक्ट करें"
+  },
+
+  // Footer
+  "footer.platform": {
+    en: "Platform 🏠", vi: "Nền Tảng 🏠", zh: "平台 🏠", ja: "プラットフォーム 🏠", ko: "플랫폼 🏠",
+    th: "แพลตฟอร์ม 🏠", fr: "Plateforme 🏠", de: "Plattform 🏠", es: "Plataforma 🏠",
+    pt: "Plataforma 🏠", ru: "Платформа 🏠", ar: "المنصة 🏠", hi: "प्लेटफॉर्म 🏠"
+  },
+  "footer.community": {
+    en: "Community 💞", vi: "Cộng Đồng 💞", zh: "社区 💞", ja: "コミュニティ 💞", ko: "커뮤니티 💞",
+    th: "ชุมชน 💞", fr: "Communauté 💞", de: "Gemeinschaft 💞", es: "Comunidad 💞",
+    pt: "Comunidade 💞", ru: "Сообщество 💞", ar: "المجتمع 💞", hi: "समुदाय 💞"
+  },
+  "footer.support": {
+    en: "Support 📚", vi: "Hỗ Trợ 📚", zh: "支持 📚", ja: "サポート 📚", ko: "지원 📚",
+    th: "การสนับสนุน 📚", fr: "Support 📚", de: "Unterstützung 📚", es: "Soporte 📚",
+    pt: "Suporte 📚", ru: "Поддержка 📚", ar: "الدعم 📚", hi: "सहायता 📚"
+  },
+  "footer.legal": {
+    en: "Legal 📋", vi: "Pháp Lý 📋", zh: "法律 📋", ja: "法的事項 📋", ko: "법적 사항 📋",
+    th: "กฎหมาย 📋", fr: "Légal 📋", de: "Rechtliches 📋", es: "Legal 📋",
+    pt: "Jurídico 📋", ru: "Юридическая информация 📋", ar: "قانوني 📋", hi: "कानूनी 📋"
+  },
+  "footer.aboutUs": {
+    en: "About Us", vi: "Giới Thiệu Về Mình", zh: "关于我们", ja: "私たちについて", ko: "우리 소개",
+    th: "เกี่ยวกับเรา", fr: "À propos de nous", de: "Über uns", es: "Sobre nosotros",
+    pt: "Sobre nós", ru: "О нас", ar: "معلومات عنا", hi: "हमारे बारे में"
+  },
+  "footer.charityCampaigns": {
+    en: "Charity Campaigns", vi: "Chiến Dịch Từ Thiện", zh: "慈善活动", ja: "チャリティキャンペーン", ko: "자선 캠페인",
+    th: "แคมเปญการกุศล", fr: "Campagnes caritatives", de: "Wohltätigkeitskampagnen", es: "Campañas benéficas",
+    pt: "Campanhas de caridade", ru: "Благотворительные кампании", ar: "حملات خيرية", hi: "दान अभियान"
+  },
+  "footer.needsMap": {
+    en: "Needs Map", vi: "Bản Đồ Nhu Cầu", zh: "需求地图", ja: "ニーズマップ", ko: "필요 지도",
+    th: "แผนที่ความต้องการ", fr: "Carte des besoins", de: "Bedarfskarte", es: "Mapa de necesidades",
+    pt: "Mapa de necessidades", ru: "Карта потребностей", ar: "خريطة الاحتياجات", hi: "आवश्यकता मानचित्र"
+  },
+  "footer.activityOverview": {
+    en: "Activity Overview", vi: "Tổng Quan Hoạt Động", zh: "活动概览", ja: "活動概要", ko: "활동 개요",
+    th: "ภาพรวมกิจกรรม", fr: "Aperçu des activités", de: "Aktivitätsübersicht", es: "Resumen de actividad",
+    pt: "Visão geral de atividades", ru: "Обзор активности", ar: "نظرة عامة على النشاط", hi: "गतिविधि अवलोकन"
+  },
+  "footer.forDonors": {
+    en: "For Donors", vi: "Dành Cho Nhà Hảo Tâm", zh: "致捐赠者", ja: "寄付者の方へ", ko: "기부자를 위한",
+    th: "สำหรับผู้บริจาค", fr: "Pour les donateurs", de: "Für Spender", es: "Para donantes",
+    pt: "Para doadores", ru: "Для доноров", ar: "للمتبرعين", hi: "दानदाताओं के लिए"
+  },
+  "footer.forVolunteers": {
+    en: "For Volunteers", vi: "Dành Cho Tình Nguyện Viên", zh: "致志愿者", ja: "ボランティアの方へ", ko: "자원봉사자를 위한",
+    th: "สำหรับอาสาสมัคร", fr: "Pour les bénévoles", de: "Für Freiwillige", es: "Para voluntarios",
+    pt: "Para voluntários", ru: "Для волонтеров", ar: "للمتطوعين", hi: "स्वयंसेवकों के लिए"
+  },
+  "footer.forOrganizations": {
+    en: "For Organizations", vi: "Dành Cho Tổ Chức", zh: "致组织", ja: "組織の方へ", ko: "조직을 위한",
+    th: "สำหรับองค์กร", fr: "Pour les organisations", de: "Für Organisationen", es: "Para organizaciones",
+    pt: "Para organizações", ru: "Для организаций", ar: "للمنظمات", hi: "संगठनों के लिए"
+  },
+  "footer.leaderboard": {
+    en: "Leaderboard", vi: "Bảng Vinh Danh", zh: "排行榜", ja: "リーダーボード", ko: "리더보드",
+    th: "กระดานผู้นำ", fr: "Classement", de: "Bestenliste", es: "Tabla de clasificación",
+    pt: "Classificação", ru: "Таблица лидеров", ar: "لوحة المتصدرين", hi: "लीडरबोर्ड"
+  },
+  "footer.userGuide": {
+    en: "User Guide", vi: "Hướng Dẫn Sử Dụng", zh: "用户指南", ja: "ユーザーガイド", ko: "사용자 가이드",
+    th: "คู่มือผู้ใช้", fr: "Guide de l'utilisateur", de: "Benutzerhandbuch", es: "Guía del usuario",
+    pt: "Guia do usuário", ru: "Руководство пользователя", ar: "دليل المستخدم", hi: "उपयोगकर्ता गाइड"
+  },
+  "footer.blockchainTransparency": {
+    en: "Blockchain Transparency", vi: "Minh Bạch Blockchain", zh: "区块链透明度", ja: "ブロックチェーンの透明性", ko: "블록체인 투명성",
+    th: "ความโปร่งใสบล็อกเชน", fr: "Transparence Blockchain", de: "Blockchain-Transparenz", es: "Transparencia Blockchain",
+    pt: "Transparência Blockchain", ru: "Прозрачность блокчейна", ar: "شفافية البلوكتشين", hi: "ब्लॉकचेन पारदर्शिता"
+  },
+  "footer.blog": {
+    en: "Blog", vi: "Blog Chia Sẻ", zh: "博客", ja: "ブログ", ko: "블로그",
+    th: "บล็อก", fr: "Blog", de: "Blog", es: "Blog",
+    pt: "Blog", ru: "Блог", ar: "المدونة", hi: "ब्लॉग"
+  },
+  "footer.contactSupport": {
+    en: "Contact Support", vi: "Liên Hệ Hỗ Trợ", zh: "联系支持", ja: "サポートに連絡", ko: "지원 문의",
+    th: "ติดต่อฝ่ายสนับสนุน", fr: "Contacter le support", de: "Support kontaktieren", es: "Contactar soporte",
+    pt: "Contatar suporte", ru: "Связаться с поддержкой", ar: "اتصل بالدعم", hi: "सहायता से संपर्क करें"
+  },
+  "footer.privacyPolicy": {
+    en: "Privacy Policy", vi: "Chính Sách Bảo Mật", zh: "隐私政策", ja: "プライバシーポリシー", ko: "개인정보 보호정책",
+    th: "นโยบายความเป็นส่วนตัว", fr: "Politique de confidentialité", de: "Datenschutzrichtlinie", es: "Política de privacidad",
+    pt: "Política de privacidade", ru: "Политика конфиденциальности", ar: "سياسة الخصوصية", hi: "गोपनीयता नीति"
+  },
+  "footer.terms": {
+    en: "Terms of Use", vi: "Điều Khoản Sử Dụng", zh: "使用条款", ja: "利用規約", ko: "이용약관",
+    th: "ข้อกำหนดการใช้งาน", fr: "Conditions d'utilisation", de: "Nutzungsbedingungen", es: "Términos de uso",
+    pt: "Termos de uso", ru: "Условия использования", ar: "شروط الاستخدام", hi: "उपयोग की शर्तें"
+  },
+  "footer.kycRegulations": {
+    en: "KYC Regulations", vi: "Quy Định KYC", zh: "KYC规定", ja: "KYC規則", ko: "KYC 규정",
+    th: "ระเบียบ KYC", fr: "Réglementations KYC", de: "KYC-Vorschriften", es: "Regulaciones KYC",
+    pt: "Regulamentos KYC", ru: "Правила KYC", ar: "لوائح KYC", hi: "KYC नियम"
+  },
+  "footer.slogan": {
+    en: "💛 Giving is happiness. Transparency is trust.", vi: "💛 Cho đi là hạnh phúc. Minh bạch là niềm tin.", zh: "💛 给予就是幸福。透明就是信任。", ja: "💛 与えることは幸せ。透明性は信頼。", ko: "💛 나눔은 행복입니다. 투명성은 신뢰입니다.",
+    th: "💛 การให้คือความสุข ความโปร่งใสคือความไว้วางใจ", fr: "💛 Donner c'est le bonheur. La transparence c'est la confiance.", de: "💛 Geben ist Glück. Transparenz ist Vertrauen.", es: "💛 Dar es felicidad. Transparencia es confianza.",
+    pt: "💛 Dar é felicidade. Transparência é confiança.", ru: "💛 Давать — это счастье. Прозрачность — это доверие.", ar: "💛 العطاء سعادة. الشفافية ثقة.", hi: "💛 देना खुशी है। पारदर्शिता विश्वास है।"
+  },
+  "footer.tagline": {
+    en: "FUN Charity – Where every heart is recognized, every help is pure and touches the soul.", vi: "FUN Charity – Nơi mỗi tấm lòng đều được ghi nhận, mỗi sự giúp đỡ đều trong sáng và chạm đến trái tim.", zh: "FUN Charity – 每一颗心都被铭记，每一份帮助都纯粹而触动灵魂。", ja: "FUN Charity – すべての心が認められ、すべての助けが純粋で魂に触れる場所。", ko: "FUN Charity – 모든 마음이 인정받고, 모든 도움이 순수하며 영혼에 닿는 곳.",
+    th: "FUN Charity – ที่ซึ่งทุกหัวใจได้รับการยอมรับ ทุกความช่วยเหลือบริสุทธิ์และสัมผัสจิตวิญญาณ", fr: "FUN Charity – Où chaque cœur est reconnu, chaque aide est pure et touche l'âme.", de: "FUN Charity – Wo jedes Herz anerkannt wird, jede Hilfe rein ist und die Seele berührt.", es: "FUN Charity – Donde cada corazón es reconocido, cada ayuda es pura y toca el alma.",
+    pt: "FUN Charity – Onde cada coração é reconhecido, cada ajuda é pura e toca a alma.", ru: "FUN Charity – Где каждое сердце признано, каждая помощь чиста и трогает душу.", ar: "FUN Charity – حيث يُعترف بكل قلب، وكل مساعدة نقية وتلامس الروح.", hi: "FUN Charity – जहां हर दिल को पहचाना जाता है, हर मदद शुद्ध है और आत्मा को छूती है।"
+  },
+  "footer.builtWith": {
+    en: "Built with love and blockchain technology.", vi: "Được xây dựng với tình yêu và công nghệ blockchain.", zh: "用爱和区块链技术构建。", ja: "愛とブロックチェーン技術で構築。", ko: "사랑과 블록체인 기술로 구축.",
+    th: "สร้างด้วยความรักและเทคโนโลยีบล็อกเชน", fr: "Construit avec amour et technologie blockchain.", de: "Mit Liebe und Blockchain-Technologie gebaut.", es: "Construido con amor y tecnología blockchain.",
+    pt: "Construído com amor e tecnologia blockchain.", ru: "Создано с любовью и технологией блокчейн.", ar: "بُني بالحب وتقنية البلوكتشين.", hi: "प्यार और ब्लॉकचेन तकनीक से बनाया गया।"
+  },
+  "footer.transparency100": {
+    en: "✨ 100% Transparent • Love Spreading • Community Connected", vi: "✨ Minh Bạch 100% • Yêu Thương Lan Tỏa • Cộng Đồng Kết Nối", zh: "✨ 100%透明 • 爱心传播 • 社区连接", ja: "✨ 100%透明 • 愛の広がり • コミュニティ接続", ko: "✨ 100% 투명 • 사랑 확산 • 커뮤니티 연결",
+    th: "✨ โปร่งใส 100% • ความรักแผ่ขยาย • ชุมชนเชื่อมต่อ", fr: "✨ 100% Transparent • Amour répandu • Communauté connectée", de: "✨ 100% Transparent • Liebe verbreiten • Gemeinschaft verbunden", es: "✨ 100% Transparente • Amor difundido • Comunidad conectada",
+    pt: "✨ 100% Transparente • Amor espalhado • Comunidade conectada", ru: "✨ 100% Прозрачность • Любовь распространяется • Сообщество связано", ar: "✨ شفافية 100% • نشر الحب • مجتمع متصل", hi: "✨ 100% पारदर्शी • प्यार फैलाना • समुदाय जुड़ा"
+  },
 };
 
 interface LanguageContextType {

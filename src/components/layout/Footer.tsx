@@ -3,32 +3,7 @@ import { Heart, Twitter, Github, Linkedin, Mail, Sparkles, Globe, Phone, MapPin 
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/Logo";
 import { DivineMantrasCarousel } from "./DivineMantrasCarousel";
-
-const footerLinks = {
-  "Nền Tảng 🏠": [
-    { name: "Giới Thiệu Về Mình", href: "/about" },
-    { name: "Chiến Dịch Từ Thiện", href: "/campaigns" },
-    { name: "Bản Đồ Nhu Cầu", href: "/needs-map" },
-    { name: "Tổng Quan Hoạt Động", href: "/dashboard" },
-  ],
-  "Cộng Đồng 💞": [
-    { name: "Dành Cho Nhà Hảo Tâm", href: "/donors" },
-    { name: "Dành Cho Tình Nguyện Viên", href: "/volunteer" },
-    { name: "Dành Cho Tổ Chức", href: "/ngos" },
-    { name: "Bảng Vinh Danh", href: "/leaderboard" },
-  ],
-  "Hỗ Trợ 📚": [
-    { name: "Hướng Dẫn Sử Dụng", href: "/docs" },
-    { name: "Minh Bạch Blockchain", href: "/contracts" },
-    { name: "Blog Chia Sẻ", href: "/blog" },
-    { name: "Liên Hệ Hỗ Trợ", href: "/support" },
-  ],
-  "Pháp Lý 📋": [
-    { name: "Chính Sách Bảo Mật", href: "/privacy" },
-    { name: "Điều Khoản Sử Dụng", href: "/terms" },
-    { name: "Quy Định KYC", href: "/kyc" },
-  ],
-};
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const socialLinks = [
   { icon: Twitter, href: "https://twitter.com/funcharity", label: "Twitter" },
@@ -38,6 +13,34 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const footerLinks = {
+    [t("footer.platform")]: [
+      { name: t("footer.aboutUs"), href: "/about" },
+      { name: t("footer.charityCampaigns"), href: "/campaigns" },
+      { name: t("footer.needsMap"), href: "/needs-map" },
+      { name: t("footer.activityOverview"), href: "/dashboard" },
+    ],
+    [t("footer.community")]: [
+      { name: t("footer.forDonors"), href: "/donors" },
+      { name: t("footer.forVolunteers"), href: "/volunteer" },
+      { name: t("footer.forOrganizations"), href: "/ngos" },
+      { name: t("footer.leaderboard"), href: "/leaderboard" },
+    ],
+    [t("footer.support")]: [
+      { name: t("footer.userGuide"), href: "/docs" },
+      { name: t("footer.blockchainTransparency"), href: "/contracts" },
+      { name: t("footer.blog"), href: "/blog" },
+      { name: t("footer.contactSupport"), href: "/support" },
+    ],
+    [t("footer.legal")]: [
+      { name: t("footer.privacyPolicy"), href: "/privacy" },
+      { name: t("footer.terms"), href: "/terms" },
+      { name: t("footer.kycRegulations"), href: "/kyc" },
+    ],
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground">
       {/* Divine Mantras Carousel */}
@@ -51,10 +54,10 @@ export function Footer() {
               <Logo size="md" />
             </Link>
             <p className="text-primary-foreground/80 text-sm mb-4 max-w-xs font-medium">
-              💛 Cho đi là hạnh phúc. Minh bạch là niềm tin.
+              {t("footer.slogan")}
             </p>
             <p className="text-primary-foreground/60 text-xs mb-6 max-w-xs">
-              FUN Charity – Nơi mỗi tấm lòng đều được ghi nhận, mỗi sự giúp đỡ đều trong sáng và chạm đến trái tim.
+              {t("footer.tagline")}
             </p>
             
             {/* Contact Info */}
@@ -111,12 +114,12 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-primary-light/30 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-primary-foreground/60">
-            © 2024 FUN Charity 💛 Được xây dựng với tình yêu{" "}
-            <Heart className="inline w-3 h-3 text-secondary" fill="currentColor" /> và công nghệ blockchain.
+            © 2024 FUN Charity 💛 {t("footer.builtWith")}{" "}
+            <Heart className="inline w-3 h-3 text-secondary" fill="currentColor" />
           </p>
           <div className="flex items-center gap-2 text-sm text-primary-foreground/60">
             <Sparkles className="w-4 h-4 text-secondary" />
-            <span>✨ Minh Bạch 100% • Yêu Thương Lan Tỏa • Cộng Đồng Kết Nối</span>
+            <span>{t("footer.transparency100")}</span>
           </div>
         </div>
       </div>

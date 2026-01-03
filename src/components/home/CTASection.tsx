@@ -3,35 +3,38 @@ import { Button } from "@/components/ui/button";
 import { ParticleButton } from "@/components/ui/ParticleButton";
 import { Heart, ArrowRight, Building2, Users, Sparkles, Crown, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const roles = [
-  {
-    icon: Heart,
-    title: "Bạn Muốn Sẻ Chia? 💕",
-    description: "Gửi đi yêu thương và xem từng nụ cười được tạo ra. Nhận lại niềm vui và huy hiệu dễ thương!",
-    cta: "Bắt Đầu Cho Đi",
-    href: "/campaigns",
-    gradient: "from-secondary to-secondary-light",
-  },
-  {
-    icon: Users,
-    title: "Bạn Có Thời Gian? ✨",
-    description: "Cùng mình làm tình nguyện nhé! Học thêm điều mới, có thêm bạn bè và tạo kỷ niệm đẹp.",
-    cta: "Tham Gia Cùng Mình",
-    href: "/auth",
-    gradient: "from-primary to-primary-light",
-  },
-  {
-    icon: Building2,
-    title: "Bạn Là Tổ Chức? 🏢",
-    description: "Tạo chiến dịch, xây dựng niềm tin với cộng đồng. Cùng nhau lan tỏa yêu thương lớn hơn!",
-    cta: "Đăng Ký Ngay",
-    href: "/auth",
-    gradient: "from-success to-secondary",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function CTASection() {
+  const { t } = useLanguage();
+
+  const roles = [
+    {
+      icon: Heart,
+      titleKey: "cta.wantToShare",
+      descKey: "cta.shareDesc",
+      ctaKey: "cta.startGiving",
+      href: "/campaigns",
+      gradient: "from-secondary to-secondary-light",
+    },
+    {
+      icon: Users,
+      titleKey: "cta.haveTime",
+      descKey: "cta.volunteerDesc",
+      ctaKey: "cta.joinUs",
+      href: "/auth",
+      gradient: "from-primary to-primary-light",
+    },
+    {
+      icon: Building2,
+      titleKey: "cta.areOrganization",
+      descKey: "cta.orgDesc",
+      ctaKey: "cta.registerNow",
+      href: "/auth",
+      gradient: "from-success to-secondary",
+    },
+  ];
+
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -41,7 +44,7 @@ export function CTASection() {
             const Icon = role.icon;
             return (
               <motion.div
-                key={role.title}
+                key={role.titleKey}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -55,13 +58,13 @@ export function CTASection() {
                       <Icon className="w-7 h-7 text-primary-foreground" />
                     </div>
                     <h3 className="font-display text-xl font-semibold mb-2">
-                      {role.title}
+                      {t(role.titleKey)}
                     </h3>
                     <p className="text-muted-foreground mb-6">
-                      {role.description}
+                      {t(role.descKey)}
                     </p>
                     <Button variant="outline" className="group/btn hover-glossy">
-                      {role.cta}
+                      {t(role.ctaKey)}
                       <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                     </Button>
                   </div>
@@ -91,13 +94,13 @@ export function CTASection() {
               </div>
             </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
-              Bạn Ơi, Sẵn Sàng <span className="text-secondary">Lan Tỏa Yêu Thương</span> Chưa? 💖
+              {t("cta.ready")}
             </h2>
             <p className="text-primary-foreground/80 text-lg mb-4 max-w-2xl mx-auto">
-              Hàng nghìn trái tim ấm áp đang chờ đón bạn! Cùng nhau, chúng ta sẽ tạo nên những điều kỳ diệu mỗi ngày.
+              {t("cta.thousandHearts")}
             </p>
             <p className="text-secondary font-medium mb-8">
-              Cho đi là nhận lại. Yêu thương là hạnh phúc. ✨
+              {t("cta.givingIsReceiving")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/campaigns">
@@ -109,7 +112,7 @@ export function CTASection() {
                   glowColor="#84D9BA"
                 >
                   <Heart className="w-5 h-5" fill="currentColor" />
-                  Khám Phá Chiến Dịch
+                  {t("cta.exploreCampaigns")}
                 </ParticleButton>
               </Link>
               <ParticleButton 
@@ -120,7 +123,7 @@ export function CTASection() {
                 glowColor="#8B5CF6"
               >
                 <Wallet className="w-5 h-5" />
-                Kết Nối Ví
+                {t("cta.connectWallet")}
               </ParticleButton>
             </div>
           </div>

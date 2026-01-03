@@ -15,33 +15,36 @@ import {
   Zap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const stats = [
-  { label: "Yêu Thương Lan Tỏa", value: "$2.4M+", icon: TrendingUp },
-  { label: "Ước Mơ Được Chắp Cánh", value: "1,200+", icon: Heart },
-  { label: "Tấm Lòng Vàng", value: "45K+", icon: Users },
-  { label: "Quốc Gia Kết Nối", value: "80+", icon: Globe },
-];
-
-const pillars = [
-  {
-    icon: Zap,
-    title: "💞 Kết Nối Yêu Thương",
-    description: "Mình kết nối những tấm lòng nhân ái với những hoàn cảnh cần giúp đỡ – tức thì, ấm áp",
-  },
-  {
-    icon: Users,
-    title: "🤝 Cộng Đồng Chia Sẻ",
-    description: "Cùng nhau chia sẻ, động viên và lan tỏa những câu chuyện đẹp mỗi ngày",
-  },
-  {
-    icon: LinkIcon,
-    title: "✨ Minh Bạch Tuyệt Đối",
-    description: "Mọi đồng tiền đều được ghi nhận rõ ràng – bạn yên tâm, người nhận được ấm lòng",
-  },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HeroSection() {
+  const { t } = useLanguage();
+
+  const stats = [
+    { labelKey: "hero.stat1", value: "$2.4M+", icon: TrendingUp },
+    { labelKey: "hero.stat2", value: "1,200+", icon: Heart },
+    { labelKey: "hero.stat3", value: "45K+", icon: Users },
+    { labelKey: "hero.stat4", value: "80+", icon: Globe },
+  ];
+
+  const pillars = [
+    {
+      icon: Zap,
+      titleKey: "hero.pillar1Title",
+      descKey: "hero.pillar1Desc",
+    },
+    {
+      icon: Users,
+      titleKey: "hero.pillar2Title",
+      descKey: "hero.pillar2Desc",
+    },
+    {
+      icon: LinkIcon,
+      titleKey: "hero.pillar3Title",
+      descKey: "hero.pillar3Desc",
+    },
+  ];
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Video Background */}
@@ -67,7 +70,7 @@ export function HeroSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
             <Badge variant="gold" className="mb-6 px-4 py-1.5">
               <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Nền Tảng Từ Thiện Minh Bạch 💛
+              {t("hero.badge")}
             </Badge>
           </motion.div>
 
@@ -76,11 +79,11 @@ export function HeroSection() {
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="text-lg md:text-xl text-primary-foreground/80 mb-4 max-w-3xl mx-auto italic">
-            "Nơi mỗi tấm lòng đều được ghi nhận, mỗi sự giúp đỡ đều trong sáng và chạm đến trái tim."
+            "{t("hero.quote")}"
           </motion.p>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }} className="text-lg md:text-xl slogan-glow mb-8">
-            💖 Cho đi là hạnh phúc. Minh bạch là niềm tin. 💖
+            {t("hero.slogan")}
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
@@ -93,7 +96,7 @@ export function HeroSection() {
                 glowColor="#84D9BA"
               >
                 <Heart className="w-5 h-5" fill="currentColor" />
-                Lan Tỏa Yêu Thương
+                {t("hero.spreadLove")}
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               </ParticleButton>
             </Link>
@@ -106,7 +109,7 @@ export function HeroSection() {
                 glowColor="#8B5CF6"
               >
                 <Wallet className="w-5 h-5" />
-                Đăng Ký / Đăng Nhập
+                {t("hero.signUpLogin")}
               </ParticleButton>
             </Link>
           </motion.div>
@@ -115,10 +118,10 @@ export function HeroSection() {
             {pillars.map((pillar, index) => {
               const Icon = pillar.icon;
               return (
-                <motion.div key={pillar.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }} className="bg-primary-foreground/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-left hover:border-secondary/40 transition-colors">
+                <motion.div key={pillar.titleKey} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }} className="bg-primary-foreground/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-left hover:border-secondary/40 transition-colors">
                   <Icon className="w-8 h-8 text-secondary mb-3" />
-                  <h3 className="font-display font-semibold text-primary-foreground mb-2">{pillar.title}</h3>
-                  <p className="text-sm text-primary-foreground/70">{pillar.description}</p>
+                  <h3 className="font-display font-semibold text-primary-foreground mb-2">{t(pillar.titleKey)}</h3>
+                  <p className="text-sm text-primary-foreground/70">{t(pillar.descKey)}</p>
                 </motion.div>
               );
             })}
@@ -128,10 +131,10 @@ export function HeroSection() {
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <motion.div key={stat.label} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }} className="bg-primary-foreground/5 backdrop-blur-sm border border-secondary/10 rounded-xl p-4 text-center">
+                <motion.div key={stat.labelKey} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: 0.9 + index * 0.1 }} className="bg-primary-foreground/5 backdrop-blur-sm border border-secondary/10 rounded-xl p-4 text-center">
                   <Icon className="w-5 h-5 text-secondary mx-auto mb-2" />
                   <div className="font-display text-2xl font-bold text-secondary mb-1">{stat.value}</div>
-                  <div className="text-xs text-primary-foreground/60">{stat.label}</div>
+                  <div className="text-xs text-primary-foreground/60">{t(stat.labelKey)}</div>
                 </motion.div>
               );
             })}
