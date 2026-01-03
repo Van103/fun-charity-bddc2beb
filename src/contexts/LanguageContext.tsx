@@ -336,6 +336,11 @@ export const translations: Translations = {
     th: "เกียรติยศ", fr: "Tableau d'honneur", de: "Ehrentafel", es: "Cuadro de Honor",
     pt: "Quadro de Honra", ru: "Доска почета", ar: "لوحة الشرف", hi: "सम्मान बोर्ड"
   },
+  "nav.trading": {
+    en: "Trading", vi: "Giao dịch", zh: "交易", ja: "取引", ko: "거래",
+    th: "การซื้อขาย", fr: "Trading", de: "Handel", es: "Comercio",
+    pt: "Negociação", ru: "Торговля", ar: "التداول", hi: "व्यापार"
+  },
 
   "birthday.title": {
     en: "Birthdays", vi: "Sinh nhật", zh: "生日", ja: "誕生日", ko: "생일",

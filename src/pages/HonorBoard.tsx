@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { useRealtimeRankingUpdates } from "@/hooks/useRealtimeRankingUpdates";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HonorStatsOverview } from "@/components/honor/HonorStatsOverview";
@@ -17,6 +18,9 @@ import { Loader2, Trophy, Heart, Award } from "lucide-react";
 export default function HonorBoard() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("donors");
+  
+  // Enable realtime ranking updates with toast notifications
+  useRealtimeRankingUpdates();
   
   const { data: topDonors = [], isLoading: donorsLoading } = useTopRankers();
   const { data: topVolunteers = [], isLoading: volunteersLoading } = useVolunteerRanking();
