@@ -78,6 +78,16 @@ interface TrailPoint {
   opacity: number;
 }
 
+interface LightRay {
+  id: number;
+  x: number;
+  y: number;
+  angle: number;
+  length: number;
+  color: string;
+  delay: number;
+}
+
 const BG_LUMA_MIN = 225;
 const BG_MAX_CHROMA = 18;
 
@@ -230,10 +240,13 @@ const FlyingAngel = () => {
 
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [trail, setTrail] = useState<TrailPoint[]>([]);
+  const [lightRays, setLightRays] = useState<LightRay[]>([]);
   const [isMovingFast, setIsMovingFast] = useState(false);
   const sparkleIdRef = useRef(0);
   const trailIdRef = useRef(0);
+  const lightRayIdRef = useRef(0);
   const lastPosRef = useRef<Position>({ x: 0, y: 0 });
+  const lastAngleRef = useRef(0);
 
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
@@ -279,6 +292,45 @@ const FlyingAngel = () => {
     setTimeout(() => {
       setTrail((prev) => prev.filter((t) => t.id !== trailPoint.id));
     }, 600);
+  }, []);
+
+  // Create light rays - comet tail effect
+  const createLightRays = useCallback((x: number, y: number, movementAngle: number) => {
+    const rayColors = [
+      'rgba(255,255,255,0.9)',
+      'rgba(255,223,0,0.8)',
+      'rgba(255,200,50,0.7)',
+      'rgba(255,180,100,0.6)',
+      'rgba(255,215,0,0.85)',
+    ];
+    
+    // Create 5-8 rays emanating from behind the angel
+    const numRays = 5 + Math.floor(Math.random() * 4);
+    const newRays: LightRay[] = [];
+    
+    for (let i = 0; i < numRays; i++) {
+      // Rays spread out behind the angel (opposite to movement direction)
+      const baseAngle = movementAngle + Math.PI; // Opposite direction
+      const spreadAngle = baseAngle + (Math.random() - 0.5) * 1.2; // Spread ±35 degrees
+      
+      const ray: LightRay = {
+        id: lightRayIdRef.current++,
+        x: x - Math.cos(movementAngle) * 15, // Start slightly behind
+        y: y - Math.sin(movementAngle) * 15,
+        angle: spreadAngle,
+        length: 30 + Math.random() * 50, // Random length 30-80px
+        color: rayColors[Math.floor(Math.random() * rayColors.length)],
+        delay: Math.random() * 0.1,
+      };
+      newRays.push(ray);
+    }
+    
+    setLightRays((prev) => [...prev.slice(-25), ...newRays]);
+    
+    // Remove after animation
+    setTimeout(() => {
+      setLightRays((prev) => prev.filter((r) => !newRays.find(nr => nr.id === r.id)));
+    }, 400);
   }, []);
 
   // Handle fairy color transition
@@ -538,12 +590,22 @@ const FlyingAngel = () => {
       const dy = position.y - lastPosRef.current.y;
       const speed = Math.hypot(dx, dy);
       
+      // Calculate movement angle for light rays
+      if (speed > 2) {
+        lastAngleRef.current = Math.atan2(dy, dx);
+      }
+      
       lastPosRef.current = { x: position.x, y: position.y };
       
       // Create trail when moving (lower threshold for more visible effect)
       if (speed > 4) {
         setIsMovingFast(true);
         createTrailPoint(position.x, position.y);
+        
+        // Create light rays when moving faster (comet effect)
+        if (speed > 8) {
+          createLightRays(position.x, position.y, lastAngleRef.current);
+        }
       } else {
         setIsMovingFast(false);
       }
@@ -555,7 +617,7 @@ const FlyingAngel = () => {
         trailIntervalRef.current = null;
       }
     };
-  }, [createTrailPoint, isAngelCursor, isHiding, isIdle, isSitting, position.x, position.y]);
+  }, [createTrailPoint, createLightRays, isAngelCursor, isHiding, isIdle, isSitting, position.x, position.y]);
 
   // Sparkle generation
   useEffect(() => {
@@ -603,6 +665,53 @@ const FlyingAngel = () => {
 
   return (
     <>
+      {/* Light rays - Comet tail emanating from wings */}
+      <AnimatePresence>
+        {lightRays.map((ray) => (
+          <motion.div
+            key={ray.id}
+            className="fixed pointer-events-none z-[9995]"
+            style={{
+              left: ray.x,
+              top: ray.y,
+              width: ray.length,
+              height: 3,
+              transformOrigin: '0 50%',
+              transform: `rotate(${ray.angle}rad)`,
+            }}
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ 
+              opacity: [0, 0.9, 0],
+              scaleX: [0, 1, 0.3],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 0.35, 
+              ease: 'easeOut',
+              delay: ray.delay,
+            }}
+          >
+            {/* Ray core - bright line */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(90deg, ${ray.color} 0%, rgba(255,255,255,0.9) 20%, ${ray.color} 60%, transparent 100%)`,
+                borderRadius: '2px',
+              }}
+            />
+            {/* Ray glow */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(90deg, rgba(255,215,0,0.6) 0%, rgba(255,255,255,0.4) 30%, transparent 100%)`,
+                filter: 'blur(4px)',
+                transform: 'scaleY(3)',
+              }}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
       {/* Trail effect - Comet tail style */}
       <AnimatePresence>
         {trail.map((point, index) => {
