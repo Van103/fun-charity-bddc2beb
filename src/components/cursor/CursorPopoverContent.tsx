@@ -1,0 +1,186 @@
+import { Settings2, Sparkles, Sun } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useCursor, CURSOR_OPTIONS, FAIRY_COLOR_OPTIONS, AURA_COLOR_OPTIONS } from '@/contexts/CursorContext';
+import { cn } from '@/lib/utils';
+
+export function CursorPopoverContent() {
+  const { cursorType, setCursorType, particlesEnabled, setParticlesEnabled, fairyColor, setFairyColor, auraColor, setAuraColor } = useCursor();
+
+  const isAngelCursor = cursorType === 'angel';
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+        <Settings2 className="h-4 w-4 text-secondary" />
+        <h3 className="font-semibold text-sm">Tùy chỉnh con trỏ</h3>
+      </div>
+
+      {/* Cursor Options Grid */}
+      <div className="grid grid-cols-3 gap-2">
+        {CURSOR_OPTIONS.map((option) => (
+          <button
+            key={option.id}
+            onClick={() => setCursorType(option.id)}
+            className={cn(
+              "relative flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200",
+              "hover:bg-muted/50 border-2",
+              cursorType === option.id 
+                ? "border-secondary bg-secondary/10" 
+                : "border-transparent"
+            )}
+            title={option.nameVi}
+          >
+            {option.id === 'default' ? (
+              <div className="w-9 h-9 flex items-center justify-center text-muted-foreground">
+                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
+                  <path d="M4 4l7 19 2-7 7-2z"/>
+                </svg>
+              </div>
+            ) : option.id === 'angel' ? (
+              <div 
+                className="w-9 h-9 flex items-center justify-center rounded-full"
+                style={{
+                  background: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6)'
+                }}
+              >
+                <span className="text-lg">👼</span>
+              </div>
+            ) : option.id.startsWith('arrow') ? (
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src={option.cursor} 
+                  alt={option.nameVi} 
+                  className="w-7 h-7 object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-9 h-9 flex items-center justify-center">
+                <img 
+                  src={option.cursor} 
+                  alt={option.nameVi} 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+            )}
+            <span className="text-[10px] mt-1 text-muted-foreground text-center leading-tight">
+              {option.nameVi}
+            </span>
+            {cursorType === option.id && (
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Fairy Color Selection - Only show when angel cursor is selected */}
+      {isAngelCursor && (
+        <>
+          <div className="pt-2 border-t border-border/50">
+            <Label className="text-sm mb-2 block">Chọn màu thiên thần</Label>
+            <div className="flex gap-2 flex-wrap">
+              {FAIRY_COLOR_OPTIONS.map((colorOption) => (
+                <button
+                  key={colorOption.id}
+                  onClick={() => setFairyColor(colorOption.id)}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200",
+                    "hover:bg-muted/50 border-2",
+                    fairyColor === colorOption.id 
+                      ? "border-secondary bg-secondary/10" 
+                      : "border-transparent"
+                  )}
+                  title={colorOption.name}
+                >
+                  {colorOption.id === 'random' ? (
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                      style={{ background: colorOption.color }}
+                    >
+                      🎲
+                    </div>
+                  ) : (
+                    <img 
+                      src={colorOption.image}
+                      alt={colorOption.name}
+                      className="w-8 h-8 object-contain"
+                    />
+                  )}
+                  <span className="text-[9px] mt-1 text-muted-foreground">
+                    {colorOption.name}
+                  </span>
+                  {fairyColor === colorOption.id && (
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Aura Color Selection */}
+          <div className="pt-2 border-t border-border/50">
+            <div className="flex items-center gap-2 mb-2">
+              <Sun className="h-4 w-4 text-yellow-400" />
+              <Label className="text-sm">Vầng sáng thiên thần</Label>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {AURA_COLOR_OPTIONS.map((auraOption) => (
+                <button
+                  key={auraOption.id}
+                  onClick={() => setAuraColor(auraOption.id)}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200",
+                    "hover:bg-muted/50 border-2",
+                    auraColor === auraOption.id 
+                      ? "border-secondary bg-secondary/10" 
+                      : "border-transparent"
+                  )}
+                  title={auraOption.name}
+                >
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-lg"
+                    style={{ 
+                      background: auraOption.id === 'rainbow' 
+                        ? 'conic-gradient(from 0deg, red, orange, yellow, green, blue, indigo, red)'
+                        : auraOption.id === 'none'
+                          ? 'rgba(128,128,128,0.3)'
+                          : auraOption.colors[0] || 'transparent',
+                      boxShadow: auraOption.id !== 'none' ? `0 0 15px ${auraOption.colors[0] || 'transparent'}` : 'none'
+                    }}
+                  >
+                    {auraOption.emoji}
+                  </div>
+                  <span className="text-[9px] mt-1 text-muted-foreground">
+                    {auraOption.name}
+                  </span>
+                  {auraColor === auraOption.id && (
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-secondary rounded-full" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Particles Toggle */}
+      <div className="flex items-center justify-between pt-2 border-t border-border/50">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-secondary" />
+          <Label htmlFor="particles-popover" className="text-sm">
+            Hiệu ứng lấp lánh
+          </Label>
+        </div>
+        <Switch
+          id="particles-popover"
+          checked={particlesEnabled}
+          onCheckedChange={setParticlesEnabled}
+        />
+      </div>
+
+      <p className="text-xs text-muted-foreground">
+        Chọn kiểu con trỏ và bật/tắt hiệu ứng hạt khi di chuyển chuột.
+      </p>
+    </div>
+  );
+}

@@ -17,7 +17,9 @@ import { NotificationDropdown } from "./NotificationDropdown";
 import { MessageDropdown } from "./MessageDropdown";
 import { SearchBar } from "./SearchBar";
 import { LanguageToggle } from "./LanguageToggle";
+import { LanguagePopoverContent } from "./LanguagePopoverContent";
 import CursorSettings from "@/components/cursor/CursorSettings";
+import { CursorPopoverContent } from "@/components/cursor/CursorPopoverContent";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFriendRequestNotifications } from "@/hooks/useFriendNotifications";
 import { usePostNotifications } from "@/hooks/usePostNotifications";
@@ -440,19 +442,33 @@ export function Navbar() {
                     
                     <DropdownMenuSeparator className="my-2" />
                     
-                    {/* Language Toggle */}
-                    <div className="p-3 rounded-lg hover:bg-primary/10 flex items-center gap-3 cursor-pointer">
-                      <Globe className="w-5 h-5 text-primary" />
-                      <span className="font-medium flex-1">{t("settings.language") || "Ngôn ngữ"}</span>
-                      <LanguageToggle />
-                    </div>
+                    {/* Language Toggle - entire row is clickable */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
+                          <Globe className="w-5 h-5 text-primary" />
+                          <span className="font-medium flex-1">{t("settings.language") || "Ngôn ngữ"}</span>
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-56 p-1 bg-card/95 backdrop-blur-xl border-border/50">
+                        <LanguagePopoverContent />
+                      </PopoverContent>
+                    </Popover>
                     
-                    {/* Cursor Settings */}
-                    <div className="p-3 rounded-lg hover:bg-primary/10 flex items-center gap-3 cursor-pointer">
-                      <MousePointer2 className="w-5 h-5 text-primary" />
-                      <span className="font-medium flex-1">{t("settings.cursor") || "Con trỏ"}</span>
-                      <CursorSettings />
-                    </div>
+                    {/* Cursor Settings - entire row is clickable */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
+                          <MousePointer2 className="w-5 h-5 text-primary" />
+                          <span className="font-medium flex-1">{t("settings.cursor") || "Con trỏ"}</span>
+                          <Sparkles className="h-4 w-4 text-secondary" />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-80 max-h-[70vh] overflow-y-auto p-4 bg-card/95 backdrop-blur-xl border-border/50">
+                        <CursorPopoverContent />
+                      </PopoverContent>
+                    </Popover>
                     
                     {/* Settings with Motion Toggle */}
                     <Popover>
