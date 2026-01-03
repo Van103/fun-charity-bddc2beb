@@ -252,20 +252,20 @@ const FlyingAngel = () => {
     }, 1000);
   }, [currentSparkleColors]);
 
-  // Create trail point
+  // Create trail point with more vibrant effect
   const createTrailPoint = useCallback((x: number, y: number) => {
     const trailPoint: TrailPoint = {
       id: trailIdRef.current++,
       x,
       y,
-      opacity: 0.8,
+      opacity: 1,
     };
-    setTrail((prev) => [...prev.slice(-12), trailPoint]);
+    setTrail((prev) => [...prev.slice(-18), trailPoint]);
     
     // Remove after animation
     setTimeout(() => {
       setTrail((prev) => prev.filter((t) => t.id !== trailPoint.id));
-    }, 400);
+    }, 600);
   }, []);
 
   // Handle fairy color transition
@@ -527,14 +527,14 @@ const FlyingAngel = () => {
       
       lastPosRef.current = { x: position.x, y: position.y };
       
-      // Only create trail when moving fast enough
-      if (speed > 8) {
+      // Create trail when moving (lower threshold for more visible effect)
+      if (speed > 4) {
         setIsMovingFast(true);
         createTrailPoint(position.x, position.y);
       } else {
         setIsMovingFast(false);
       }
-    }, 30);
+    }, 25);
 
     return () => {
       if (trailIntervalRef.current) {
@@ -590,57 +590,82 @@ const FlyingAngel = () => {
 
   return (
     <>
-      {/* Trail effect */}
+      {/* Trail effect - Comet tail style */}
       <AnimatePresence>
-        {trail.map((point, index) => (
-          <motion.div
-            key={point.id}
-            className="fixed pointer-events-none z-[9996]"
-            style={{
-              left: point.x - 15,
-              top: point.y - 10,
-              width: 30 - index * 1.5,
-              height: 30 - index * 1.5,
-            }}
-            initial={{ opacity: 0.7, scale: 1 }}
-            animate={{ 
-              opacity: [0.6, 0.3, 0],
-              scale: [1, 0.6, 0.2],
-            }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-          >
-            <div 
-              className="w-full h-full rounded-full"
+        {trail.map((point, index) => {
+          const trailSize = Math.max(8, 35 - index * 1.8);
+          const trailOpacity = Math.max(0.1, 0.9 - index * 0.05);
+          
+          return (
+            <motion.div
+              key={point.id}
+              className="fixed pointer-events-none z-[9996]"
               style={{
-                background: `radial-gradient(circle, ${currentTrailColors.primary} 0%, ${currentTrailColors.secondary} 40%, ${currentTrailColors.tertiary} 70%, transparent 100%)`,
-                filter: 'blur(3px)',
+                left: point.x - trailSize / 2,
+                top: point.y - trailSize / 2,
+                width: trailSize,
+                height: trailSize,
               }}
-            />
-          </motion.div>
-        ))}
+              initial={{ opacity: trailOpacity, scale: 1.2 }}
+              animate={{ 
+                opacity: [trailOpacity, trailOpacity * 0.5, 0],
+                scale: [1.2, 0.8, 0.3],
+              }}
+              exit={{ opacity: 0, scale: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              {/* Outer glow */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: `radial-gradient(circle, ${currentTrailColors.primary} 0%, ${currentTrailColors.secondary} 50%, transparent 100%)`,
+                  filter: 'blur(6px)',
+                  transform: 'scale(1.5)',
+                }}
+              />
+              {/* Inner bright core */}
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: `radial-gradient(circle, white 0%, ${currentTrailColors.primary} 30%, ${currentTrailColors.secondary} 60%, transparent 100%)`,
+                  filter: 'blur(2px)',
+                }}
+              />
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
 
-      {/* Glow effect when moving fast */}
+      {/* Enhanced glow effect when moving fast */}
       {isMovingFast && (
         <motion.div
           className="fixed pointer-events-none z-[9997]"
           style={{
-            left: position.x - 50,
-            top: position.y - 35,
-            width: 100,
-            height: 80,
+            left: position.x - 60,
+            top: position.y - 40,
+            width: 120,
+            height: 90,
           }}
           animate={{
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.1, 1],
+            opacity: [0.4, 0.7, 0.4],
+            scale: [1, 1.15, 1],
           }}
-          transition={{ duration: 0.3, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 0.25, repeat: Infinity, ease: 'easeInOut' }}
         >
+          {/* Outer aura */}
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `radial-gradient(ellipse, ${currentGlowColors.outer} 0%, transparent 70%)`,
+              filter: 'blur(15px)',
+              transform: 'scale(1.3)',
+            }}
+          />
+          {/* Inner glow */}
           <div 
             className="w-full h-full rounded-full"
             style={{
-              background: `radial-gradient(ellipse, ${currentGlowColors.inner} 0%, ${currentGlowColors.outer} 30%, transparent 70%)`,
+              background: `radial-gradient(ellipse, ${currentGlowColors.inner} 0%, ${currentGlowColors.outer} 40%, transparent 80%)`,
               filter: 'blur(8px)',
             }}
           />
