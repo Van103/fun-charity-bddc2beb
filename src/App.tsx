@@ -46,6 +46,7 @@ import NotFound from "./pages/NotFound";
 import VerifyEmail from "./pages/VerifyEmail";
 import AuthCallback from "./pages/AuthCallback";
 import LiveStream from "./pages/LiveStream";
+import HonorBoard from "./pages/HonorBoard";
 
 const queryClient = new QueryClient();
 
@@ -171,6 +172,7 @@ const App = () => (
                 <Route path="/volunteer" element={<Volunteer />} />
                 <Route path="/install" element={<Install />} />
                 <Route path="/live/:streamId" element={<LiveStream />} />
+                <Route path="/honor-board" element={<HonorBoard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

@@ -108,11 +108,11 @@ export function RightSidebar() {
         </video>
         <div className="absolute inset-0 bg-purple-900/30" />
         
-        <div className="relative border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60">
+        <Link to="/honor-board" className="relative block border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60 hover:from-purple-800/70 hover:via-purple-700/80 hover:to-purple-800/70 transition-all">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#FFD700', fontSize: '20px' }}>
             <span className="animate-sparkle inline-block">✨</span> {t("honor.title")} <span className="animate-sparkle-delay inline-block">✨</span>
           </h3>
-        </div>
+        </Link>
         <div className="relative p-3 space-y-2">
           {statsLoading ? (
             <div className="flex items-center justify-center py-8">
@@ -145,11 +145,11 @@ export function RightSidebar() {
         </video>
         <div className="absolute inset-0 bg-purple-900/30" />
         
-        <div className="relative border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60">
+        <Link to="/honor-board" className="relative block border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60 hover:from-purple-800/70 hover:via-purple-700/80 hover:to-purple-800/70 transition-all">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#FFD700', fontSize: '20px' }}>
             <span className="animate-sparkle inline-block">👑</span> {t("ranking.title")} <span className="animate-sparkle-delay inline-block">👑</span>
           </h3>
-        </div>
+        </Link>
         <div className="ranking-scroll-container h-[500px] overflow-y-auto relative p-3 space-y-2.5">
           {rankersLoading ? (
             <div className="flex items-center justify-center py-8">

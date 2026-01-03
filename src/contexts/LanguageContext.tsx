@@ -249,6 +249,94 @@ export const translations: Translations = {
     th: "อันดับสูงสุด", fr: "CLASSEMENT", de: "RANGLISTE", es: "CLASIFICACIÓN",
     pt: "CLASSIFICAÇÃO", ru: "РЕЙТИНГ", ar: "الترتيب", hi: "शीर्ष रैंकिंग"
   },
+
+  // Honor Board Page
+  "honorBoard.pageTitle": {
+    en: "Honor Board", vi: "Bảng Vinh Danh", zh: "荣誉榜", ja: "栄誉の殿堂", ko: "명예의 전당",
+    th: "เกียรติยศ", fr: "Tableau d'honneur", de: "Ehrentafel", es: "Cuadro de Honor",
+    pt: "Quadro de Honra", ru: "Доска почета", ar: "لوحة الشرف", hi: "सम्मान बोर्ड"
+  },
+  "honorBoard.metaDescription": {
+    en: "Honor Board - Recognizing top donors and volunteers who make a difference", vi: "Bảng Vinh Danh - Tôn vinh các nhà tài trợ và tình nguyện viên xuất sắc", zh: "荣誉榜 - 表彰杰出的捐赠者和志愿者", ja: "栄誉の殿堂 - 優れた寄付者とボランティアを称える", ko: "명예의 전당 - 우수 기부자와 봉사자 인정",
+    th: "เกียรติยศ - ยกย่องผู้บริจาคและอาสาสมัครที่โดดเด่น", fr: "Tableau d'honneur - Reconnaître les meilleurs donateurs et bénévoles", de: "Ehrentafel - Anerkennung der besten Spender und Freiwilligen", es: "Cuadro de Honor - Reconociendo a los mejores donantes y voluntarios",
+    pt: "Quadro de Honra - Reconhecendo os melhores doadores e voluntários", ru: "Доска почета - Признание лучших жертвователей и волонтеров", ar: "لوحة الشرف - تكريم أفضل المتبرعين والمتطوعين", hi: "सम्मान बोर्ड - शीर्ष दानदाताओं और स्वयंसेवकों को सम्मान"
+  },
+  "honorBoard.title": {
+    en: "HONOR BOARD", vi: "BẢNG VINH DANH", zh: "荣誉榜", ja: "栄誉の殿堂", ko: "명예의 전당",
+    th: "เกียรติยศ", fr: "TABLEAU D'HONNEUR", de: "EHRENTAFEL", es: "CUADRO DE HONOR",
+    pt: "QUADRO DE HONRA", ru: "ДОСКА ПОЧЕТА", ar: "لوحة الشرف", hi: "सम्मान बोर्ड"
+  },
+  "honorBoard.subtitle": {
+    en: "Celebrating our heroes who make the world a better place", vi: "Tôn vinh những anh hùng làm thế giới tốt đẹp hơn", zh: "表彰让世界更美好的英雄们", ja: "世界をより良い場所にする英雄たちを称える", ko: "세상을 더 나은 곳으로 만드는 영웅들을 기념합니다",
+    th: "เฉลิมฉลองวีรบุรุษของเราที่ทำให้โลกน่าอยู่ขึ้น", fr: "Célébrer nos héros qui rendent le monde meilleur", de: "Unsere Helden feiern, die die Welt zu einem besseren Ort machen", es: "Celebrando a nuestros héroes que hacen del mundo un lugar mejor",
+    pt: "Celebrando nossos heróis que tornam o mundo um lugar melhor", ru: "Чествуем наших героев, делающих мир лучше", ar: "نحتفل بأبطالنا الذين يجعلون العالم مكانًا أفضل", hi: "हमारे नायकों का जश्न जो दुनिया को बेहतर बनाते हैं"
+  },
+  "honorBoard.topDonors": {
+    en: "Top Donors", vi: "Top Nhà Tài Trợ", zh: "顶级捐赠者", ja: "トップドナー", ko: "최고 기부자",
+    th: "ผู้บริจาคสูงสุด", fr: "Meilleurs donateurs", de: "Top-Spender", es: "Mejores donantes",
+    pt: "Principais doadores", ru: "Лучшие жертвователи", ar: "أفضل المتبرعين", hi: "शीर्ष दानदाता"
+  },
+  "honorBoard.donors": {
+    en: "Donors", vi: "Nhà Tài Trợ", zh: "捐赠者", ja: "ドナー", ko: "기부자",
+    th: "ผู้บริจาค", fr: "Donateurs", de: "Spender", es: "Donantes",
+    pt: "Doadores", ru: "Жертвователи", ar: "المتبرعون", hi: "दानदाता"
+  },
+  "honorBoard.topVolunteers": {
+    en: "Top Volunteers", vi: "Top Tình Nguyện Viên", zh: "顶级志愿者", ja: "トップボランティア", ko: "최고 봉사자",
+    th: "อาสาสมัครสูงสุด", fr: "Meilleurs bénévoles", de: "Top-Freiwillige", es: "Mejores voluntarios",
+    pt: "Principais voluntários", ru: "Лучшие волонтеры", ar: "أفضل المتطوعين", hi: "शीर्ष स्वयंसेवक"
+  },
+  "honorBoard.volunteers": {
+    en: "Volunteers", vi: "Tình Nguyện", zh: "志愿者", ja: "ボランティア", ko: "봉사자",
+    th: "อาสาสมัคร", fr: "Bénévoles", de: "Freiwillige", es: "Voluntarios",
+    pt: "Voluntários", ru: "Волонтеры", ar: "المتطوعون", hi: "स्वयंसेवक"
+  },
+  "honorBoard.badgesTab": {
+    en: "Badges & Achievements", vi: "Huy Hiệu & Thành Tích", zh: "徽章与成就", ja: "バッジと実績", ko: "배지 및 업적",
+    th: "ตราและความสำเร็จ", fr: "Badges et réalisations", de: "Abzeichen & Erfolge", es: "Insignias y logros",
+    pt: "Distintivos e conquistas", ru: "Значки и достижения", ar: "الشارات والإنجازات", hi: "बैज और उपलब्धियां"
+  },
+  "honorBoard.badges": {
+    en: "Badges", vi: "Huy Hiệu", zh: "徽章", ja: "バッジ", ko: "배지",
+    th: "ตรา", fr: "Badges", de: "Abzeichen", es: "Insignias",
+    pt: "Distintivos", ru: "Значки", ar: "الشارات", hi: "बैज"
+  },
+  "honorBoard.hours": {
+    en: "hours", vi: "giờ", zh: "小时", ja: "時間", ko: "시간",
+    th: "ชั่วโมง", fr: "heures", de: "Stunden", es: "horas",
+    pt: "horas", ru: "часов", ar: "ساعات", hi: "घंटे"
+  },
+  "honorBoard.hrs": {
+    en: "hrs", vi: "giờ", zh: "时", ja: "時間", ko: "시간",
+    th: "ชม.", fr: "h", de: "Std", es: "hrs",
+    pt: "h", ru: "ч", ar: "س", hi: "घंटे"
+  },
+  "honorBoard.tasks": {
+    en: "tasks", vi: "nhiệm vụ", zh: "任务", ja: "タスク", ko: "작업",
+    th: "งาน", fr: "tâches", de: "Aufgaben", es: "tareas",
+    pt: "tarefas", ru: "задач", ar: "مهام", hi: "कार्य"
+  },
+  "honorBoard.tasksCompleted": {
+    en: "tasks completed", vi: "nhiệm vụ hoàn thành", zh: "已完成任务", ja: "完了タスク", ko: "완료된 작업",
+    th: "งานที่เสร็จสิ้น", fr: "tâches terminées", de: "erledigte Aufgaben", es: "tareas completadas",
+    pt: "tarefas concluídas", ru: "выполненных задач", ar: "مهام مكتملة", hi: "पूर्ण कार्य"
+  },
+  "honorBoard.noDonors": {
+    en: "No donors yet. Be the first to donate!", vi: "Chưa có nhà tài trợ. Hãy là người đầu tiên quyên góp!", zh: "暂无捐赠者。成为第一个捐赠者！", ja: "まだドナーがいません。最初の寄付者になりましょう！", ko: "아직 기부자가 없습니다. 첫 번째 기부자가 되어주세요!",
+    th: "ยังไม่มีผู้บริจาค มาเป็นคนแรกที่บริจาค!", fr: "Pas encore de donateurs. Soyez le premier à donner !", de: "Noch keine Spender. Seien Sie der Erste!", es: "Aún no hay donantes. ¡Sé el primero en donar!",
+    pt: "Ainda não há doadores. Seja o primeiro a doar!", ru: "Пока нет жертвователей. Станьте первым!", ar: "لا يوجد متبرعون بعد. كن أول من يتبرع!", hi: "अभी तक कोई दानदाता नहीं। पहले दानदाता बनें!"
+  },
+  "honorBoard.noVolunteers": {
+    en: "No volunteers yet. Join our mission!", vi: "Chưa có tình nguyện viên. Tham gia sứ mệnh của chúng tôi!", zh: "暂无志愿者。加入我们的使命！", ja: "まだボランティアがいません。私たちのミッションに参加してください！", ko: "아직 봉사자가 없습니다. 우리의 미션에 참여하세요!",
+    th: "ยังไม่มีอาสาสมัคร มาร่วมภารกิจของเรา!", fr: "Pas encore de bénévoles. Rejoignez notre mission !", de: "Noch keine Freiwilligen. Schließen Sie sich unserer Mission an!", es: "Aún no hay voluntarios. ¡Únete a nuestra misión!",
+    pt: "Ainda não há voluntários. Junte-se à nossa missão!", ru: "Пока нет волонтеров. Присоединяйтесь к нашей миссии!", ar: "لا يوجد متطوعون بعد. انضم إلى مهمتنا!", hi: "अभी तक कोई स्वयंसेवक नहीं। हमारे मिशन में शामिल हों!"
+  },
+  "nav.honorBoard": {
+    en: "Honor Board", vi: "Bảng Vinh Danh", zh: "荣誉榜", ja: "栄誉の殿堂", ko: "명예의 전당",
+    th: "เกียรติยศ", fr: "Tableau d'honneur", de: "Ehrentafel", es: "Cuadro de Honor",
+    pt: "Quadro de Honra", ru: "Доска почета", ar: "لوحة الشرف", hi: "सम्मान बोर्ड"
+  },
+
   "birthday.title": {
     en: "Birthdays", vi: "Sinh nhật", zh: "生日", ja: "誕生日", ko: "생일",
     th: "วันเกิด", fr: "Anniversaires", de: "Geburtstage", es: "Cumpleaños",
