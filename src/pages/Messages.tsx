@@ -23,8 +23,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
+import { formatDistanceToNow, Locale } from "date-fns";
+import { vi, enUS, zhCN, ja, ko, th } from "date-fns/locale";
 import { usePresence, getOnlineStatus } from "@/hooks/usePresence";
 import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 import { useTypingIndicator } from "@/hooks/useTypingIndicator";
@@ -41,6 +41,7 @@ import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 // IncomingCallNotification import removed - now handled globally in App.tsx
 import { CallsTab } from "@/components/chat/CallsTab";
 import { CallMessageBubble, isCallMessage } from "@/components/chat/CallMessageBubble";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Conversation {
   id: string;
@@ -92,12 +93,14 @@ const isVideoUrl = (url: string): boolean => {
   return videoExtensions.some(ext => lowerUrl.includes(ext));
 };
 
-// Helper function to get media type label
-const getMediaLabel = (url: string): string => {
-  return isVideoUrl(url) ? "🎬 Video" : "📷 Hình ảnh";
+// Locale map for date-fns
+const localeMap: Record<string, Locale> = {
+  vi, en: enUS, zh: zhCN, ja, ko, th
 };
 
 export default function Messages() {
+  const { t, language } = useLanguage();
+  const dateLocale = localeMap[language] || vi;
   const [searchParams, setSearchParams] = useSearchParams();
   const targetUserId = searchParams.get("user");
   const answerCallId = searchParams.get("answer");
@@ -278,8 +281,8 @@ export default function Messages() {
       if (callError || !callSession) {
         console.error("Error fetching call session:", callError);
         toast({
-          title: "Lỗi",
-          description: "Không tìm thấy cuộc gọi",
+          title: t('common.error'),
+          description: t('messages.callNotFound'),
           variant: "destructive"
         });
         // Clear URL params
@@ -291,8 +294,8 @@ export default function Messages() {
       if (callSession.status !== "pending") {
         console.log("Call is no longer pending:", callSession.status);
         toast({
-          title: "Cuộc gọi đã kết thúc",
-          description: "Cuộc gọi này không còn khả dụng",
+          title: t('messages.callEnded'),
+          description: t('messages.callNotAvailable'),
         });
         // Clear URL params
         setSearchParams({});
@@ -314,7 +317,7 @@ export default function Messages() {
       setIncomingCallConversationId(answerConversationId);
       setIncomingCallOtherUser({
         user_id: callSession.caller_id,
-        full_name: callerProfile?.full_name || "Người dùng",
+        full_name: callerProfile?.full_name || t('messages.user'),
         avatar_url: callerProfile?.avatar_url || null
       });
       setShowVideoCall(true);
@@ -404,6 +407,10 @@ export default function Messages() {
             .limit(1)
             .maybeSingle();
 
+          const getMediaLabel = (url: string): string => {
+            return isVideoUrl(url) ? `🎬 ${t('messages.video')}` : `📷 ${t('messages.image')}`;
+          };
+
           return {
             ...convo,
             participants: profiles || [],
@@ -430,6 +437,10 @@ export default function Messages() {
           .limit(1)
           .maybeSingle();
 
+        const getMediaLabel = (url: string): string => {
+          return isVideoUrl(url) ? `🎬 ${t('messages.video')}` : `📷 ${t('messages.image')}`;
+        };
+
         return {
           ...convo,
           otherUser: profile || undefined,
@@ -441,7 +452,7 @@ export default function Messages() {
     );
 
     setConversations(enrichedConvos);
-  }, []);
+  }, [t]);
 
   const openConversationWithUser = async (myId: string, theirId: string) => {
     const { data: existing } = await supabase
@@ -566,8 +577,8 @@ export default function Messages() {
 
     if (file.size > 10 * 1024 * 1024) {
       toast({
-        title: "File quá lớn",
-        description: "Vui lòng chọn ảnh dưới 10MB",
+        title: t('messages.fileTooLarge'),
+        description: t('messages.fileSizeLimit'),
         variant: "destructive"
       });
       return;
@@ -646,8 +657,8 @@ export default function Messages() {
       }
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể gửi tin nhắn",
+        title: t('common.error'),
+        description: error.message || t('messages.sendFailed'),
         variant: "destructive"
       });
     } finally {
@@ -673,7 +684,7 @@ export default function Messages() {
         .eq("id", activeConversation.id);
     } catch (error: any) {
       toast({
-        title: "Lỗi",
+        title: t('common.error'),
         description: error.message,
         variant: "destructive"
       });
@@ -695,8 +706,8 @@ export default function Messages() {
       setMessages(prev => prev.filter(m => m.id !== messageId));
       
       toast({
-        title: "Đã thu hồi",
-        description: "Tin nhắn đã được thu hồi thành công",
+        title: t('messages.recalled'),
+        description: t('messages.recallSuccess'),
       });
 
       // Refresh conversation list
@@ -705,8 +716,8 @@ export default function Messages() {
       }
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể thu hồi tin nhắn",
+        title: t('common.error'),
+        description: error.message || t('messages.recallFailed'),
         variant: "destructive"
       });
     }
@@ -841,8 +852,8 @@ export default function Messages() {
   });
 
   const getConversationName = (convo: Conversation) => {
-    if (convo.is_group) return convo.name || "Nhóm chat";
-    return convo.otherUser?.full_name || "Người dùng";
+    if (convo.is_group) return convo.name || t('messages.groupChat');
+    return convo.otherUser?.full_name || t('messages.user');
   };
 
   const getConversationAvatar = (convo: Conversation) => {
@@ -864,13 +875,13 @@ export default function Messages() {
         {/* Header */}
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Đoạn chat</h1>
+            <h1 className="text-2xl font-bold">{t('messages.chats')}</h1>
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
                 className="rounded-full h-9 w-9 hover:bg-muted"
-                title="Cài đặt"
+                title={t('settings.title')}
               >
                 <Settings className="w-5 h-5" />
               </Button>
@@ -878,7 +889,7 @@ export default function Messages() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowCreateGroup(true)}
-                title="Tạo cuộc trò chuyện mới"
+                title={t('messages.newConversation')}
                 className="rounded-full hover:bg-muted h-9 w-9"
               >
                 <Edit3 className="w-5 h-5" />
@@ -890,7 +901,7 @@ export default function Messages() {
           <div className="relative" ref={searchInputRef}>
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm kiếm trên Messenger"
+              placeholder={t('messages.searchMessenger')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim().length >= 2 && setShowSearchDropdown(true)}
@@ -912,7 +923,7 @@ export default function Messages() {
                     </div>
                   ) : searchResults.length === 0 ? (
                     <div className="p-4 text-center text-muted-foreground text-sm">
-                      Không tìm thấy người dùng
+                      {t('messages.noUsersFound')}
                     </div>
                   ) : (
                     searchResults.map(user => (
@@ -927,7 +938,7 @@ export default function Messages() {
                             {user.full_name?.charAt(0) || "U"}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">{user.full_name || "Người dùng"}</span>
+                        <span className="font-medium">{user.full_name || t('messages.user')}</span>
                       </button>
                     ))
                   )}
@@ -944,7 +955,7 @@ export default function Messages() {
               onClick={() => setActiveFilter("all")}
               className="rounded-full h-8 px-4"
             >
-              Tất cả
+              {t('messages.all')}
             </Button>
             <Button
               variant={activeFilter === "unread" ? "default" : "ghost"}
@@ -952,7 +963,7 @@ export default function Messages() {
               onClick={() => setActiveFilter("unread")}
               className="rounded-full h-8 px-4"
             >
-              Chưa đọc
+              {t('messages.unread')}
             </Button>
             <Button
               variant={activeFilter === "groups" ? "default" : "ghost"}
@@ -960,7 +971,7 @@ export default function Messages() {
               onClick={() => setActiveFilter("groups")}
               className="rounded-full h-8 px-4"
             >
-              Nhóm
+              {t('messages.groups')}
             </Button>
             <Button
               variant={activeFilter === "calls" ? "default" : "ghost"}
@@ -969,7 +980,7 @@ export default function Messages() {
               className="rounded-full h-8 px-4 gap-1"
             >
               <Phone className="w-3.5 h-3.5" />
-              Cuộc gọi
+              {t('messages.calls')}
             </Button>
           </div>
         </div>
@@ -991,7 +1002,7 @@ export default function Messages() {
           <ScrollArea className="flex-1">
             {filteredConversations.length === 0 ? (
               <div className="p-4 text-center text-muted-foreground text-sm">
-                Chưa có cuộc trò chuyện nào
+                {t('messages.noConversations')}
               </div>
             ) : (
               filteredConversations.map(convo => (
@@ -1032,10 +1043,10 @@ export default function Messages() {
                       <p className={`text-sm truncate flex-1 ${
                         convo.unreadCount ? 'text-foreground font-medium' : 'text-muted-foreground'
                       }`}>
-                        {convo.lastMessage || "Bắt đầu trò chuyện"}
+                        {convo.lastMessage || t('messages.startConversation')}
                       </p>
                       <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        · {formatDistanceToNow(new Date(convo.last_message_at), { locale: vi, addSuffix: false })}
+                        · {formatDistanceToNow(new Date(convo.last_message_at), { locale: dateLocale, addSuffix: false })}
                       </span>
                       {!!convo.unreadCount && convo.unreadCount > 0 && (
                         <span className="flex-shrink-0 w-3 h-3 rounded-full bg-primary" />
@@ -1071,9 +1082,9 @@ export default function Messages() {
                       <Users className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <p className="font-bold text-base">{activeConversation.name || "Nhóm chat"}</p>
+                      <p className="font-bold text-base">{activeConversation.name || t('messages.groupChat')}</p>
                       <p className="text-xs text-muted-foreground">
-                        {(activeConversation.participants?.length || 0) + 1} thành viên
+                        {(activeConversation.participants?.length || 0) + 1} {t('messages.members')}
                       </p>
                     </div>
                   </>
@@ -1095,16 +1106,16 @@ export default function Messages() {
                         to={`/user/${activeConversation.otherUser?.user_id}`}
                         className="font-bold hover:underline block text-base"
                       >
-                        {activeConversation.otherUser?.full_name || "Người dùng"}
+                        {activeConversation.otherUser?.full_name || t('messages.user')}
                       </Link>
                       <p className="text-xs">
                         {activeConversation.isOnline ? (
                           <span className="text-green-500 flex items-center gap-1">
                             <Circle className="w-2 h-2 fill-green-500" />
-                            Đang hoạt động
+                            {t('messages.online')}
                           </span>
                         ) : (
-                          <span className="text-muted-foreground">Hoạt động gần đây</span>
+                          <span className="text-muted-foreground">{t('messages.recentlyActive')}</span>
                         )}
                       </p>
                     </div>
@@ -1124,7 +1135,7 @@ export default function Messages() {
                         setCallType("audio");
                         setShowGroupCall(true);
                       }}
-                      title="Gọi thoại nhóm"
+                      title={t('messages.groupAudioCall')}
                       className="rounded-full hover:bg-muted text-primary h-10 w-10"
                     >
                       <Phone className="w-5 h-5" />
@@ -1136,7 +1147,7 @@ export default function Messages() {
                         setCallType("video");
                         setShowGroupCall(true);
                       }}
-                      title="Gọi video nhóm"
+                      title={t('messages.groupVideoCall')}
                       className="rounded-full hover:bg-muted text-primary h-10 w-10"
                     >
                       <Video className="w-5 h-5" />
@@ -1151,7 +1162,7 @@ export default function Messages() {
                       variant="ghost"
                       size="icon"
                       onClick={() => startCall("audio")}
-                      title="Gọi thoại"
+                      title={t('messages.audioCall')}
                       className="rounded-full hover:bg-muted text-primary h-10 w-10"
                     >
                       <Phone className="w-5 h-5" />
@@ -1160,7 +1171,7 @@ export default function Messages() {
                       variant="ghost"
                       size="icon"
                       onClick={() => startCall("video")}
-                      title="Gọi video"
+                      title={t('messages.videoCall')}
                       className="rounded-full hover:bg-muted text-primary h-10 w-10"
                     >
                       <Video className="w-5 h-5" />
@@ -1171,7 +1182,7 @@ export default function Messages() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowRightPanel(!showRightPanel)}
-                  title="Thông tin cuộc trò chuyện"
+                  title={t('messages.conversationInfo')}
                   className={`rounded-full hover:bg-muted h-10 w-10 ${showRightPanel ? 'text-primary' : ''}`}
                 >
                   <Info className="w-5 h-5" />
@@ -1183,7 +1194,7 @@ export default function Messages() {
             <div className="px-4 py-2 bg-muted/30 text-center">
               <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                 <Lock className="w-3 h-3" />
-                Tin nhắn và cuộc gọi được bảo mật bằng mã hóa đầu cuối
+                {t('messages.encryptedMessages')}
               </p>
             </div>
 
@@ -1198,8 +1209,8 @@ export default function Messages() {
                         {(activeConversation.otherUser?.full_name || "U").charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <p className="font-bold text-lg">{activeConversation.otherUser?.full_name || "Người dùng"}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Bắt đầu cuộc trò chuyện...</p>
+                    <p className="font-bold text-lg">{activeConversation.otherUser?.full_name || t('messages.user')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{t('messages.startConversation')}...</p>
                   </div>
                 ) : (
                   messages.map((msg, index) => {
@@ -1253,7 +1264,7 @@ export default function Messages() {
                                   className="text-destructive focus:text-destructive cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
-                                  Thu hồi tin nhắn
+                                  {t('messages.recallMessage')}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -1402,7 +1413,7 @@ export default function Messages() {
                     className="h-10 w-10 rounded-full hover:bg-muted text-primary"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSending}
-                    title="Đính kèm ảnh/video"
+                    title={t('messages.attachMedia')}
                   >
                     <Plus className="w-6 h-6" />
                   </Button>
@@ -1413,7 +1424,7 @@ export default function Messages() {
                     className="h-10 w-10 rounded-full hover:bg-muted text-primary hidden sm:flex"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSending}
-                    title="Gửi ảnh"
+                    title={t('messages.sendImage')}
                   >
                     <ImageIcon className="w-5 h-5" />
                   </Button>
@@ -1458,7 +1469,7 @@ export default function Messages() {
                     size="icon"
                     className="h-10 w-10 rounded-full hover:bg-muted text-primary flex-shrink-0"
                     onClick={sendLike}
-                    title="Gửi like"
+                    title={t('messages.sendLike')}
                   >
                     <ThumbsUp className="w-6 h-6" />
                   </Button>
@@ -1472,8 +1483,8 @@ export default function Messages() {
               <Send className="w-12 h-12 text-primary" />
             </div>
             <div className="text-center">
-              <p className="font-bold text-xl text-foreground">Tin nhắn của bạn</p>
-              <p className="text-sm mt-1">Chọn một cuộc trò chuyện để bắt đầu</p>
+              <p className="font-bold text-xl text-foreground">{t('messages.yourMessages')}</p>
+              <p className="text-sm mt-1">{t('messages.selectConversation')}</p>
             </div>
           </div>
         )}
@@ -1498,9 +1509,9 @@ export default function Messages() {
                       {(activeConversation.otherUser?.full_name || "U").charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <h3 className="font-bold text-lg">{activeConversation.otherUser?.full_name || "Người dùng"}</h3>
+                  <h3 className="font-bold text-lg">{activeConversation.otherUser?.full_name || t('messages.user')}</h3>
                   <p className="text-xs text-muted-foreground">
-                    {activeConversation.isOnline ? "Đang hoạt động" : "Hoạt động gần đây"}
+                    {activeConversation.isOnline ? t('messages.online') : t('messages.recentlyActive')}
                   </p>
                 </div>
 
@@ -1511,21 +1522,21 @@ export default function Messages() {
                       to={`/user/${activeConversation.otherUser?.user_id}`}
                       className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mx-auto mb-1 hover:bg-muted/80 transition-colors"
                     >
-                      <Users className="w-5 h-5" />
+                    <Users className="w-5 h-5" />
                     </Link>
-                    <span className="text-xs text-muted-foreground">Trang cá nhân</span>
+                    <span className="text-xs text-muted-foreground">{t('messages.profile')}</span>
                   </div>
                   <div className="text-center">
                     <button className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mx-auto mb-1 hover:bg-muted/80 transition-colors">
                       <Bell className="w-5 h-5" />
                     </button>
-                    <span className="text-xs text-muted-foreground">Tắt thông báo</span>
+                    <span className="text-xs text-muted-foreground">{t('messages.muteNotifications')}</span>
                   </div>
                   <div className="text-center">
                     <button className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mx-auto mb-1 hover:bg-muted/80 transition-colors">
                       <Search className="w-5 h-5" />
                     </button>
-                    <span className="text-xs text-muted-foreground">Tìm kiếm</span>
+                    <span className="text-xs text-muted-foreground">{t('common.search')}</span>
                   </div>
                 </div>
 
@@ -1534,12 +1545,12 @@ export default function Messages() {
                   {/* Chat Info */}
                   <Collapsible>
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <span className="font-medium">Thông tin về đoạn chat</span>
+                      <span className="font-medium">{t('messages.chatInfo')}</span>
                       <ChevronDown className="w-5 h-5" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-3 py-2">
                       <p className="text-sm text-muted-foreground">
-                        Cuộc trò chuyện được tạo {formatDistanceToNow(new Date(activeConversation.last_message_at), { locale: vi, addSuffix: true })}
+                        {t('messages.conversationCreated')} {formatDistanceToNow(new Date(activeConversation.last_message_at), { locale: dateLocale, addSuffix: true })}
                       </p>
                     </CollapsibleContent>
                   </Collapsible>
@@ -1547,17 +1558,17 @@ export default function Messages() {
                   {/* Customize Chat */}
                   <Collapsible>
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <span className="font-medium">Tùy chỉnh đoạn chat</span>
+                      <span className="font-medium">{t('messages.customizeChat')}</span>
                       <ChevronDown className="w-5 h-5" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-3 py-2 space-y-2">
                       <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors">
                         <span className="w-2 h-2 rounded-full bg-primary" />
-                        <span className="text-sm">Đổi chủ đề</span>
+                        <span className="text-sm">{t('messages.changeTheme')}</span>
                       </button>
                       <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors">
                         <Edit3 className="w-4 h-4" />
-                        <span className="text-sm">Đổi biệt danh</span>
+                        <span className="text-sm">{t('messages.changeNickname')}</span>
                       </button>
                     </CollapsibleContent>
                   </Collapsible>
@@ -1565,12 +1576,12 @@ export default function Messages() {
                   {/* Media & Files */}
                   <Collapsible open={mediaOpen} onOpenChange={setMediaOpen}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <span className="font-medium">File phương tiện & file</span>
+                      <span className="font-medium">{t('messages.mediaFiles')}</span>
                       <ChevronDown className={`w-5 h-5 transition-transform ${mediaOpen ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-3 py-2">
                       {messageMedia.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">Chưa có file nào</p>
+                        <p className="text-sm text-muted-foreground">{t('messages.noFiles')}</p>
                       ) : (
                         <div className="grid grid-cols-3 gap-2">
                           {messageMedia.slice(0, 6).map((msg) => (
@@ -1607,17 +1618,17 @@ export default function Messages() {
                   {/* Privacy & Support */}
                   <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen}>
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <span className="font-medium">Quyền riêng tư và hỗ trợ</span>
+                      <span className="font-medium">{t('messages.privacySupport')}</span>
                       <ChevronDown className={`w-5 h-5 transition-transform ${privacyOpen ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-3 py-2 space-y-2">
                       <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors">
                         <BellOff className="w-4 h-4" />
-                        <span className="text-sm">Tắt thông báo</span>
+                        <span className="text-sm">{t('messages.muteNotifications')}</span>
                       </button>
                       <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors text-destructive">
                         <Shield className="w-4 h-4" />
-                        <span className="text-sm">Chặn</span>
+                        <span className="text-sm">{t('messages.block')}</span>
                       </button>
                     </CollapsibleContent>
                   </Collapsible>
@@ -1645,7 +1656,7 @@ export default function Messages() {
             }}
             conversationId={isIncomingCall && incomingCallConversationId ? incomingCallConversationId : (activeConversation?.id || "")}
             recipientId={isIncomingCall && incomingCallOtherUser ? incomingCallOtherUser.user_id : (activeConversation?.otherUser?.user_id || "")}
-            recipientName={isIncomingCall && incomingCallOtherUser ? (incomingCallOtherUser.full_name || "Người dùng") : (activeConversation?.otherUser?.full_name || "Người dùng")}
+            recipientName={isIncomingCall && incomingCallOtherUser ? (incomingCallOtherUser.full_name || t('messages.user')) : (activeConversation?.otherUser?.full_name || t('messages.user'))}
             recipientAvatar={isIncomingCall && incomingCallOtherUser ? (incomingCallOtherUser.avatar_url || undefined) : (activeConversation?.otherUser?.avatar_url || undefined)}
             callType={callType}
             isIncoming={isIncomingCall}
@@ -1699,7 +1710,7 @@ export default function Messages() {
           open={showGroupCall}
           onClose={() => setShowGroupCall(false)}
           conversationId={activeConversation.id}
-          conversationName={activeConversation.name || "Nhóm chat"}
+          conversationName={activeConversation.name || t('messages.groupChat')}
           participants={activeConversation.participants || []}
           callType={callType}
           currentUserId={currentUserId}

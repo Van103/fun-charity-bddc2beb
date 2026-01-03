@@ -1344,6 +1344,166 @@ export const translations: Translations = {
     th: "รายงาน", fr: "Signaler", de: "Melden", es: "Reportar",
     pt: "Denunciar", ru: "Пожаловаться", ar: "إبلاغ", hi: "रिपोर्ट करें"
   },
+  "messages.chats": {
+    en: "Chats", vi: "Đoạn chat", zh: "聊天", ja: "チャット", ko: "채팅",
+    th: "แชท", fr: "Discussions", de: "Chats", es: "Chats",
+    pt: "Conversas", ru: "Чаты", ar: "المحادثات", hi: "चैट"
+  },
+  "messages.searchMessenger": {
+    en: "Search on Messenger", vi: "Tìm kiếm trên Messenger", zh: "在Messenger上搜索", ja: "Messengerで検索", ko: "메신저에서 검색",
+    th: "ค้นหาใน Messenger", fr: "Rechercher sur Messenger", de: "Auf Messenger suchen", es: "Buscar en Messenger",
+    pt: "Pesquisar no Messenger", ru: "Поиск в Messenger", ar: "البحث في Messenger", hi: "Messenger में खोजें"
+  },
+  "messages.noUsersFound": {
+    en: "No users found", vi: "Không tìm thấy người dùng", zh: "未找到用户", ja: "ユーザーが見つかりません", ko: "사용자를 찾을 수 없습니다",
+    th: "ไม่พบผู้ใช้", fr: "Aucun utilisateur trouvé", de: "Keine Benutzer gefunden", es: "No se encontraron usuarios",
+    pt: "Nenhum usuário encontrado", ru: "Пользователи не найдены", ar: "لم يتم العثور على مستخدمين", hi: "कोई उपयोगकर्ता नहीं मिला"
+  },
+  "messages.startConversation": {
+    en: "Start a conversation", vi: "Bắt đầu trò chuyện", zh: "开始对话", ja: "会話を始める", ko: "대화 시작",
+    th: "เริ่มการสนทนา", fr: "Démarrer une conversation", de: "Gespräch starten", es: "Iniciar conversación",
+    pt: "Iniciar conversa", ru: "Начать разговор", ar: "بدء محادثة", hi: "बातचीत शुरू करें"
+  },
+  "messages.groupChat": {
+    en: "Group chat", vi: "Nhóm chat", zh: "群聊", ja: "グループチャット", ko: "그룹 채팅",
+    th: "แชทกลุ่ม", fr: "Discussion de groupe", de: "Gruppenchat", es: "Chat grupal",
+    pt: "Chat em grupo", ru: "Групповой чат", ar: "دردشة جماعية", hi: "समूह चैट"
+  },
+  "messages.members": {
+    en: "members", vi: "thành viên", zh: "成员", ja: "メンバー", ko: "멤버",
+    th: "สมาชิก", fr: "membres", de: "Mitglieder", es: "miembros",
+    pt: "membros", ru: "участников", ar: "أعضاء", hi: "सदस्य"
+  },
+  "messages.recentlyActive": {
+    en: "Recently active", vi: "Hoạt động gần đây", zh: "最近活跃", ja: "最近アクティブ", ko: "최근 활동",
+    th: "ใช้งานล่าสุด", fr: "Récemment actif", de: "Kürzlich aktiv", es: "Activo recientemente",
+    pt: "Recentemente ativo", ru: "Недавно активен", ar: "نشط مؤخرًا", hi: "हाल ही में सक्रिय"
+  },
+  "messages.groupAudioCall": {
+    en: "Group audio call", vi: "Gọi thoại nhóm", zh: "群组语音通话", ja: "グループ音声通話", ko: "그룹 음성 통화",
+    th: "โทรเสียงกลุ่ม", fr: "Appel vocal de groupe", de: "Gruppenanruf", es: "Llamada grupal de voz",
+    pt: "Chamada de voz em grupo", ru: "Групповой голосовой звонок", ar: "مكالمة صوتية جماعية", hi: "समूह ऑडियो कॉल"
+  },
+  "messages.groupVideoCall": {
+    en: "Group video call", vi: "Gọi video nhóm", zh: "群组视频通话", ja: "グループビデオ通話", ko: "그룹 영상 통화",
+    th: "วิดีโอคอลกลุ่ม", fr: "Appel vidéo de groupe", de: "Gruppenvideoanruf", es: "Videollamada grupal",
+    pt: "Videochamada em grupo", ru: "Групповой видеозвонок", ar: "مكالمة فيديو جماعية", hi: "समूह वीडियो कॉल"
+  },
+  "messages.audioCall": {
+    en: "Audio call", vi: "Gọi thoại", zh: "语音通话", ja: "音声通話", ko: "음성 통화",
+    th: "โทรเสียง", fr: "Appel vocal", de: "Sprachanruf", es: "Llamada de voz",
+    pt: "Chamada de voz", ru: "Голосовой звонок", ar: "مكالمة صوتية", hi: "ऑडियो कॉल"
+  },
+  "messages.conversationInfo": {
+    en: "Conversation info", vi: "Thông tin cuộc trò chuyện", zh: "对话信息", ja: "会話情報", ko: "대화 정보",
+    th: "ข้อมูลการสนทนา", fr: "Info conversation", de: "Gesprächsinfo", es: "Info de conversación",
+    pt: "Info da conversa", ru: "Инфо разговора", ar: "معلومات المحادثة", hi: "वार्तालाप जानकारी"
+  },
+  "messages.encryptedMessages": {
+    en: "Messages and calls are secured with end-to-end encryption", vi: "Tin nhắn và cuộc gọi được bảo mật bằng mã hóa đầu cuối", zh: "消息和通话通过端对端加密保护", ja: "メッセージと通話はエンドツーエンド暗号化で保護されています", ko: "메시지와 통화는 종단간 암호화로 보호됩니다",
+    th: "ข้อความและการโทรได้รับการเข้ารหัสแบบ end-to-end", fr: "Messages et appels sécurisés par chiffrement de bout en bout", de: "Nachrichten und Anrufe sind durch Ende-zu-Ende-Verschlüsselung geschützt", es: "Mensajes y llamadas están cifrados de extremo a extremo",
+    pt: "Mensagens e chamadas são protegidas por criptografia de ponta a ponta", ru: "Сообщения и звонки защищены сквозным шифрованием", ar: "الرسائل والمكالمات مؤمنة بالتشفير من طرف إلى طرف", hi: "संदेश और कॉल एंड-टू-एंड एन्क्रिप्शन से सुरक्षित हैं"
+  },
+  "messages.recallMessage": {
+    en: "Recall message", vi: "Thu hồi tin nhắn", zh: "撤回消息", ja: "メッセージを取り消す", ko: "메시지 회수",
+    th: "เรียกคืนข้อความ", fr: "Rappeler le message", de: "Nachricht zurückrufen", es: "Retirar mensaje",
+    pt: "Cancelar mensagem", ru: "Отозвать сообщение", ar: "استرجاع الرسالة", hi: "संदेश वापस लें"
+  },
+  "messages.recalled": {
+    en: "Recalled", vi: "Đã thu hồi", zh: "已撤回", ja: "取り消し済み", ko: "회수됨",
+    th: "เรียกคืนแล้ว", fr: "Rappelé", de: "Zurückgerufen", es: "Retirado",
+    pt: "Cancelado", ru: "Отозвано", ar: "تم الاسترجاع", hi: "वापस लिया गया"
+  },
+  "messages.recallSuccess": {
+    en: "Message recalled successfully", vi: "Tin nhắn đã được thu hồi thành công", zh: "消息已成功撤回", ja: "メッセージが正常に取り消されました", ko: "메시지가 성공적으로 회수되었습니다",
+    th: "เรียกคืนข้อความสำเร็จ", fr: "Message rappelé avec succès", de: "Nachricht erfolgreich zurückgerufen", es: "Mensaje retirado con éxito",
+    pt: "Mensagem cancelada com sucesso", ru: "Сообщение успешно отозвано", ar: "تم استرجاع الرسالة بنجاح", hi: "संदेश सफलतापूर्वक वापस लिया गया"
+  },
+  "messages.recallFailed": {
+    en: "Failed to recall message", vi: "Không thể thu hồi tin nhắn", zh: "撤回消息失败", ja: "メッセージの取り消しに失敗しました", ko: "메시지 회수 실패",
+    th: "ไม่สามารถเรียกคืนข้อความได้", fr: "Échec du rappel du message", de: "Nachricht konnte nicht zurückgerufen werden", es: "Error al retirar mensaje",
+    pt: "Falha ao cancelar mensagem", ru: "Не удалось отозвать сообщение", ar: "فشل استرجاع الرسالة", hi: "संदेश वापस लेने में विफल"
+  },
+  "messages.sendFailed": {
+    en: "Failed to send message", vi: "Không thể gửi tin nhắn", zh: "发送消息失败", ja: "メッセージの送信に失敗しました", ko: "메시지 전송 실패",
+    th: "ไม่สามารถส่งข้อความได้", fr: "Échec de l'envoi du message", de: "Nachricht konnte nicht gesendet werden", es: "Error al enviar mensaje",
+    pt: "Falha ao enviar mensagem", ru: "Не удалось отправить сообщение", ar: "فشل إرسال الرسالة", hi: "संदेश भेजने में विफल"
+  },
+  "messages.fileTooLarge": {
+    en: "File too large", vi: "File quá lớn", zh: "文件太大", ja: "ファイルが大きすぎます", ko: "파일이 너무 큽니다",
+    th: "ไฟล์ใหญ่เกินไป", fr: "Fichier trop volumineux", de: "Datei zu groß", es: "Archivo demasiado grande",
+    pt: "Arquivo muito grande", ru: "Файл слишком большой", ar: "الملف كبير جدًا", hi: "फ़ाइल बहुत बड़ी है"
+  },
+  "messages.fileSizeLimit": {
+    en: "Please choose an image under 10MB", vi: "Vui lòng chọn ảnh dưới 10MB", zh: "请选择小于10MB的图片", ja: "10MB以下の画像を選択してください", ko: "10MB 이하의 이미지를 선택하세요",
+    th: "กรุณาเลือกรูปภาพที่มีขนาดต่ำกว่า 10MB", fr: "Veuillez choisir une image de moins de 10 Mo", de: "Bitte wählen Sie ein Bild unter 10 MB", es: "Por favor seleccione una imagen menor a 10MB",
+    pt: "Por favor escolha uma imagem com menos de 10MB", ru: "Пожалуйста, выберите изображение до 10 МБ", ar: "يرجى اختيار صورة أقل من 10 ميغابايت", hi: "कृपया 10MB से कम की छवि चुनें"
+  },
+  "messages.yourMessages": {
+    en: "Your messages", vi: "Tin nhắn của bạn", zh: "您的消息", ja: "あなたのメッセージ", ko: "내 메시지",
+    th: "ข้อความของคุณ", fr: "Vos messages", de: "Ihre Nachrichten", es: "Tus mensajes",
+    pt: "Suas mensagens", ru: "Ваши сообщения", ar: "رسائلك", hi: "आपके संदेश"
+  },
+  "messages.profile": {
+    en: "Profile", vi: "Trang cá nhân", zh: "个人资料", ja: "プロフィール", ko: "프로필",
+    th: "โปรไฟล์", fr: "Profil", de: "Profil", es: "Perfil",
+    pt: "Perfil", ru: "Профиль", ar: "الملف الشخصي", hi: "प्रोफाइल"
+  },
+  "messages.chatInfo": {
+    en: "About this chat", vi: "Thông tin về đoạn chat", zh: "关于此聊天", ja: "このチャットについて", ko: "이 채팅 정보",
+    th: "เกี่ยวกับแชทนี้", fr: "À propos de ce chat", de: "Über diesen Chat", es: "Acerca de este chat",
+    pt: "Sobre este chat", ru: "Об этом чате", ar: "حول هذه المحادثة", hi: "इस चैट के बारे में"
+  },
+  "messages.conversationCreated": {
+    en: "Conversation created", vi: "Cuộc trò chuyện được tạo", zh: "对话已创建", ja: "会話が作成されました", ko: "대화가 생성됨",
+    th: "การสนทนาสร้างแล้ว", fr: "Conversation créée", de: "Gespräch erstellt", es: "Conversación creada",
+    pt: "Conversa criada", ru: "Разговор создан", ar: "تم إنشاء المحادثة", hi: "वार्तालाप बनाया गया"
+  },
+  "messages.customizeChat": {
+    en: "Customize chat", vi: "Tùy chỉnh đoạn chat", zh: "自定义聊天", ja: "チャットをカスタマイズ", ko: "채팅 사용자 정의",
+    th: "ปรับแต่งแชท", fr: "Personnaliser le chat", de: "Chat anpassen", es: "Personalizar chat",
+    pt: "Personalizar chat", ru: "Настроить чат", ar: "تخصيص المحادثة", hi: "चैट अनुकूलित करें"
+  },
+  "messages.changeTheme": {
+    en: "Change theme", vi: "Đổi chủ đề", zh: "更改主题", ja: "テーマを変更", ko: "테마 변경",
+    th: "เปลี่ยนธีม", fr: "Changer le thème", de: "Thema ändern", es: "Cambiar tema",
+    pt: "Alterar tema", ru: "Изменить тему", ar: "تغيير السمة", hi: "थीम बदलें"
+  },
+  "messages.changeNickname": {
+    en: "Change nickname", vi: "Đổi biệt danh", zh: "更改昵称", ja: "ニックネームを変更", ko: "닉네임 변경",
+    th: "เปลี่ยนชื่อเล่น", fr: "Changer le surnom", de: "Spitzname ändern", es: "Cambiar apodo",
+    pt: "Alterar apelido", ru: "Изменить никнейм", ar: "تغيير الاسم المستعار", hi: "उपनाम बदलें"
+  },
+  "messages.noFiles": {
+    en: "No files yet", vi: "Chưa có file nào", zh: "暂无文件", ja: "まだファイルがありません", ko: "아직 파일이 없습니다",
+    th: "ยังไม่มีไฟล์", fr: "Aucun fichier", de: "Noch keine Dateien", es: "Sin archivos",
+    pt: "Nenhum arquivo ainda", ru: "Пока нет файлов", ar: "لا توجد ملفات بعد", hi: "अभी कोई फ़ाइल नहीं"
+  },
+  "messages.privacySupport": {
+    en: "Privacy and support", vi: "Quyền riêng tư và hỗ trợ", zh: "隐私和支持", ja: "プライバシーとサポート", ko: "개인정보 및 지원",
+    th: "ความเป็นส่วนตัวและการสนับสนุน", fr: "Confidentialité et assistance", de: "Datenschutz und Support", es: "Privacidad y soporte",
+    pt: "Privacidade e suporte", ru: "Конфиденциальность и поддержка", ar: "الخصوصية والدعم", hi: "गोपनीयता और सहायता"
+  },
+  "messages.attachMedia": {
+    en: "Attach image/video", vi: "Đính kèm ảnh/video", zh: "附加图片/视频", ja: "画像/動画を添付", ko: "이미지/비디오 첨부",
+    th: "แนบรูปภาพ/วิดีโอ", fr: "Joindre image/vidéo", de: "Bild/Video anhängen", es: "Adjuntar imagen/video",
+    pt: "Anexar imagem/vídeo", ru: "Прикрепить изображение/видео", ar: "إرفاق صورة/فيديو", hi: "छवि/वीडियो संलग्न करें"
+  },
+  "messages.sendImage": {
+    en: "Send image", vi: "Gửi ảnh", zh: "发送图片", ja: "画像を送信", ko: "이미지 보내기",
+    th: "ส่งรูปภาพ", fr: "Envoyer une image", de: "Bild senden", es: "Enviar imagen",
+    pt: "Enviar imagem", ru: "Отправить изображение", ar: "إرسال صورة", hi: "छवि भेजें"
+  },
+  "messages.sendLike": {
+    en: "Send like", vi: "Gửi like", zh: "发送赞", ja: "いいねを送信", ko: "좋아요 보내기",
+    th: "ส่งไลค์", fr: "Envoyer j'aime", de: "Like senden", es: "Enviar me gusta",
+    pt: "Enviar curtida", ru: "Отправить лайк", ar: "إرسال إعجاب", hi: "लाइक भेजें"
+  },
+  "messages.newConversation": {
+    en: "New conversation", vi: "Tạo cuộc trò chuyện mới", zh: "新对话", ja: "新しい会話", ko: "새 대화",
+    th: "การสนทนาใหม่", fr: "Nouvelle conversation", de: "Neues Gespräch", es: "Nueva conversación",
+    pt: "Nova conversa", ru: "Новый разговор", ar: "محادثة جديدة", hi: "नई बातचीत"
+  },
 
   // ============ FRIENDS PAGE ============
   "friends.title": {
@@ -1725,97 +1885,7 @@ export const translations: Translations = {
     pt: "Aparência", ru: "Внешний вид", ar: "المظهر", hi: "दिखावट"
   },
 
-  // ============ ADDITIONAL MESSAGES KEYS ============
-  "messages.chats": {
-    en: "Chats", vi: "Đoạn chat", zh: "聊天", ja: "チャット", ko: "채팅",
-    th: "แชท", fr: "Discussions", de: "Chats", es: "Chats",
-    pt: "Conversas", ru: "Чаты", ar: "المحادثات", hi: "चैट"
-  },
-  "messages.searchMessenger": {
-    en: "Search on Messenger", vi: "Tìm kiếm trên Messenger", zh: "在Messenger上搜索", ja: "Messengerで検索", ko: "메신저에서 검색",
-    th: "ค้นหาใน Messenger", fr: "Rechercher sur Messenger", de: "Auf Messenger suchen", es: "Buscar en Messenger",
-    pt: "Pesquisar no Messenger", ru: "Поиск в Messenger", ar: "البحث في Messenger", hi: "Messenger पर खोजें"
-  },
-  "messages.newConversation": {
-    en: "New conversation", vi: "Tạo cuộc trò chuyện mới", zh: "新对话", ja: "新しい会話", ko: "새 대화",
-    th: "การสนทนาใหม่", fr: "Nouvelle conversation", de: "Neue Unterhaltung", es: "Nueva conversación",
-    pt: "Nova conversa", ru: "Новый разговор", ar: "محادثة جديدة", hi: "नई बातचीत"
-  },
-  "messages.startConvo": {
-    en: "Start a conversation", vi: "Bắt đầu trò chuyện", zh: "开始对话", ja: "会話を始める", ko: "대화 시작",
-    th: "เริ่มการสนทนา", fr: "Démarrer une conversation", de: "Unterhaltung starten", es: "Iniciar conversación",
-    pt: "Iniciar conversa", ru: "Начать разговор", ar: "بدء محادثة", hi: "बातचीत शुरू करें"
-  },
-  "messages.groupChatLabel": {
-    en: "Group chat", vi: "Nhóm chat", zh: "群聊", ja: "グループチャット", ko: "그룹 채팅",
-    th: "แชทกลุ่ม", fr: "Discussion de groupe", de: "Gruppenchat", es: "Chat grupal",
-    pt: "Chat em grupo", ru: "Групповой чат", ar: "دردشة جماعية", hi: "समूह चैट"
-  },
-  "messages.members": {
-    en: "members", vi: "thành viên", zh: "成员", ja: "メンバー", ko: "멤버",
-    th: "สมาชิก", fr: "membres", de: "Mitglieder", es: "miembros",
-    pt: "membros", ru: "участников", ar: "أعضاء", hi: "सदस्य"
-  },
-  "messages.activeNow": {
-    en: "Active now", vi: "Đang hoạt động", zh: "在线", ja: "オンライン", ko: "활동 중",
-    th: "ใช้งานอยู่", fr: "Actif maintenant", de: "Jetzt aktiv", es: "Activo ahora",
-    pt: "Ativo agora", ru: "Онлайн", ar: "نشط الآن", hi: "अभी सक्रिय"
-  },
-  "messages.recentActivity": {
-    en: "Recently active", vi: "Hoạt động gần đây", zh: "最近活跃", ja: "最近アクティブ", ko: "최근 활동",
-    th: "เพิ่งใช้งาน", fr: "Récemment actif", de: "Kürzlich aktiv", es: "Activo recientemente",
-    pt: "Ativo recentemente", ru: "Недавно активен", ar: "نشط مؤخراً", hi: "हाल ही में सक्रिय"
-  },
-  "messages.groupVoiceCall": {
-    en: "Group voice call", vi: "Gọi thoại nhóm", zh: "群语音通话", ja: "グループ音声通話", ko: "그룹 음성 통화",
-    th: "โทรเสียงกลุ่ม", fr: "Appel vocal de groupe", de: "Gruppen-Sprachanruf", es: "Llamada de voz grupal",
-    pt: "Chamada de voz em grupo", ru: "Групповой голосовой звонок", ar: "مكالمة صوتية جماعية", hi: "समूह वॉयस कॉल"
-  },
-  "messages.groupVideoCall": {
-    en: "Group video call", vi: "Gọi video nhóm", zh: "群视频通话", ja: "グループビデオ通話", ko: "그룹 영상 통화",
-    th: "วิดีโอคอลกลุ่ม", fr: "Appel vidéo de groupe", de: "Gruppen-Videoanruf", es: "Videollamada grupal",
-    pt: "Chamada de vídeo em grupo", ru: "Групповой видеозвонок", ar: "مكالمة فيديو جماعية", hi: "समूह वीडियो कॉल"
-  },
-  "messages.conversationInfo": {
-    en: "Conversation info", vi: "Thông tin cuộc trò chuyện", zh: "对话信息", ja: "会話情報", ko: "대화 정보",
-    th: "ข้อมูลการสนทนา", fr: "Info conversation", de: "Unterhaltungsinfo", es: "Info de conversación",
-    pt: "Info da conversa", ru: "Информация о разговоре", ar: "معلومات المحادثة", hi: "बातचीत की जानकारी"
-  },
-  "messages.encryptedNotice": {
-    en: "Messages and calls are secured with end-to-end encryption", vi: "Tin nhắn và cuộc gọi được bảo mật bằng mã hóa đầu cuối", zh: "消息和通话采用端对端加密保护", ja: "メッセージと通話はエンドツーエンドの暗号化で保護されています", ko: "메시지와 통화는 종단 간 암호화로 보호됩니다",
-    th: "ข้อความและการโทรถูกเข้ารหัสแบบ end-to-end", fr: "Les messages et appels sont sécurisés par chiffrement de bout en bout", de: "Nachrichten und Anrufe sind mit End-to-End-Verschlüsselung gesichert", es: "Los mensajes y llamadas están protegidos con cifrado de extremo a extremo",
-    pt: "Mensagens e chamadas são protegidas com criptografia de ponta a ponta", ru: "Сообщения и звонки защищены сквозным шифрованием", ar: "الرسائل والمكالمات مؤمنة بالتشفير من طرف إلى طرف", hi: "संदेश और कॉल एंड-टू-एंड एन्क्रिप्शन से सुरक्षित हैं"
-  },
-  "messages.recallMessage": {
-    en: "Recall message", vi: "Thu hồi tin nhắn", zh: "撤回消息", ja: "メッセージを取り消す", ko: "메시지 회수",
-    th: "เรียกคืนข้อความ", fr: "Annuler le message", de: "Nachricht zurückrufen", es: "Retirar mensaje",
-    pt: "Revogar mensagem", ru: "Отозвать сообщение", ar: "استرجاع الرسالة", hi: "संदेश वापस लें"
-  },
-  "messages.recalled": {
-    en: "Recalled", vi: "Đã thu hồi", zh: "已撤回", ja: "取り消しました", ko: "회수됨",
-    th: "เรียกคืนแล้ว", fr: "Annulé", de: "Zurückgerufen", es: "Retirado",
-    pt: "Revogado", ru: "Отозвано", ar: "تم الاسترجاع", hi: "वापस लिया गया"
-  },
-  "messages.messageRecalled": {
-    en: "Message recalled successfully", vi: "Tin nhắn đã được thu hồi thành công", zh: "消息已成功撤回", ja: "メッセージが取り消されました", ko: "메시지가 회수되었습니다",
-    th: "เรียกคืนข้อความสำเร็จ", fr: "Message annulé avec succès", de: "Nachricht erfolgreich zurückgerufen", es: "Mensaje retirado exitosamente",
-    pt: "Mensagem revogada com sucesso", ru: "Сообщение успешно отозвано", ar: "تم استرجاع الرسالة بنجاح", hi: "संदेश सफलतापूर्वक वापस लिया गया"
-  },
-  "messages.fileTooLarge": {
-    en: "File too large", vi: "File quá lớn", zh: "文件太大", ja: "ファイルが大きすぎます", ko: "파일이 너무 큼",
-    th: "ไฟล์ใหญ่เกินไป", fr: "Fichier trop volumineux", de: "Datei zu groß", es: "Archivo demasiado grande",
-    pt: "Arquivo muito grande", ru: "Файл слишком большой", ar: "الملف كبير جداً", hi: "फ़ाइल बहुत बड़ी है"
-  },
-  "messages.selectImageUnder10MB": {
-    en: "Please select an image under 10MB", vi: "Vui lòng chọn ảnh dưới 10MB", zh: "请选择10MB以下的图片", ja: "10MB以下の画像を選択してください", ko: "10MB 미만의 이미지를 선택하세요",
-    th: "กรุณาเลือกภาพขนาดไม่เกิน 10MB", fr: "Veuillez sélectionner une image de moins de 10 Mo", de: "Bitte wählen Sie ein Bild unter 10 MB", es: "Por favor seleccione una imagen menor a 10MB",
-    pt: "Por favor selecione uma imagem menor que 10MB", ru: "Пожалуйста, выберите изображение менее 10 МБ", ar: "يرجى اختيار صورة أقل من 10 ميجابايت", hi: "कृपया 10MB से कम की छवि चुनें"
-  },
-  "messages.sharedMedia": {
-    en: "Shared media", vi: "File phương tiện", zh: "共享媒体", ja: "共有メディア", ko: "공유 미디어",
-    th: "สื่อที่แชร์", fr: "Médias partagés", de: "Geteilte Medien", es: "Medios compartidos",
-    pt: "Mídia compartilhada", ru: "Общие медиа", ar: "الوسائط المشتركة", hi: "साझा मीडिया"
-  },
+  // Note: Additional messages keys were consolidated with earlier messages section
 
   // ============ DASHBOARD PAGE ============
   "dashboard.title": {

@@ -36,6 +36,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const donationTrend = [
   { month: "Th7", amount: 125000 },
@@ -71,6 +72,8 @@ const recentActivity = [
 ];
 
 const Dashboard = () => {
+  const { t } = useLanguage();
+  
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -81,13 +84,13 @@ const Dashboard = () => {
           <div className="mb-8">
             <Badge variant="accent" className="mb-3">
               <Activity className="w-3.5 h-3.5 mr-1" />
-              Tổng Quan Trực Tiếp
+              {t('dashboard.liveOverview')}
             </Badge>
             <h1 className="font-display text-4xl font-bold mb-2">
-              Bảng Điều Khiển <span className="gradient-text">Tác Động</span>
+              {t('dashboard.title')} <span className="gradient-text">{t('dashboard.impact')}</span>
             </h1>
             <p className="text-muted-foreground">
-              Minh bạch real-time về tác động từ thiện toàn cầu
+              {t('dashboard.subtitle')}
             </p>
           </div>
 
@@ -95,7 +98,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[
               {
-                label: "Tổng Quyên Góp",
+                label: t('dashboard.totalDonations'),
                 value: "$2.4M",
                 change: "+12.5%",
                 trend: "up",
@@ -103,7 +106,7 @@ const Dashboard = () => {
                 color: "text-primary",
               },
               {
-                label: "Chiến Dịch Hoạt Động",
+                label: t('dashboard.activeCampaigns'),
                 value: "142",
                 change: "+8",
                 trend: "up",
@@ -111,7 +114,7 @@ const Dashboard = () => {
                 color: "text-secondary",
               },
               {
-                label: "Tổng Nhà Hảo Tâm",
+                label: t('dashboard.totalDonors'),
                 value: "45.2K",
                 change: "+2.3K",
                 trend: "up",
@@ -119,7 +122,7 @@ const Dashboard = () => {
                 color: "text-success",
               },
               {
-                label: "Quốc Gia Tiếp Cận",
+                label: t('dashboard.countriesReached'),
                 value: "84",
                 change: "+3",
                 trend: "up",
@@ -170,12 +173,12 @@ const Dashboard = () => {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="font-display font-semibold text-lg">Xu Hướng Quyên Góp</h3>
-                    <p className="text-sm text-muted-foreground">Quyên góp hàng tháng theo thời gian</p>
+                    <h3 className="font-display font-semibold text-lg">{t('dashboard.donationTrend')}</h3>
+                    <p className="text-sm text-muted-foreground">{t('dashboard.monthlyDonations')}</p>
                   </div>
                   <Badge variant="success">
                     <TrendingUp className="w-3 h-3 mr-1" />
-                    +18% tháng này
+                    {t('dashboard.thisMonth')}
                   </Badge>
                 </div>
                 <div className="h-[300px]">
@@ -199,7 +202,7 @@ const Dashboard = () => {
                           border: "1px solid hsl(var(--border))",
                           borderRadius: "0.75rem",
                         }}
-                        formatter={(value: number) => [`$${value.toLocaleString()}`, "Quyên góp"]}
+                        formatter={(value: number) => [`$${value.toLocaleString()}`, t('common.donate')]}
                       />
                       <Area
                         type="monotone"
@@ -221,7 +224,7 @@ const Dashboard = () => {
                 transition={{ delay: 0.3 }}
                 className="glass-card p-6"
               >
-                <h3 className="font-display font-semibold text-lg mb-6">Tác Động Theo Danh Mục</h3>
+                <h3 className="font-display font-semibold text-lg mb-6">{t('dashboard.impactByCategory')}</h3>
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="h-[200px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -273,7 +276,7 @@ const Dashboard = () => {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
                   </span>
-                  <h3 className="font-display font-semibold">Hoạt Động Trực Tiếp</h3>
+                  <h3 className="font-display font-semibold">{t('dashboard.liveActivity')}</h3>
                 </div>
                 <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-hide">
                   {recentActivity.map((activity, index) => (
@@ -337,10 +340,10 @@ const Dashboard = () => {
                 className="glass-card p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-display font-semibold">Top Nhà Hảo Tâm</h3>
+                  <h3 className="font-display font-semibold">{t('dashboard.topDonors')}</h3>
                   <Badge variant="accent">
                     <Award className="w-3 h-3 mr-1" />
-                    Bảng Xếp Hạng
+                    {t('dashboard.leaderboard')}
                   </Badge>
                 </div>
                 <div className="space-y-4">
@@ -369,7 +372,7 @@ const Dashboard = () => {
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm truncate">{donor.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {donor.campaigns} chiến dịch
+                          {donor.campaigns} {t('campaigns.title').toLowerCase()}
                         </div>
                       </div>
                       <div className="text-right">
