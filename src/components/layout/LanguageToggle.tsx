@@ -19,7 +19,11 @@ export function LanguageToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted">
-          <span className="text-lg">{currentLanguage?.flag || "🌐"}</span>
+          {currentLanguage?.flag ? (
+            <img src={currentLanguage.flag} alt={currentLanguage.name} className="w-6 h-4 rounded-sm object-cover" />
+          ) : (
+            <Globe className="h-4 w-4" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 p-1 bg-card/95 backdrop-blur-xl border-border/50">
@@ -35,7 +39,7 @@ export function LanguageToggle() {
                   language === option.code && "bg-primary/15 text-primary font-medium"
                 )}
               >
-                <span className="text-xl">{option.flag}</span>
+                <img src={option.flag} alt={option.name} className="w-6 h-4 rounded-sm object-cover" />
                 <div className="flex-1 flex flex-col">
                   <span className="text-sm font-medium">{option.nativeName}</span>
                   <span className="text-xs text-muted-foreground">{option.name}</span>

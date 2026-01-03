@@ -19,7 +19,7 @@ export function LanguagePopoverContent() {
               language === option.code && "bg-primary/15 text-primary font-medium"
             )}
           >
-            <span className="text-xl">{option.flag}</span>
+            <img src={option.flag} alt={option.name} className="w-6 h-4 rounded-sm object-cover" />
             <div className="flex-1 flex flex-col text-left">
               <span className="text-sm font-medium">{option.nativeName}</span>
               <span className="text-xs text-muted-foreground">{option.name}</span>

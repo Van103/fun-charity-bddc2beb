@@ -10,19 +10,19 @@ export interface LanguageOption {
 }
 
 export const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: "vi", name: "Vietnamese", nativeName: "Tiếng Việt", flag: "🇻🇳" },
-  { code: "en", name: "English", nativeName: "English", flag: "🇺🇸" },
-  { code: "zh", name: "Chinese", nativeName: "中文", flag: "🇨🇳" },
-  { code: "ja", name: "Japanese", nativeName: "日本語", flag: "🇯🇵" },
-  { code: "ko", name: "Korean", nativeName: "한국어", flag: "🇰🇷" },
-  { code: "th", name: "Thai", nativeName: "ภาษาไทย", flag: "🇹🇭" },
-  { code: "fr", name: "French", nativeName: "Français", flag: "🇫🇷" },
-  { code: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪" },
-  { code: "es", name: "Spanish", nativeName: "Español", flag: "🇪🇸" },
-  { code: "pt", name: "Portuguese", nativeName: "Português", flag: "🇧🇷" },
-  { code: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺" },
-  { code: "ar", name: "Arabic", nativeName: "العربية", flag: "🇸🇦" },
-  { code: "hi", name: "Hindi", nativeName: "हिन्दी", flag: "🇮🇳" },
+  { code: "vi", name: "Vietnamese", nativeName: "Tiếng Việt", flag: "/flags/vi.png" },
+  { code: "en", name: "English", nativeName: "English", flag: "/flags/en.png" },
+  { code: "zh", name: "Chinese", nativeName: "中文", flag: "/flags/zh.png" },
+  { code: "ja", name: "Japanese", nativeName: "日本語", flag: "/flags/ja.png" },
+  { code: "ko", name: "Korean", nativeName: "한국어", flag: "/flags/ko.png" },
+  { code: "th", name: "Thai", nativeName: "ภาษาไทย", flag: "/flags/th.png" },
+  { code: "fr", name: "French", nativeName: "Français", flag: "/flags/fr.png" },
+  { code: "de", name: "German", nativeName: "Deutsch", flag: "/flags/de.png" },
+  { code: "es", name: "Spanish", nativeName: "Español", flag: "/flags/es.png" },
+  { code: "pt", name: "Portuguese", nativeName: "Português", flag: "/flags/pt.png" },
+  { code: "ru", name: "Russian", nativeName: "Русский", flag: "/flags/ru.png" },
+  { code: "ar", name: "Arabic", nativeName: "العربية", flag: "/flags/ar.png" },
+  { code: "hi", name: "Hindi", nativeName: "हिन्दी", flag: "/flags/hi.png" },
 ];
 
 interface TranslationValue {
