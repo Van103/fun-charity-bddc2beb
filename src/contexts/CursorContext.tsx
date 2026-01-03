@@ -4,6 +4,8 @@ export type CursorType = 'angel' | 'diamond' | 'heart' | 'baby' | 'star' | 'crow
 
 export type AngelStyle = 'pink' | 'purple' | 'yellow' | 'blue' | 'green' | 'orange' | 'red' | 'random';
 
+export type AuraColor = 'gold' | 'rainbow' | 'pink' | 'purple' | 'blue' | 'white' | 'none';
+
 export const FAIRY_COLOR_OPTIONS = [
   { id: 'pink' as const, name: 'Hồng', image: '/cursors/fairy-angel.png', color: '#FF69B4' },
   { id: 'purple' as const, name: 'Tím', image: '/cursors/fairy-angel-purple.png', color: '#9333EA' },
@@ -13,6 +15,16 @@ export const FAIRY_COLOR_OPTIONS = [
   { id: 'orange' as const, name: 'Cam', image: '/cursors/fairy-angel-orange.png', color: '#F97316' },
   { id: 'red' as const, name: 'Đỏ', image: '/cursors/fairy-angel-red.png', color: '#EF4444' },
   { id: 'random' as const, name: 'Ngẫu nhiên', image: '', color: 'linear-gradient(135deg, #FF69B4, #9333EA, #F59E0B, #3B82F6, #22C55E, #F97316, #EF4444)' },
+];
+
+export const AURA_COLOR_OPTIONS = [
+  { id: 'gold' as const, name: 'Vàng kim', emoji: '✨', colors: ['rgba(255,215,0,0.6)', 'rgba(255,193,7,0.4)', 'rgba(255,165,0,0.2)'] },
+  { id: 'rainbow' as const, name: 'Cầu vồng', emoji: '🌈', colors: ['rgba(255,0,0,0.4)', 'rgba(255,165,0,0.4)', 'rgba(255,255,0,0.4)', 'rgba(0,255,0,0.4)', 'rgba(0,0,255,0.4)', 'rgba(75,0,130,0.4)'] },
+  { id: 'pink' as const, name: 'Hồng', emoji: '💗', colors: ['rgba(255,105,180,0.6)', 'rgba(255,182,193,0.4)', 'rgba(255,20,147,0.2)'] },
+  { id: 'purple' as const, name: 'Tím', emoji: '💜', colors: ['rgba(147,51,234,0.6)', 'rgba(168,85,247,0.4)', 'rgba(139,92,246,0.2)'] },
+  { id: 'blue' as const, name: 'Xanh', emoji: '💙', colors: ['rgba(59,130,246,0.6)', 'rgba(96,165,250,0.4)', 'rgba(37,99,235,0.2)'] },
+  { id: 'white' as const, name: 'Trắng', emoji: '🤍', colors: ['rgba(255,255,255,0.7)', 'rgba(255,255,255,0.4)', 'rgba(255,255,255,0.2)'] },
+  { id: 'none' as const, name: 'Tắt', emoji: '⭕', colors: [] },
 ];
 
 interface CursorOption {
@@ -145,6 +157,8 @@ interface CursorContextType {
   currentCursor: CursorOption;
   fairyColor: AngelStyle;
   setFairyColor: (color: AngelStyle) => void;
+  auraColor: AuraColor;
+  setAuraColor: (color: AuraColor) => void;
 }
 
 const CursorContext = createContext<CursorContextType | undefined>(undefined);
@@ -165,6 +179,11 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
     return (saved as AngelStyle) || 'random';
   });
 
+  const [auraColor, setAuraColorState] = useState<AuraColor>(() => {
+    const saved = localStorage.getItem('auraColor');
+    return (saved as AuraColor) || 'gold';
+  });
+
   const currentCursor = CURSOR_OPTIONS.find(c => c.id === cursorType) || CURSOR_OPTIONS[0];
 
   const setCursorType = (type: CursorType) => {
@@ -180,6 +199,11 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
   const setFairyColor = (color: AngelStyle) => {
     setFairyColorState(color);
     localStorage.setItem('fairyColor', color);
+  };
+
+  const setAuraColor = (color: AuraColor) => {
+    setAuraColorState(color);
+    localStorage.setItem('auraColor', color);
   };
 
   // Apply cursor styles dynamically
@@ -235,6 +259,8 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
       currentCursor,
       fairyColor,
       setFairyColor,
+      auraColor,
+      setAuraColor,
     }}>
       {children}
     </CursorContext.Provider>

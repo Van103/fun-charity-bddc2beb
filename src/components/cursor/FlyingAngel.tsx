@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useCursor, FAIRY_COLOR_OPTIONS, AngelStyle } from '@/contexts/CursorContext';
+import { useCursor, FAIRY_COLOR_OPTIONS, AngelStyle, AURA_COLOR_OPTIONS, AuraColor } from '@/contexts/CursorContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FAIRY_IMAGES: Record<Exclude<AngelStyle, 'random'>, string> = {
@@ -25,11 +25,18 @@ const SPARKLE_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, string[]> =
   red: ['#EF4444', '#F87171', '#FCA5A5', '#DC2626', '#FF6B6B', '#FFB3B3'], // Red fairy - passionate flames
 };
 
-// Trail glow colors for each fairy
+// Trail glow colors - Always golden yellow for visibility
+const TRAIL_COLORS_GOLDEN = {
+  primary: 'rgba(255,215,0,0.9)',
+  secondary: 'rgba(255,193,7,0.5)',
+  tertiary: 'rgba(255,165,0,0.3)'
+};
+
+// Trail glow colors for each fairy (fallback, but we prefer golden)
 const TRAIL_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, { primary: string; secondary: string; tertiary: string }> = {
   pink: { primary: 'rgba(255,182,193,0.8)', secondary: 'rgba(255,105,180,0.4)', tertiary: 'rgba(255,20,147,0.2)' },
   purple: { primary: 'rgba(168,85,247,0.8)', secondary: 'rgba(147,51,234,0.4)', tertiary: 'rgba(139,92,246,0.2)' },
-  yellow: { primary: 'rgba(255,215,0,0.8)', secondary: 'rgba(255,165,0,0.4)', tertiary: 'rgba(255,193,7,0.2)' },
+  yellow: { primary: 'rgba(255,215,0,0.9)', secondary: 'rgba(255,165,0,0.5)', tertiary: 'rgba(255,193,7,0.3)' },
   blue: { primary: 'rgba(96,165,250,0.8)', secondary: 'rgba(59,130,246,0.4)', tertiary: 'rgba(37,99,235,0.2)' },
   green: { primary: 'rgba(74,222,128,0.8)', secondary: 'rgba(34,197,94,0.4)', tertiary: 'rgba(22,163,74,0.2)' },
   orange: { primary: 'rgba(251,146,60,0.8)', secondary: 'rgba(249,115,22,0.4)', tertiary: 'rgba(234,88,12,0.2)' },
@@ -163,7 +170,7 @@ async function removeBackgroundByEdgeFloodFill(src: string): Promise<Blob> {
 }
 
 const FlyingAngel = () => {
-  const { cursorType, fairyColor } = useCursor();
+  const { cursorType, fairyColor, auraColor } = useCursor();
 
   const isAngelCursor = cursorType.startsWith('angel');
 
@@ -188,15 +195,21 @@ const FlyingAngel = () => {
     return SPARKLE_COLORS_BY_FAIRY[currentFairyColorKey] || DEFAULT_SPARKLE_COLORS;
   }, [currentFairyColorKey]);
 
-  // Get trail colors based on current fairy
+  // Get trail colors - Use golden for better visibility
   const currentTrailColors = useMemo(() => {
-    return TRAIL_COLORS_BY_FAIRY[currentFairyColorKey] || TRAIL_COLORS_BY_FAIRY.pink;
-  }, [currentFairyColorKey]);
+    return TRAIL_COLORS_GOLDEN;
+  }, []);
 
   // Get glow colors based on current fairy
   const currentGlowColors = useMemo(() => {
     return GLOW_COLORS_BY_FAIRY[currentFairyColorKey] || GLOW_COLORS_BY_FAIRY.pink;
   }, [currentFairyColorKey]);
+
+  // Get aura colors based on selection
+  const currentAuraColors = useMemo(() => {
+    const auraOption = AURA_COLOR_OPTIONS.find(a => a.id === auraColor);
+    return auraOption?.colors || [];
+  }, [auraColor]);
 
   const [processedFairySrc, setProcessedFairySrc] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -700,6 +713,47 @@ const FlyingAngel = () => {
           </motion.div>
         ))}
       </AnimatePresence>
+
+      {/* Aura glow behind angel */}
+      {auraColor !== 'none' && currentAuraColors.length > 0 && (
+        <motion.div
+          className="fixed pointer-events-none z-[9998]"
+          style={{
+            left: position.x - 55 + peekOffset.x,
+            top: position.y - 40 + peekOffset.y,
+            width: 100,
+            height: 90,
+          }}
+          animate={{
+            opacity: isHiding ? 0 : [0.7, 1, 0.7],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            opacity: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+          }}
+        >
+          {/* Main aura glow */}
+          <div 
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: auraColor === 'rainbow'
+                ? `conic-gradient(from 0deg, ${currentAuraColors.join(', ')}, ${currentAuraColors[0]})`
+                : `radial-gradient(circle, ${currentAuraColors[0]} 0%, ${currentAuraColors[1] || 'transparent'} 50%, transparent 80%)`,
+              filter: 'blur(12px)',
+              animation: auraColor === 'rainbow' ? 'spin 4s linear infinite' : undefined,
+            }}
+          />
+          {/* Inner bright core */}
+          <div 
+            className="absolute inset-4 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${currentAuraColors[0]} 0%, transparent 70%)`,
+              filter: 'blur(6px)',
+            }}
+          />
+        </motion.div>
+      )}
 
       {/* Fairy */}
       <motion.div
