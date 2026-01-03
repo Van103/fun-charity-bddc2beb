@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Navbar } from '@/components/layout/Navbar';
+import { LogActivityModal } from '@/components/volunteer/LogActivityModal';
 import { 
   Heart, 
   Users, 
@@ -34,7 +35,9 @@ import {
   Target,
   HandHeart,
   Plus,
-  User
+  User,
+  History,
+  Trophy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -168,16 +171,16 @@ const Volunteer = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('tasks');
   const [userSkills, setUserSkills] = useState<string[]>(['Teaching', 'Communication', 'Leadership']);
-
-  // User stats (mock data)
-  const volunteerStats = {
-    hoursCompleted: 48,
-    tasksCompleted: 12,
-    impactScore: 850,
-    rank: 'Tình nguyện viên Vàng',
-    rankEn: 'Gold Volunteer',
-    nextRankPoints: 1000,
-  };
+  const [logModalOpen, setLogModalOpen] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState({
+    hoursCompleted: 0,
+    tasksCompleted: 0,
+    impactScore: 0,
+    rank: 'Tình nguyện viên Mới',
+    rankEn: 'New Volunteer',
+    nextRankPoints: 100,
+  });
+  const [activityHistory, setActivityHistory] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -191,6 +194,54 @@ const Volunteer = () => {
             .eq('user_id', user.id)
             .single();
           setProfile(profileData);
+          
+          // Fetch volunteer stats from reputation_events
+          const { data: events } = await supabase
+            .from('reputation_events')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('event_type', 'volunteer_activity')
+            .order('created_at', { ascending: false });
+
+          if (events) {
+            const totalPoints = events.reduce((sum, e) => sum + e.points, 0);
+            const totalHours = events.reduce((sum, e) => sum + (e.points / 10), 0);
+            const tasksCount = events.length;
+
+            // Determine rank based on points
+            let rank = 'Tình nguyện viên Mới';
+            let rankEn = 'New Volunteer';
+            let nextRankPoints = 100;
+
+            if (totalPoints >= 1000) {
+              rank = 'Tình nguyện viên Kim Cương';
+              rankEn = 'Diamond Volunteer';
+              nextRankPoints = 2000;
+            } else if (totalPoints >= 500) {
+              rank = 'Tình nguyện viên Vàng';
+              rankEn = 'Gold Volunteer';
+              nextRankPoints = 1000;
+            } else if (totalPoints >= 200) {
+              rank = 'Tình nguyện viên Bạc';
+              rankEn = 'Silver Volunteer';
+              nextRankPoints = 500;
+            } else if (totalPoints >= 100) {
+              rank = 'Tình nguyện viên Đồng';
+              rankEn = 'Bronze Volunteer';
+              nextRankPoints = 200;
+            }
+
+            setVolunteerStats({
+              hoursCompleted: Math.round(totalHours),
+              tasksCompleted: tasksCount,
+              impactScore: totalPoints,
+              rank,
+              rankEn,
+              nextRankPoints,
+            });
+
+            setActivityHistory(events.slice(0, 10));
+          }
         }
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -201,6 +252,55 @@ const Volunteer = () => {
 
     fetchUserData();
   }, []);
+
+  const refreshStats = async () => {
+    if (!user) return;
+    const { data: events } = await supabase
+      .from('reputation_events')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('event_type', 'volunteer_activity')
+      .order('created_at', { ascending: false });
+
+    if (events) {
+      const totalPoints = events.reduce((sum, e) => sum + e.points, 0);
+      const totalHours = events.reduce((sum, e) => sum + (e.points / 10), 0);
+      const tasksCount = events.length;
+
+      let rank = 'Tình nguyện viên Mới';
+      let rankEn = 'New Volunteer';
+      let nextRankPoints = 100;
+
+      if (totalPoints >= 1000) {
+        rank = 'Tình nguyện viên Kim Cương';
+        rankEn = 'Diamond Volunteer';
+        nextRankPoints = 2000;
+      } else if (totalPoints >= 500) {
+        rank = 'Tình nguyện viên Vàng';
+        rankEn = 'Gold Volunteer';
+        nextRankPoints = 1000;
+      } else if (totalPoints >= 200) {
+        rank = 'Tình nguyện viên Bạc';
+        rankEn = 'Silver Volunteer';
+        nextRankPoints = 500;
+      } else if (totalPoints >= 100) {
+        rank = 'Tình nguyện viên Đồng';
+        rankEn = 'Bronze Volunteer';
+        nextRankPoints = 200;
+      }
+
+      setVolunteerStats({
+        hoursCompleted: Math.round(totalHours),
+        tasksCompleted: tasksCount,
+        impactScore: totalPoints,
+        rank,
+        rankEn,
+        nextRankPoints,
+      });
+
+      setActivityHistory(events.slice(0, 10));
+    }
+  };
 
   const filteredTasks = sampleTasks.filter(task => {
     const matchesSearch = 
@@ -385,20 +485,33 @@ const Volunteer = () => {
 
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-card/50 backdrop-blur-sm border border-border/50 p-1">
-              <TabsTrigger value="tasks" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
-                <Target className="w-4 h-4" />
-                {language === 'vi' ? 'Nhiệm vụ' : 'Tasks'}
-              </TabsTrigger>
-              <TabsTrigger value="skills" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
-                <Sparkles className="w-4 h-4" />
-                {language === 'vi' ? 'Kỹ năng' : 'Skills'}
-              </TabsTrigger>
-              <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
-                <Award className="w-4 h-4" />
-                {language === 'vi' ? 'Bảng xếp hạng' : 'Leaderboard'}
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <TabsList className="bg-card/50 backdrop-blur-sm border border-border/50 p-1">
+                <TabsTrigger value="tasks" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Target className="w-4 h-4" />
+                  {language === 'vi' ? 'Nhiệm vụ' : 'Tasks'}
+                </TabsTrigger>
+                <TabsTrigger value="my-activity" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <History className="w-4 h-4" />
+                  {language === 'vi' ? 'Hoạt động' : 'My Activity'}
+                </TabsTrigger>
+                <TabsTrigger value="skills" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Sparkles className="w-4 h-4" />
+                  {language === 'vi' ? 'Kỹ năng' : 'Skills'}
+                </TabsTrigger>
+                <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Trophy className="w-4 h-4" />
+                  {language === 'vi' ? 'Xếp hạng' : 'Leaderboard'}
+                </TabsTrigger>
+              </TabsList>
+
+              {user && (
+                <Button onClick={() => setLogModalOpen(true)} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  {language === 'vi' ? 'Ghi nhận hoạt động' : 'Log Activity'}
+                </Button>
+              )}
+            </div>
 
             {/* Tasks Tab */}
             <TabsContent value="tasks" className="space-y-6">
@@ -531,6 +644,137 @@ const Volunteer = () => {
                     );
                   })}
                 </AnimatePresence>
+              </div>
+            </TabsContent>
+
+            {/* My Activity Tab */}
+            <TabsContent value="my-activity" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Activity History */}
+                <Card className="lg:col-span-2 bg-card/50 backdrop-blur-sm border-border/50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <History className="w-5 h-5 text-primary" />
+                      {language === 'vi' ? 'Lịch sử hoạt động' : 'Activity History'}
+                    </CardTitle>
+                    <CardDescription>
+                      {language === 'vi' 
+                        ? 'Các hoạt động tình nguyện bạn đã ghi nhận' 
+                        : 'Your logged volunteer activities'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {activityHistory.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-semibold mb-2">
+                          {language === 'vi' ? 'Chưa có hoạt động nào' : 'No activities yet'}
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          {language === 'vi' 
+                            ? 'Bắt đầu ghi nhận hoạt động tình nguyện của bạn!' 
+                            : 'Start logging your volunteer activities!'}
+                        </p>
+                        <Button onClick={() => setLogModalOpen(true)} className="gap-2">
+                          <Plus className="w-4 h-4" />
+                          {language === 'vi' ? 'Ghi nhận hoạt động đầu tiên' : 'Log your first activity'}
+                        </Button>
+                      </div>
+                    ) : (
+                      <ScrollArea className="h-[400px]">
+                        <div className="space-y-3">
+                          {activityHistory.map((activity, index) => (
+                            <motion.div
+                              key={activity.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="flex items-center gap-4 p-4 rounded-xl bg-background/50 border border-border/50 hover:bg-background/80 transition-all"
+                            >
+                              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Award className="w-6 h-6 text-primary" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold text-foreground capitalize">
+                                  {activity.reference_type?.replace('_', ' ') || 'Activity'}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(activity.created_at).toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-primary">+{activity.points}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {language === 'vi' ? 'điểm' : 'points'}
+                                </p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Quick Stats */}
+                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-primary" />
+                      {language === 'vi' ? 'Thống kê nhanh' : 'Quick Stats'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-8 h-8 text-blue-500" />
+                        <div>
+                          <p className="text-2xl font-bold">{volunteerStats.hoursCompleted}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {language === 'vi' ? 'Tổng giờ tình nguyện' : 'Total hours'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-8 h-8 text-green-500" />
+                        <div>
+                          <p className="text-2xl font-bold">{volunteerStats.tasksCompleted}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {language === 'vi' ? 'Hoạt động đã ghi nhận' : 'Activities logged'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-violet-500/10 border border-purple-500/20">
+                      <div className="flex items-center gap-3">
+                        <Star className="w-8 h-8 text-purple-500" />
+                        <div>
+                          <p className="text-2xl font-bold">{volunteerStats.impactScore}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {language === 'vi' ? 'Tổng điểm đóng góp' : 'Total impact points'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-border">
+                      <Link to="/honor-board">
+                        <Button variant="outline" className="w-full gap-2">
+                          <Trophy className="w-4 h-4" />
+                          {language === 'vi' ? 'Xem bảng vinh danh' : 'View Honor Board'}
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
@@ -698,6 +942,13 @@ const Volunteer = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Log Activity Modal */}
+      <LogActivityModal 
+        open={logModalOpen} 
+        onOpenChange={setLogModalOpen}
+        onActivityLogged={refreshStats}
+      />
     </>
   );
 };

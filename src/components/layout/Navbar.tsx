@@ -61,8 +61,9 @@ const platformItems = [
   { nameKey: "nav.campaigns", path: "/campaigns", icon: Newspaper },
   { nameKey: "nav.myCampaigns", path: "/my-campaigns", icon: Layers },
   { nameKey: "nav.needsMap", path: "/needs-map", icon: MapPin },
+  { nameKey: "nav.honorBoard", path: "/honor-board", icon: Star },
   { nameKey: "nav.overview", path: "/dashboard", icon: LayoutDashboard },
-  { nameKey: "nav.reviews", path: "/reviews", icon: Star },
+  { nameKey: "nav.reviews", path: "/reviews", icon: Sparkles },
 ];
 
 const navItems = [

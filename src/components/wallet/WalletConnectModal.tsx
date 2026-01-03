@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Wallet, Link2, Check, AlertCircle, ExternalLink, Copy, Edit2, Smartphone, QrCode, RefreshCw } from "lucide-react";
+import { Wallet, Link2, Check, AlertCircle, ExternalLink, Copy, Edit2, Smartphone, QrCode, RefreshCw, ArrowDownToLine, Coins } from "lucide-react";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
+import { WithdrawModal } from "./WithdrawModal";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
   const [isSaving, setIsSaving] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showWalletConnectInfo, setShowWalletConnectInfo] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const { toast } = useToast();
   
   const { eth, matic, ethUsd, maticUsd, loading: balanceLoading, refetch: refetchBalance } = useWalletBalance(connectedAddress);
@@ -229,7 +231,21 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
                 </div>
               </div>
               
-              <Button variant="outline" size="sm" onClick={disconnectWallet} className="mt-3 w-full">Ngắt kết nối</Button>
+              {/* Action Buttons */}
+              <div className="flex gap-2 mt-3">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setWithdrawModalOpen(true)}
+                  className="flex-1 gap-2"
+                >
+                  <ArrowDownToLine className="w-4 h-4" />
+                  Rút tiền
+                </Button>
+                <Button variant="outline" size="sm" onClick={disconnectWallet} className="flex-1">
+                  Ngắt kết nối
+                </Button>
+              </div>
             </motion.div>
           ) : (
             <>
@@ -320,6 +336,16 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
           )}
         </div>
       </DialogContent>
+      
+      {/* Withdraw Modal */}
+      <WithdrawModal
+        open={withdrawModalOpen}
+        onOpenChange={setWithdrawModalOpen}
+        walletAddress={connectedAddress}
+        onWithdrawSuccess={() => {
+          // Optionally refresh data
+        }}
+      />
     </Dialog>
   );
 }
