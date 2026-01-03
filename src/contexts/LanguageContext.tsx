@@ -492,6 +492,82 @@ export const translations: Translations = {
     th: "กระเป๋าเงิน:", fr: "Portefeuille :", de: "Wallet:", es: "Billetera:",
     pt: "Carteira:", ru: "Кошелек:", ar: "المحفظة:", hi: "वॉलेट:"
   },
+  "common.confirm": {
+    en: "Confirm", vi: "Xác nhận", zh: "确认", ja: "確認", ko: "확인",
+    th: "ยืนยัน", fr: "Confirmer", de: "Bestätigen", es: "Confirmar",
+    pt: "Confirmar", ru: "Подтвердить", ar: "تأكيد", hi: "पुष्टि करें"
+  },
+  "common.submit": {
+    en: "Submit", vi: "Gửi", zh: "提交", ja: "送信", ko: "제출",
+    th: "ส่ง", fr: "Soumettre", de: "Absenden", es: "Enviar",
+    pt: "Enviar", ru: "Отправить", ar: "إرسال", hi: "सबमिट करें"
+  },
+  "common.seeMore": {
+    en: "See more", vi: "Xem thêm", zh: "查看更多", ja: "もっと見る", ko: "더 보기",
+    th: "ดูเพิ่มเติม", fr: "Voir plus", de: "Mehr anzeigen", es: "Ver más",
+    pt: "Ver mais", ru: "Показать больше", ar: "عرض المزيد", hi: "और देखें"
+  },
+  "common.seeLess": {
+    en: "See less", vi: "Thu gọn", zh: "收起", ja: "折りたたむ", ko: "접기",
+    th: "ดูน้อยลง", fr: "Voir moins", de: "Weniger anzeigen", es: "Ver menos",
+    pt: "Ver menos", ru: "Показать меньше", ar: "عرض أقل", hi: "कम देखें"
+  },
+  "common.share": {
+    en: "Share", vi: "Chia sẻ", zh: "分享", ja: "シェア", ko: "공유",
+    th: "แชร์", fr: "Partager", de: "Teilen", es: "Compartir",
+    pt: "Compartilhar", ru: "Поделиться", ar: "مشاركة", hi: "शेयर करें"
+  },
+  "common.comment": {
+    en: "Comment", vi: "Bình luận", zh: "评论", ja: "コメント", ko: "댓글",
+    th: "แสดงความคิดเห็น", fr: "Commenter", de: "Kommentieren", es: "Comentar",
+    pt: "Comentar", ru: "Комментировать", ar: "تعليق", hi: "टिप्पणी करें"
+  },
+  "common.reply": {
+    en: "Reply", vi: "Trả lời", zh: "回复", ja: "返信", ko: "답글",
+    th: "ตอบกลับ", fr: "Répondre", de: "Antworten", es: "Responder",
+    pt: "Responder", ru: "Ответить", ar: "رد", hi: "जवाब दें"
+  },
+  "common.send": {
+    en: "Send", vi: "Gửi", zh: "发送", ja: "送信", ko: "보내기",
+    th: "ส่ง", fr: "Envoyer", de: "Senden", es: "Enviar",
+    pt: "Enviar", ru: "Отправить", ar: "إرسال", hi: "भेजें"
+  },
+  "common.viewAll": {
+    en: "View All", vi: "Xem tất cả", zh: "查看全部", ja: "すべて表示", ko: "전체 보기",
+    th: "ดูทั้งหมด", fr: "Voir tout", de: "Alle anzeigen", es: "Ver todo",
+    pt: "Ver tudo", ru: "Посмотреть все", ar: "عرض الكل", hi: "सभी देखें"
+  },
+  "common.back": {
+    en: "Back", vi: "Quay lại", zh: "返回", ja: "戻る", ko: "뒤로",
+    th: "ย้อนกลับ", fr: "Retour", de: "Zurück", es: "Volver",
+    pt: "Voltar", ru: "Назад", ar: "رجوع", hi: "वापस"
+  },
+  "common.next": {
+    en: "Next", vi: "Tiếp theo", zh: "下一步", ja: "次へ", ko: "다음",
+    th: "ถัดไป", fr: "Suivant", de: "Weiter", es: "Siguiente",
+    pt: "Próximo", ru: "Далее", ar: "التالي", hi: "अगला"
+  },
+  "common.previous": {
+    en: "Previous", vi: "Trước", zh: "上一步", ja: "前へ", ko: "이전",
+    th: "ก่อนหน้า", fr: "Précédent", de: "Zurück", es: "Anterior",
+    pt: "Anterior", ru: "Предыдущий", ar: "السابق", hi: "पिछला"
+  },
+  "common.success": {
+    en: "Success", vi: "Thành công", zh: "成功", ja: "成功", ko: "성공",
+    th: "สำเร็จ", fr: "Succès", de: "Erfolg", es: "Éxito",
+    pt: "Sucesso", ru: "Успешно", ar: "نجاح", hi: "सफलता"
+  },
+  "common.warning": {
+    en: "Warning", vi: "Cảnh báo", zh: "警告", ja: "警告", ko: "경고",
+    th: "คำเตือน", fr: "Avertissement", de: "Warnung", es: "Advertencia",
+    pt: "Aviso", ru: "Предупреждение", ar: "تحذير", hi: "चेतावनी"
+  },
+  "common.info": {
+    en: "Info", vi: "Thông tin", zh: "信息", ja: "情報", ko: "정보",
+    th: "ข้อมูล", fr: "Info", de: "Info", es: "Información",
+    pt: "Informação", ru: "Информация", ar: "معلومات", hi: "जानकारी"
+  },
+
 
   // User menu
   "user.profile": {
@@ -1110,6 +1186,543 @@ export const translations: Translations = {
     en: "Gas fees apply 🔒", vi: "Phí gas áp dụng 🔒", zh: "适用 Gas 费用 🔒", ja: "ガス料金が適用されます 🔒", ko: "가스 요금 적용 🔒",
     th: "มีค่าธรรมเนียม Gas 🔒", fr: "Frais de gas applicables 🔒", de: "Gas-Gebühren gelten 🔒", es: "Se aplican tarifas de gas 🔒",
     pt: "Taxas de gas aplicáveis 🔒", ru: "Применяются комиссии за газ 🔒", ar: "تطبق رسوم الغاز 🔒", hi: "गैस शुल्क लागू 🔒"
+  },
+
+  // ============ MESSAGES PAGE ============
+  "messages.title": {
+    en: "Messages", vi: "Tin nhắn", zh: "消息", ja: "メッセージ", ko: "메시지",
+    th: "ข้อความ", fr: "Messages", de: "Nachrichten", es: "Mensajes",
+    pt: "Mensagens", ru: "Сообщения", ar: "الرسائل", hi: "संदेश"
+  },
+  "messages.description": {
+    en: "Chat with friends and communities", vi: "Trò chuyện với bạn bè và cộng đồng", zh: "与朋友和社区聊天", ja: "友達やコミュニティとチャット", ko: "친구 및 커뮤니티와 채팅",
+    th: "แชทกับเพื่อนและชุมชน", fr: "Discutez avec vos amis et communautés", de: "Chatten Sie mit Freunden und Communities", es: "Chatea con amigos y comunidades",
+    pt: "Converse com amigos e comunidades", ru: "Общайтесь с друзьями и сообществами", ar: "دردش مع الأصدقاء والمجتمعات", hi: "मित्रों और समुदायों के साथ चैट करें"
+  },
+  "messages.searchByName": {
+    en: "Search by name...", vi: "Tìm kiếm theo tên...", zh: "按名称搜索...", ja: "名前で検索...", ko: "이름으로 검색...",
+    th: "ค้นหาตามชื่อ...", fr: "Rechercher par nom...", de: "Nach Namen suchen...", es: "Buscar por nombre...",
+    pt: "Pesquisar por nome...", ru: "Поиск по имени...", ar: "البحث بالاسم...", hi: "नाम से खोजें..."
+  },
+  "messages.all": {
+    en: "All", vi: "Tất cả", zh: "全部", ja: "すべて", ko: "전체",
+    th: "ทั้งหมด", fr: "Tous", de: "Alle", es: "Todos",
+    pt: "Todos", ru: "Все", ar: "الكل", hi: "सभी"
+  },
+  "messages.unread": {
+    en: "Unread", vi: "Chưa đọc", zh: "未读", ja: "未読", ko: "읽지 않음",
+    th: "ยังไม่ได้อ่าน", fr: "Non lus", de: "Ungelesen", es: "No leídos",
+    pt: "Não lidos", ru: "Непрочитанные", ar: "غير مقروءة", hi: "अपठित"
+  },
+  "messages.groups": {
+    en: "Groups", vi: "Nhóm", zh: "群组", ja: "グループ", ko: "그룹",
+    th: "กลุ่ม", fr: "Groupes", de: "Gruppen", es: "Grupos",
+    pt: "Grupos", ru: "Группы", ar: "المجموعات", hi: "समूह"
+  },
+  "messages.calls": {
+    en: "Calls", vi: "Cuộc gọi", zh: "通话", ja: "通話", ko: "통화",
+    th: "การโทร", fr: "Appels", de: "Anrufe", es: "Llamadas",
+    pt: "Chamadas", ru: "Звонки", ar: "المكالمات", hi: "कॉल"
+  },
+  "messages.noConversations": {
+    en: "No conversations yet", vi: "Chưa có cuộc trò chuyện nào", zh: "暂无对话", ja: "会話がまだありません", ko: "대화가 없습니다",
+    th: "ยังไม่มีการสนทนา", fr: "Aucune conversation", de: "Noch keine Gespräche", es: "Sin conversaciones",
+    pt: "Nenhuma conversa ainda", ru: "Пока нет разговоров", ar: "لا توجد محادثات بعد", hi: "अभी कोई वार्तालाप नहीं"
+  },
+  "messages.searchStart": {
+    en: "Search and start a new conversation", vi: "Tìm kiếm và bắt đầu cuộc trò chuyện mới", zh: "搜索并开始新对话", ja: "検索して新しい会話を始める", ko: "검색하고 새 대화 시작",
+    th: "ค้นหาและเริ่มการสนทนาใหม่", fr: "Recherchez et démarrez une nouvelle conversation", de: "Suchen und neue Unterhaltung starten", es: "Busca e inicia una nueva conversación",
+    pt: "Pesquise e inicie uma nova conversa", ru: "Найдите и начните новый разговор", ar: "ابحث وابدأ محادثة جديدة", hi: "खोजें और नई बातचीत शुरू करें"
+  },
+  "messages.selectConversation": {
+    en: "Select a conversation to start chatting", vi: "Chọn một cuộc trò chuyện để bắt đầu chat", zh: "选择一个对话开始聊天", ja: "会話を選択してチャットを開始", ko: "채팅을 시작할 대화를 선택하세요",
+    th: "เลือกการสนทนาเพื่อเริ่มแชท", fr: "Sélectionnez une conversation pour commencer à discuter", de: "Wählen Sie ein Gespräch, um zu chatten", es: "Selecciona una conversación para chatear",
+    pt: "Selecione uma conversa para começar a conversar", ru: "Выберите разговор, чтобы начать общение", ar: "اختر محادثة لبدء الدردشة", hi: "चैट शुरू करने के लिए एक वार्तालाप चुनें"
+  },
+  "messages.typeMessage": {
+    en: "Type a message...", vi: "Nhập tin nhắn...", zh: "输入消息...", ja: "メッセージを入力...", ko: "메시지 입력...",
+    th: "พิมพ์ข้อความ...", fr: "Tapez un message...", de: "Nachricht eingeben...", es: "Escribe un mensaje...",
+    pt: "Digite uma mensagem...", ru: "Введите сообщение...", ar: "اكتب رسالة...", hi: "संदेश टाइप करें..."
+  },
+  "messages.online": {
+    en: "Online", vi: "Đang hoạt động", zh: "在线", ja: "オンライン", ko: "온라인",
+    th: "ออนไลน์", fr: "En ligne", de: "Online", es: "En línea",
+    pt: "Online", ru: "В сети", ar: "متصل", hi: "ऑनलाइन"
+  },
+  "messages.offline": {
+    en: "Offline", vi: "Ngoại tuyến", zh: "离线", ja: "オフライン", ko: "오프라인",
+    th: "ออฟไลน์", fr: "Hors ligne", de: "Offline", es: "Sin conexión",
+    pt: "Offline", ru: "Не в сети", ar: "غير متصل", hi: "ऑफलाइन"
+  },
+  "messages.typing": {
+    en: "is typing...", vi: "đang nhập...", zh: "正在输入...", ja: "入力中...", ko: "입력 중...",
+    th: "กำลังพิมพ์...", fr: "écrit...", de: "tippt...", es: "escribiendo...",
+    pt: "digitando...", ru: "печатает...", ar: "يكتب...", hi: "टाइप कर रहा है..."
+  },
+  "messages.deleteMessage": {
+    en: "Delete message", vi: "Xóa tin nhắn", zh: "删除消息", ja: "メッセージを削除", ko: "메시지 삭제",
+    th: "ลบข้อความ", fr: "Supprimer le message", de: "Nachricht löschen", es: "Eliminar mensaje",
+    pt: "Excluir mensagem", ru: "Удалить сообщение", ar: "حذف الرسالة", hi: "संदेश हटाएं"
+  },
+  "messages.deleteConversation": {
+    en: "Delete conversation", vi: "Xóa cuộc trò chuyện", zh: "删除对话", ja: "会話を削除", ko: "대화 삭제",
+    th: "ลบการสนทนา", fr: "Supprimer la conversation", de: "Gespräch löschen", es: "Eliminar conversación",
+    pt: "Excluir conversa", ru: "Удалить разговор", ar: "حذف المحادثة", hi: "वार्तालाप हटाएं"
+  },
+  "messages.createGroup": {
+    en: "Create Group", vi: "Tạo nhóm", zh: "创建群组", ja: "グループを作成", ko: "그룹 만들기",
+    th: "สร้างกลุ่ม", fr: "Créer un groupe", de: "Gruppe erstellen", es: "Crear grupo",
+    pt: "Criar grupo", ru: "Создать группу", ar: "إنشاء مجموعة", hi: "समूह बनाएं"
+  },
+  "messages.videoCall": {
+    en: "Video call", vi: "Gọi video", zh: "视频通话", ja: "ビデオ通話", ko: "영상 통화",
+    th: "วิดีโอคอล", fr: "Appel vidéo", de: "Videoanruf", es: "Videollamada",
+    pt: "Videochamada", ru: "Видеозвонок", ar: "مكالمة فيديو", hi: "वीडियो कॉल"
+  },
+  "messages.voiceCall": {
+    en: "Voice call", vi: "Gọi thoại", zh: "语音通话", ja: "音声通話", ko: "음성 통화",
+    th: "โทรเสียง", fr: "Appel vocal", de: "Sprachanruf", es: "Llamada de voz",
+    pt: "Chamada de voz", ru: "Голосовой звонок", ar: "مكالمة صوتية", hi: "वॉयस कॉल"
+  },
+  "messages.mediaFiles": {
+    en: "Media & Files", vi: "Phương tiện & Tệp", zh: "媒体与文件", ja: "メディアとファイル", ko: "미디어 및 파일",
+    th: "สื่อและไฟล์", fr: "Médias et fichiers", de: "Medien & Dateien", es: "Medios y archivos",
+    pt: "Mídia e arquivos", ru: "Медиа и файлы", ar: "الوسائط والملفات", hi: "मीडिया और फ़ाइलें"
+  },
+  "messages.privacy": {
+    en: "Privacy & Safety", vi: "Quyền riêng tư & Bảo mật", zh: "隐私与安全", ja: "プライバシーとセキュリティ", ko: "개인정보 및 보안",
+    th: "ความเป็นส่วนตัวและความปลอดภัย", fr: "Confidentialité et sécurité", de: "Datenschutz & Sicherheit", es: "Privacidad y seguridad",
+    pt: "Privacidade e segurança", ru: "Конфиденциальность и безопасность", ar: "الخصوصية والأمان", hi: "गोपनीयता और सुरक्षा"
+  },
+  "messages.user": {
+    en: "User", vi: "Người dùng", zh: "用户", ja: "ユーザー", ko: "사용자",
+    th: "ผู้ใช้", fr: "Utilisateur", de: "Benutzer", es: "Usuario",
+    pt: "Usuário", ru: "Пользователь", ar: "مستخدم", hi: "उपयोगकर्ता"
+  },
+  "messages.image": {
+    en: "Image", vi: "Hình ảnh", zh: "图片", ja: "画像", ko: "이미지",
+    th: "รูปภาพ", fr: "Image", de: "Bild", es: "Imagen",
+    pt: "Imagem", ru: "Изображение", ar: "صورة", hi: "छवि"
+  },
+  "messages.video": {
+    en: "Video", vi: "Video", zh: "视频", ja: "ビデオ", ko: "비디오",
+    th: "วิดีโอ", fr: "Vidéo", de: "Video", es: "Video",
+    pt: "Vídeo", ru: "Видео", ar: "فيديو", hi: "वीडियो"
+  },
+  "messages.callEnded": {
+    en: "Call ended", vi: "Cuộc gọi đã kết thúc", zh: "通话结束", ja: "通話終了", ko: "통화 종료",
+    th: "การโทรสิ้นสุดแล้ว", fr: "Appel terminé", de: "Anruf beendet", es: "Llamada finalizada",
+    pt: "Chamada encerrada", ru: "Звонок завершен", ar: "انتهت المكالمة", hi: "कॉल समाप्त हुई"
+  },
+  "messages.callNotAvailable": {
+    en: "Call not available", vi: "Cuộc gọi này không còn khả dụng", zh: "此通话不可用", ja: "通話が利用できません", ko: "통화를 사용할 수 없습니다",
+    th: "ไม่สามารถโทรได้", fr: "Appel non disponible", de: "Anruf nicht verfügbar", es: "Llamada no disponible",
+    pt: "Chamada não disponível", ru: "Звонок недоступен", ar: "المكالمة غير متاحة", hi: "कॉल उपलब्ध नहीं"
+  },
+  "messages.error": {
+    en: "Error", vi: "Lỗi", zh: "错误", ja: "エラー", ko: "오류",
+    th: "ข้อผิดพลาด", fr: "Erreur", de: "Fehler", es: "Error",
+    pt: "Erro", ru: "Ошибка", ar: "خطأ", hi: "त्रुटि"
+  },
+  "messages.callNotFound": {
+    en: "Call not found", vi: "Không tìm thấy cuộc gọi", zh: "未找到通话", ja: "通話が見つかりません", ko: "통화를 찾을 수 없습니다",
+    th: "ไม่พบการโทร", fr: "Appel introuvable", de: "Anruf nicht gefunden", es: "Llamada no encontrada",
+    pt: "Chamada não encontrada", ru: "Звонок не найден", ar: "لم يتم العثور على المكالمة", hi: "कॉल नहीं मिला"
+  },
+  "messages.muteNotifications": {
+    en: "Mute notifications", vi: "Tắt thông báo", zh: "静音通知", ja: "通知をミュート", ko: "알림 음소거",
+    th: "ปิดเสียงแจ้งเตือน", fr: "Couper les notifications", de: "Benachrichtigungen stummschalten", es: "Silenciar notificaciones",
+    pt: "Silenciar notificações", ru: "Отключить уведомления", ar: "كتم الإشعارات", hi: "सूचनाएं म्यूट करें"
+  },
+  "messages.block": {
+    en: "Block", vi: "Chặn", zh: "屏蔽", ja: "ブロック", ko: "차단",
+    th: "บล็อก", fr: "Bloquer", de: "Blockieren", es: "Bloquear",
+    pt: "Bloquear", ru: "Заблокировать", ar: "حظر", hi: "ब्लॉक करें"
+  },
+  "messages.report": {
+    en: "Report", vi: "Báo cáo", zh: "举报", ja: "報告", ko: "신고",
+    th: "รายงาน", fr: "Signaler", de: "Melden", es: "Reportar",
+    pt: "Denunciar", ru: "Пожаловаться", ar: "إبلاغ", hi: "रिपोर्ट करें"
+  },
+
+  // ============ FRIENDS PAGE ============
+  "friends.title": {
+    en: "Friends", vi: "Bạn bè", zh: "好友", ja: "友達", ko: "친구",
+    th: "เพื่อน", fr: "Amis", de: "Freunde", es: "Amigos",
+    pt: "Amigos", ru: "Друзья", ar: "الأصدقاء", hi: "मित्र"
+  },
+  "friends.description": {
+    en: "Connect with the community and find new friends", vi: "Kết nối với cộng đồng và tìm kiếm bạn mới", zh: "与社区建立联系并结交新朋友", ja: "コミュニティとつながり、新しい友達を見つけよう", ko: "커뮤니티와 연결하고 새 친구를 찾으세요",
+    th: "เชื่อมต่อกับชุมชนและค้นหาเพื่อนใหม่", fr: "Connectez-vous avec la communauté et trouvez de nouveaux amis", de: "Verbinde dich mit der Community und finde neue Freunde", es: "Conéctate con la comunidad y encuentra nuevos amigos",
+    pt: "Conecte-se com a comunidade e encontre novos amigos", ru: "Связывайтесь с сообществом и находите новых друзей", ar: "تواصل مع المجتمع وابحث عن أصدقاء جدد", hi: "समुदाय से जुड़ें और नए मित्र खोजें"
+  },
+  "friends.searchPlaceholder": {
+    en: "Search friends by name...", vi: "Tìm kiếm bạn bè theo tên...", zh: "按名称搜索好友...", ja: "名前で友達を検索...", ko: "이름으로 친구 검색...",
+    th: "ค้นหาเพื่อนตามชื่อ...", fr: "Rechercher des amis par nom...", de: "Freunde nach Namen suchen...", es: "Buscar amigos por nombre...",
+    pt: "Pesquisar amigos por nome...", ru: "Искать друзей по имени...", ar: "البحث عن أصدقاء بالاسم...", hi: "नाम से मित्र खोजें..."
+  },
+  "friends.search": {
+    en: "Search", vi: "Tìm kiếm", zh: "搜索", ja: "検索", ko: "검색",
+    th: "ค้นหา", fr: "Rechercher", de: "Suchen", es: "Buscar",
+    pt: "Pesquisar", ru: "Поиск", ar: "بحث", hi: "खोजें"
+  },
+  "friends.searchResults": {
+    en: "Search results", vi: "Kết quả tìm kiếm", zh: "搜索结果", ja: "検索結果", ko: "검색 결과",
+    th: "ผลการค้นหา", fr: "Résultats de recherche", de: "Suchergebnisse", es: "Resultados de búsqueda",
+    pt: "Resultados da pesquisa", ru: "Результаты поиска", ar: "نتائج البحث", hi: "खोज परिणाम"
+  },
+  "friends.addFriend": {
+    en: "Add Friend", vi: "Kết bạn", zh: "添加好友", ja: "友達追加", ko: "친구 추가",
+    th: "เพิ่มเพื่อน", fr: "Ajouter un ami", de: "Freund hinzufügen", es: "Agregar amigo",
+    pt: "Adicionar amigo", ru: "Добавить в друзья", ar: "إضافة صديق", hi: "मित्र जोड़ें"
+  },
+  "friends.unfriend": {
+    en: "Unfriend", vi: "Hủy kết bạn", zh: "删除好友", ja: "友達を削除", ko: "친구 삭제",
+    th: "ยกเลิกเป็นเพื่อน", fr: "Supprimer ami", de: "Entfreunden", es: "Eliminar amigo",
+    pt: "Desfazer amizade", ru: "Удалить из друзей", ar: "إلغاء الصداقة", hi: "अनफ्रेंड करें"
+  },
+  "friends.requests": {
+    en: "Requests", vi: "Lời mời", zh: "好友请求", ja: "リクエスト", ko: "요청",
+    th: "คำขอ", fr: "Demandes", de: "Anfragen", es: "Solicitudes",
+    pt: "Solicitações", ru: "Запросы", ar: "الطلبات", hi: "अनुरोध"
+  },
+  "friends.sent": {
+    en: "Sent", vi: "Đã gửi", zh: "已发送", ja: "送信済み", ko: "보냄",
+    th: "ส่งแล้ว", fr: "Envoyées", de: "Gesendet", es: "Enviadas",
+    pt: "Enviadas", ru: "Отправленные", ar: "مرسلة", hi: "भेजा गया"
+  },
+  "friends.suggestions": {
+    en: "Suggestions", vi: "Gợi ý", zh: "推荐", ja: "おすすめ", ko: "추천",
+    th: "แนะนำ", fr: "Suggestions", de: "Vorschläge", es: "Sugerencias",
+    pt: "Sugestões", ru: "Рекомендации", ar: "اقتراحات", hi: "सुझाव"
+  },
+  "friends.noFriends": {
+    en: "You don't have any friends yet", vi: "Bạn chưa có bạn bè nào", zh: "您还没有好友", ja: "まだ友達がいません", ko: "아직 친구가 없습니다",
+    th: "คุณยังไม่มีเพื่อน", fr: "Vous n'avez pas encore d'amis", de: "Du hast noch keine Freunde", es: "Aún no tienes amigos",
+    pt: "Você ainda não tem amigos", ru: "У вас пока нет друзей", ar: "ليس لديك أصدقاء بعد", hi: "आपका अभी कोई मित्र नहीं है"
+  },
+  "friends.noPendingRequests": {
+    en: "No pending requests", vi: "Không có lời mời đang chờ", zh: "没有待处理的请求", ja: "保留中のリクエストはありません", ko: "대기 중인 요청 없음",
+    th: "ไม่มีคำขอที่รอดำเนินการ", fr: "Aucune demande en attente", de: "Keine ausstehenden Anfragen", es: "Sin solicitudes pendientes",
+    pt: "Nenhuma solicitação pendente", ru: "Нет ожидающих запросов", ar: "لا توجد طلبات معلقة", hi: "कोई लंबित अनुरोध नहीं"
+  },
+  "friends.noSentRequests": {
+    en: "No sent requests", vi: "Không có lời mời đã gửi", zh: "没有已发送的请求", ja: "送信したリクエストはありません", ko: "보낸 요청 없음",
+    th: "ไม่มีคำขอที่ส่งออก", fr: "Aucune demande envoyée", de: "Keine gesendeten Anfragen", es: "Sin solicitudes enviadas",
+    pt: "Nenhuma solicitação enviada", ru: "Нет отправленных запросов", ar: "لا توجد طلبات مرسلة", hi: "कोई भेजा गया अनुरोध नहीं"
+  },
+  "friends.noSuggestions": {
+    en: "No suggestions available", vi: "Không có gợi ý nào", zh: "没有可用的建议", ja: "おすすめはありません", ko: "추천 없음",
+    th: "ไม่มีคำแนะนำ", fr: "Aucune suggestion disponible", de: "Keine Vorschläge verfügbar", es: "Sin sugerencias disponibles",
+    pt: "Nenhuma sugestão disponível", ru: "Нет доступных рекомендаций", ar: "لا توجد اقتراحات متاحة", hi: "कोई सुझाव उपलब्ध नहीं"
+  },
+  "friends.accept": {
+    en: "Accept", vi: "Chấp nhận", zh: "接受", ja: "承認", ko: "수락",
+    th: "ยอมรับ", fr: "Accepter", de: "Akzeptieren", es: "Aceptar",
+    pt: "Aceitar", ru: "Принять", ar: "قبول", hi: "स्वीकार करें"
+  },
+  "friends.decline": {
+    en: "Decline", vi: "Từ chối", zh: "拒绝", ja: "拒否", ko: "거절",
+    th: "ปฏิเสธ", fr: "Refuser", de: "Ablehnen", es: "Rechazar",
+    pt: "Recusar", ru: "Отклонить", ar: "رفض", hi: "अस्वीकार करें"
+  },
+  "friends.cancel": {
+    en: "Cancel", vi: "Hủy", zh: "取消", ja: "キャンセル", ko: "취소",
+    th: "ยกเลิก", fr: "Annuler", de: "Abbrechen", es: "Cancelar",
+    pt: "Cancelar", ru: "Отмена", ar: "إلغاء", hi: "रद्द करें"
+  },
+  "friends.sentRequest": {
+    en: "Friend request sent", vi: "Đã gửi lời mời kết bạn", zh: "好友请求已发送", ja: "友達リクエストを送信しました", ko: "친구 요청이 전송되었습니다",
+    th: "ส่งคำขอเป็นเพื่อนแล้ว", fr: "Demande d'ami envoyée", de: "Freundschaftsanfrage gesendet", es: "Solicitud de amistad enviada",
+    pt: "Solicitação de amizade enviada", ru: "Запрос на добавление в друзья отправлен", ar: "تم إرسال طلب الصداقة", hi: "मित्र अनुरोध भेजा गया"
+  },
+  "friends.waitingResponse": {
+    en: "Waiting for response", vi: "Đang chờ phản hồi", zh: "等待回复", ja: "返答待ち", ko: "응답 대기 중",
+    th: "รอการตอบกลับ", fr: "En attente de réponse", de: "Warten auf Antwort", es: "Esperando respuesta",
+    pt: "Aguardando resposta", ru: "Ожидание ответа", ar: "في انتظار الرد", hi: "प्रतिक्रिया की प्रतीक्षा में"
+  },
+  "friends.accepted": {
+    en: "Friend request accepted", vi: "Đã chấp nhận lời mời", zh: "好友请求已接受", ja: "友達リクエストを承認しました", ko: "친구 요청이 수락되었습니다",
+    th: "ยอมรับคำขอเป็นเพื่อนแล้ว", fr: "Demande d'ami acceptée", de: "Freundschaftsanfrage akzeptiert", es: "Solicitud de amistad aceptada",
+    pt: "Solicitação de amizade aceita", ru: "Запрос на добавление в друзья принят", ar: "تم قبول طلب الصداقة", hi: "मित्र अनुरोध स्वीकार किया गया"
+  },
+  "friends.nowFriends": {
+    en: "You are now friends", vi: "Các bạn đã trở thành bạn bè", zh: "你们现在是好友了", ja: "友達になりました", ko: "이제 친구가 되었습니다",
+    th: "ตอนนี้คุณเป็นเพื่อนกันแล้ว", fr: "Vous êtes maintenant amis", de: "Ihr seid jetzt Freunde", es: "Ahora son amigos",
+    pt: "Agora vocês são amigos", ru: "Теперь вы друзья", ar: "أصبحتما أصدقاء الآن", hi: "आप अब मित्र हैं"
+  },
+  "friends.rejected": {
+    en: "Request declined", vi: "Đã từ chối lời mời", zh: "请求已拒绝", ja: "リクエストを拒否しました", ko: "요청이 거절되었습니다",
+    th: "ปฏิเสธคำขอแล้ว", fr: "Demande refusée", de: "Anfrage abgelehnt", es: "Solicitud rechazada",
+    pt: "Solicitação recusada", ru: "Запрос отклонен", ar: "تم رفض الطلب", hi: "अनुरोध अस्वीकार किया गया"
+  },
+  "friends.cancelled": {
+    en: "Request cancelled", vi: "Đã hủy lời mời kết bạn", zh: "请求已取消", ja: "リクエストをキャンセルしました", ko: "요청이 취소되었습니다",
+    th: "ยกเลิกคำขอแล้ว", fr: "Demande annulée", de: "Anfrage abgebrochen", es: "Solicitud cancelada",
+    pt: "Solicitação cancelada", ru: "Запрос отменен", ar: "تم إلغاء الطلب", hi: "अनुरोध रद्द किया गया"
+  },
+  "friends.unfriended": {
+    en: "Unfriended", vi: "Đã hủy kết bạn", zh: "已删除好友", ja: "友達を削除しました", ko: "친구 삭제됨",
+    th: "ยกเลิกเป็นเพื่อนแล้ว", fr: "Ami supprimé", de: "Entfreundet", es: "Eliminado de amigos",
+    pt: "Amizade desfeita", ru: "Удален из друзей", ar: "تم إلغاء الصداقة", hi: "अनफ्रेंड किया गया"
+  },
+  "friends.message": {
+    en: "Message", vi: "Nhắn tin", zh: "发消息", ja: "メッセージ", ko: "메시지",
+    th: "ส่งข้อความ", fr: "Message", de: "Nachricht", es: "Mensaje",
+    pt: "Mensagem", ru: "Сообщение", ar: "رسالة", hi: "संदेश"
+  },
+
+  // ============ AUTH PAGE ============
+  "auth.login": {
+    en: "Log In", vi: "Đăng nhập", zh: "登录", ja: "ログイン", ko: "로그인",
+    th: "เข้าสู่ระบบ", fr: "Connexion", de: "Anmelden", es: "Iniciar sesión",
+    pt: "Entrar", ru: "Войти", ar: "تسجيل الدخول", hi: "लॉग इन करें"
+  },
+  "auth.signup": {
+    en: "Sign Up", vi: "Đăng ký", zh: "注册", ja: "サインアップ", ko: "회원가입",
+    th: "สมัครสมาชิก", fr: "S'inscrire", de: "Registrieren", es: "Registrarse",
+    pt: "Cadastrar", ru: "Зарегистрироваться", ar: "إنشاء حساب", hi: "साइन अप करें"
+  },
+  "auth.email": {
+    en: "Email", vi: "Email", zh: "电子邮箱", ja: "メールアドレス", ko: "이메일",
+    th: "อีเมล", fr: "Email", de: "E-Mail", es: "Correo electrónico",
+    pt: "E-mail", ru: "Электронная почта", ar: "البريد الإلكتروني", hi: "ईमेल"
+  },
+  "auth.password": {
+    en: "Password", vi: "Mật khẩu", zh: "密码", ja: "パスワード", ko: "비밀번호",
+    th: "รหัสผ่าน", fr: "Mot de passe", de: "Passwort", es: "Contraseña",
+    pt: "Senha", ru: "Пароль", ar: "كلمة المرور", hi: "पासवर्ड"
+  },
+  "auth.confirmPassword": {
+    en: "Confirm Password", vi: "Xác nhận mật khẩu", zh: "确认密码", ja: "パスワードを確認", ko: "비밀번호 확인",
+    th: "ยืนยันรหัสผ่าน", fr: "Confirmer le mot de passe", de: "Passwort bestätigen", es: "Confirmar contraseña",
+    pt: "Confirmar senha", ru: "Подтвердите пароль", ar: "تأكيد كلمة المرور", hi: "पासवर्ड की पुष्टि करें"
+  },
+  "auth.fullName": {
+    en: "Full Name", vi: "Họ và tên", zh: "全名", ja: "氏名", ko: "성명",
+    th: "ชื่อ-นามสกุล", fr: "Nom complet", de: "Vollständiger Name", es: "Nombre completo",
+    pt: "Nome completo", ru: "Полное имя", ar: "الاسم الكامل", hi: "पूरा नाम"
+  },
+  "auth.forgotPassword": {
+    en: "Forgot password?", vi: "Quên mật khẩu?", zh: "忘记密码？", ja: "パスワードをお忘れですか？", ko: "비밀번호를 잊으셨나요?",
+    th: "ลืมรหัสผ่าน?", fr: "Mot de passe oublié ?", de: "Passwort vergessen?", es: "¿Olvidaste tu contraseña?",
+    pt: "Esqueceu a senha?", ru: "Забыли пароль?", ar: "نسيت كلمة المرور؟", hi: "पासवर्ड भूल गए?"
+  },
+  "auth.noAccount": {
+    en: "Don't have an account?", vi: "Chưa có tài khoản?", zh: "没有账户？", ja: "アカウントをお持ちでないですか？", ko: "계정이 없으신가요?",
+    th: "ยังไม่มีบัญชี?", fr: "Pas encore de compte ?", de: "Kein Konto?", es: "¿No tienes cuenta?",
+    pt: "Não tem uma conta?", ru: "Нет аккаунта?", ar: "ليس لديك حساب؟", hi: "खाता नहीं है?"
+  },
+  "auth.haveAccount": {
+    en: "Already have an account?", vi: "Đã có tài khoản?", zh: "已有账户？", ja: "すでにアカウントをお持ちですか？", ko: "이미 계정이 있으신가요?",
+    th: "มีบัญชีอยู่แล้ว?", fr: "Vous avez déjà un compte ?", de: "Bereits ein Konto?", es: "¿Ya tienes cuenta?",
+    pt: "Já tem uma conta?", ru: "Уже есть аккаунт?", ar: "لديك حساب بالفعل؟", hi: "पहले से खाता है?"
+  },
+  "auth.orContinueWith": {
+    en: "Or continue with", vi: "Hoặc tiếp tục với", zh: "或者使用以下方式继续", ja: "または次で続行", ko: "또는 계속하기",
+    th: "หรือดำเนินการต่อด้วย", fr: "Ou continuer avec", de: "Oder weiter mit", es: "O continuar con",
+    pt: "Ou continue com", ru: "Или продолжить с", ar: "أو تابع باستخدام", hi: "या इसके साथ जारी रखें"
+  },
+  "auth.loggingIn": {
+    en: "Logging in...", vi: "Đang đăng nhập...", zh: "正在登录...", ja: "ログイン中...", ko: "로그인 중...",
+    th: "กำลังเข้าสู่ระบบ...", fr: "Connexion en cours...", de: "Anmelden...", es: "Iniciando sesión...",
+    pt: "Entrando...", ru: "Вход...", ar: "جارٍ تسجيل الدخول...", hi: "लॉग इन हो रहा है..."
+  },
+  "auth.signingUp": {
+    en: "Signing up...", vi: "Đang đăng ký...", zh: "正在注册...", ja: "サインアップ中...", ko: "가입 중...",
+    th: "กำลังสมัครสมาชิก...", fr: "Inscription en cours...", de: "Registrieren...", es: "Registrándose...",
+    pt: "Cadastrando...", ru: "Регистрация...", ar: "جارٍ إنشاء الحساب...", hi: "साइन अप हो रहा है..."
+  },
+  "auth.loginSuccess": {
+    en: "Login successful", vi: "Đăng nhập thành công", zh: "登录成功", ja: "ログイン成功", ko: "로그인 성공",
+    th: "เข้าสู่ระบบสำเร็จ", fr: "Connexion réussie", de: "Anmeldung erfolgreich", es: "Inicio de sesión exitoso",
+    pt: "Login bem-sucedido", ru: "Вход выполнен успешно", ar: "تم تسجيل الدخول بنجاح", hi: "लॉगिन सफल"
+  },
+  "auth.welcome": {
+    en: "Welcome", vi: "Chào mừng", zh: "欢迎", ja: "ようこそ", ko: "환영합니다",
+    th: "ยินดีต้อนรับ", fr: "Bienvenue", de: "Willkommen", es: "Bienvenido",
+    pt: "Bem-vindo", ru: "Добро пожаловать", ar: "مرحباً", hi: "स्वागत है"
+  },
+  "auth.registrationSuccess": {
+    en: "Registration successful", vi: "Đăng ký thành công", zh: "注册成功", ja: "登録成功", ko: "가입 성공",
+    th: "ลงทะเบียนสำเร็จ", fr: "Inscription réussie", de: "Registrierung erfolgreich", es: "Registro exitoso",
+    pt: "Cadastro bem-sucedido", ru: "Регистрация успешна", ar: "تم التسجيل بنجاح", hi: "पंजीकरण सफल"
+  },
+  "auth.checkEmail": {
+    en: "Please check your email to verify your account", vi: "Vui lòng kiểm tra email để xác minh tài khoản", zh: "请检查您的邮箱以验证账户", ja: "メールを確認してアカウントを確認してください", ko: "계정 확인을 위해 이메일을 확인해주세요",
+    th: "กรุณาตรวจสอบอีเมลเพื่อยืนยันบัญชีของคุณ", fr: "Veuillez vérifier votre e-mail pour vérifier votre compte", de: "Bitte überprüfen Sie Ihre E-Mail, um Ihr Konto zu verifizieren", es: "Por favor revisa tu correo para verificar tu cuenta",
+    pt: "Por favor, verifique seu e-mail para confirmar sua conta", ru: "Пожалуйста, проверьте свою электронную почту для подтверждения аккаунта", ar: "يرجى التحقق من بريدك الإلكتروني لتأكيد حسابك", hi: "कृपया अपना खाता सत्यापित करने के लिए अपना ईमेल जांचें"
+  },
+  "auth.loginError": {
+    en: "Login failed", vi: "Đăng nhập thất bại", zh: "登录失败", ja: "ログインに失敗しました", ko: "로그인 실패",
+    th: "เข้าสู่ระบบล้มเหลว", fr: "Échec de la connexion", de: "Anmeldung fehlgeschlagen", es: "Error de inicio de sesión",
+    pt: "Falha no login", ru: "Ошибка входа", ar: "فشل تسجيل الدخول", hi: "लॉगिन विफल"
+  },
+  "auth.logout": {
+    en: "Log Out", vi: "Đăng xuất", zh: "退出登录", ja: "ログアウト", ko: "로그아웃",
+    th: "ออกจากระบบ", fr: "Déconnexion", de: "Abmelden", es: "Cerrar sesión",
+    pt: "Sair", ru: "Выйти", ar: "تسجيل الخروج", hi: "लॉग आउट"
+  },
+
+
+  // ============ WALLET ============
+  "wallet.title": {
+    en: "Wallet", vi: "Ví", zh: "钱包", ja: "ウォレット", ko: "지갑",
+    th: "กระเป๋าเงิน", fr: "Portefeuille", de: "Wallet", es: "Billetera",
+    pt: "Carteira", ru: "Кошелек", ar: "المحفظة", hi: "वॉलेट"
+  },
+  "wallet.connected": {
+    en: "Connected", vi: "Đã kết nối", zh: "已连接", ja: "接続済み", ko: "연결됨",
+    th: "เชื่อมต่อแล้ว", fr: "Connecté", de: "Verbunden", es: "Conectado",
+    pt: "Conectado", ru: "Подключено", ar: "متصل", hi: "जुड़ा हुआ"
+  },
+  "wallet.disconnect": {
+    en: "Disconnect", vi: "Ngắt kết nối", zh: "断开连接", ja: "切断", ko: "연결 해제",
+    th: "ยกเลิกการเชื่อมต่อ", fr: "Déconnecter", de: "Trennen", es: "Desconectar",
+    pt: "Desconectar", ru: "Отключить", ar: "قطع الاتصال", hi: "डिस्कनेक्ट करें"
+  },
+  "wallet.balance": {
+    en: "Balance", vi: "Số dư", zh: "余额", ja: "残高", ko: "잔액",
+    th: "ยอดคงเหลือ", fr: "Solde", de: "Guthaben", es: "Saldo",
+    pt: "Saldo", ru: "Баланс", ar: "الرصيد", hi: "शेष"
+  },
+
+  // ============ CAMPAIGNS ============
+  "campaigns.title": {
+    en: "Campaigns", vi: "Chiến dịch", zh: "活动", ja: "キャンペーン", ko: "캠페인",
+    th: "แคมเปญ", fr: "Campagnes", de: "Kampagnen", es: "Campañas",
+    pt: "Campanhas", ru: "Кампании", ar: "الحملات", hi: "अभियान"
+  },
+  "campaigns.description": {
+    en: "Browse and support charitable campaigns", vi: "Duyệt và hỗ trợ các chiến dịch từ thiện", zh: "浏览并支持慈善活动", ja: "慈善キャンペーンを閲覧してサポート", ko: "자선 캠페인 검색 및 지원",
+    th: "เรียกดูและสนับสนุนแคมเปญการกุศล", fr: "Parcourir et soutenir les campagnes caritatives", de: "Durchsuchen und unterstützen Sie Wohltätigkeitskampagnen", es: "Explora y apoya campañas benéficas",
+    pt: "Navegue e apoie campanhas de caridade", ru: "Просматривайте и поддерживайте благотворительные кампании", ar: "تصفح وادعم الحملات الخيرية", hi: "चैरिटेबल अभियान ब्राउज़ करें और सपोर्ट करें"
+  },
+  "campaigns.create": {
+    en: "Create Campaign", vi: "Tạo chiến dịch", zh: "创建活动", ja: "キャンペーンを作成", ko: "캠페인 만들기",
+    th: "สร้างแคมเปญ", fr: "Créer une campagne", de: "Kampagne erstellen", es: "Crear campaña",
+    pt: "Criar campanha", ru: "Создать кампанию", ar: "إنشاء حملة", hi: "अभियान बनाएं"
+  },
+  "campaigns.goal": {
+    en: "Goal", vi: "Mục tiêu", zh: "目标", ja: "目標", ko: "목표",
+    th: "เป้าหมาย", fr: "Objectif", de: "Ziel", es: "Meta",
+    pt: "Meta", ru: "Цель", ar: "الهدف", hi: "लक्ष्य"
+  },
+  "campaigns.raised": {
+    en: "Raised", vi: "Đã quyên góp", zh: "已筹集", ja: "集まった金額", ko: "모금액",
+    th: "ระดมทุนได้", fr: "Collecté", de: "Gesammelt", es: "Recaudado",
+    pt: "Arrecadado", ru: "Собрано", ar: "تم جمع", hi: "जुटाया गया"
+  },
+  "campaigns.donors": {
+    en: "Donors", vi: "Người quyên góp", zh: "捐赠者", ja: "寄付者", ko: "기부자",
+    th: "ผู้บริจาค", fr: "Donateurs", de: "Spender", es: "Donantes",
+    pt: "Doadores", ru: "Жертвователи", ar: "المتبرعون", hi: "दानदाता"
+  },
+  "campaigns.daysLeft": {
+    en: "days left", vi: "ngày còn lại", zh: "天剩余", ja: "日残り", ko: "일 남음",
+    th: "วันที่เหลือ", fr: "jours restants", de: "Tage übrig", es: "días restantes",
+    pt: "dias restantes", ru: "дней осталось", ar: "أيام متبقية", hi: "दिन बाकी"
+  },
+  "campaigns.active": {
+    en: "Active", vi: "Đang hoạt động", zh: "进行中", ja: "アクティブ", ko: "진행 중",
+    th: "กำลังดำเนินการ", fr: "Actif", de: "Aktiv", es: "Activo",
+    pt: "Ativo", ru: "Активна", ar: "نشطة", hi: "सक्रिय"
+  },
+  "campaigns.completed": {
+    en: "Completed", vi: "Hoàn thành", zh: "已完成", ja: "完了", ko: "완료",
+    th: "เสร็จสิ้น", fr: "Terminé", de: "Abgeschlossen", es: "Completado",
+    pt: "Concluído", ru: "Завершена", ar: "مكتملة", hi: "पूर्ण"
+  },
+  "campaigns.pending": {
+    en: "Pending", vi: "Đang chờ", zh: "待审核", ja: "保留中", ko: "대기 중",
+    th: "รอดำเนินการ", fr: "En attente", de: "Ausstehend", es: "Pendiente",
+    pt: "Pendente", ru: "На рассмотрении", ar: "قيد الانتظار", hi: "लंबित"
+  },
+
+  // ============ PROFILE ============
+  "profile.title": {
+    en: "Profile", vi: "Hồ sơ", zh: "个人资料", ja: "プロフィール", ko: "프로필",
+    th: "โปรไฟล์", fr: "Profil", de: "Profil", es: "Perfil",
+    pt: "Perfil", ru: "Профиль", ar: "الملف الشخصي", hi: "प्रोफ़ाइल"
+  },
+  "profile.editProfile": {
+    en: "Edit Profile", vi: "Chỉnh sửa hồ sơ", zh: "编辑资料", ja: "プロフィールを編集", ko: "프로필 편집",
+    th: "แก้ไขโปรไฟล์", fr: "Modifier le profil", de: "Profil bearbeiten", es: "Editar perfil",
+    pt: "Editar perfil", ru: "Редактировать профиль", ar: "تعديل الملف الشخصي", hi: "प्रोफ़ाइल संपादित करें"
+  },
+  "profile.bio": {
+    en: "Bio", vi: "Giới thiệu", zh: "简介", ja: "自己紹介", ko: "소개",
+    th: "ประวัติ", fr: "Bio", de: "Biografie", es: "Biografía",
+    pt: "Bio", ru: "О себе", ar: "نبذة", hi: "परिचय"
+  },
+  "profile.posts": {
+    en: "Posts", vi: "Bài viết", zh: "帖子", ja: "投稿", ko: "게시물",
+    th: "โพสต์", fr: "Publications", de: "Beiträge", es: "Publicaciones",
+    pt: "Publicações", ru: "Публикации", ar: "المنشورات", hi: "पोस्ट"
+  },
+  "profile.photos": {
+    en: "Photos", vi: "Ảnh", zh: "照片", ja: "写真", ko: "사진",
+    th: "รูปภาพ", fr: "Photos", de: "Fotos", es: "Fotos",
+    pt: "Fotos", ru: "Фотографии", ar: "الصور", hi: "तस्वीरें"
+  },
+  "profile.videos": {
+    en: "Videos", vi: "Video", zh: "视频", ja: "動画", ko: "동영상",
+    th: "วิดีโอ", fr: "Vidéos", de: "Videos", es: "Videos",
+    pt: "Vídeos", ru: "Видео", ar: "مقاطع الفيديو", hi: "वीडियो"
+  },
+  "profile.about": {
+    en: "About", vi: "Giới thiệu", zh: "关于", ja: "概要", ko: "소개",
+    th: "เกี่ยวกับ", fr: "À propos", de: "Über", es: "Acerca de",
+    pt: "Sobre", ru: "О себе", ar: "حول", hi: "के बारे में"
+  },
+
+  // ============ NOTIFICATIONS ============
+  "notifications.title": {
+    en: "Notifications", vi: "Thông báo", zh: "通知", ja: "通知", ko: "알림",
+    th: "การแจ้งเตือน", fr: "Notifications", de: "Benachrichtigungen", es: "Notificaciones",
+    pt: "Notificações", ru: "Уведомления", ar: "الإشعارات", hi: "सूचनाएं"
+  },
+  "notifications.noNotifications": {
+    en: "No notifications", vi: "Không có thông báo", zh: "没有通知", ja: "通知はありません", ko: "알림 없음",
+    th: "ไม่มีการแจ้งเตือน", fr: "Aucune notification", de: "Keine Benachrichtigungen", es: "Sin notificaciones",
+    pt: "Sem notificações", ru: "Нет уведомлений", ar: "لا توجد إشعارات", hi: "कोई सूचना नहीं"
+  },
+  "notifications.markAllRead": {
+    en: "Mark all as read", vi: "Đánh dấu tất cả đã đọc", zh: "全部标为已读", ja: "すべて既読にする", ko: "모두 읽음으로 표시",
+    th: "ทำเครื่องหมายว่าอ่านทั้งหมด", fr: "Tout marquer comme lu", de: "Alle als gelesen markieren", es: "Marcar todo como leído",
+    pt: "Marcar tudo como lido", ru: "Отметить все как прочитанное", ar: "تحديد الكل كمقروء", hi: "सभी को पढ़ा हुआ चिह्नित करें"
+  },
+
+  // ============ SETTINGS ============
+  "settings.title": {
+    en: "Settings", vi: "Cài đặt", zh: "设置", ja: "設定", ko: "설정",
+    th: "การตั้งค่า", fr: "Paramètres", de: "Einstellungen", es: "Configuración",
+    pt: "Configurações", ru: "Настройки", ar: "الإعدادات", hi: "सेटिंग्स"
+  },
+  "settings.account": {
+    en: "Account", vi: "Tài khoản", zh: "账户", ja: "アカウント", ko: "계정",
+    th: "บัญชี", fr: "Compte", de: "Konto", es: "Cuenta",
+    pt: "Conta", ru: "Аккаунт", ar: "الحساب", hi: "खाता"
+  },
+  "settings.privacy": {
+    en: "Privacy", vi: "Quyền riêng tư", zh: "隐私", ja: "プライバシー", ko: "개인정보",
+    th: "ความเป็นส่วนตัว", fr: "Confidentialité", de: "Datenschutz", es: "Privacidad",
+    pt: "Privacidade", ru: "Конфиденциальность", ar: "الخصوصية", hi: "गोपनीयता"
+  },
+  "settings.security": {
+    en: "Security", vi: "Bảo mật", zh: "安全", ja: "セキュリティ", ko: "보안",
+    th: "ความปลอดภัย", fr: "Sécurité", de: "Sicherheit", es: "Seguridad",
+    pt: "Segurança", ru: "Безопасность", ar: "الأمان", hi: "सुरक्षा"
+  },
+  "settings.notifications": {
+    en: "Notifications", vi: "Thông báo", zh: "通知", ja: "通知", ko: "알림",
+    th: "การแจ้งเตือน", fr: "Notifications", de: "Benachrichtigungen", es: "Notificaciones",
+    pt: "Notificações", ru: "Уведомления", ar: "الإشعارات", hi: "सूचनाएं"
+  },
+  "settings.appearance": {
+    en: "Appearance", vi: "Giao diện", zh: "外观", ja: "外観", ko: "외관",
+    th: "รูปลักษณ์", fr: "Apparence", de: "Erscheinungsbild", es: "Apariencia",
+    pt: "Aparência", ru: "Внешний вид", ar: "المظهر", hi: "दिखावट"
   },
 };
 

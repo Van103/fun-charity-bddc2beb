@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
 import { useFriendRequestNotifications } from "@/hooks/useFriendNotifications";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   Search, 
   UserPlus, 
@@ -51,6 +52,7 @@ export default function Friends() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   // Enable realtime friend notifications
   useFriendRequestNotifications(currentUserId);
@@ -238,8 +240,8 @@ export default function Friends() {
       if (error) throw error;
 
       toast({
-        title: "Đã gửi lời mời kết bạn",
-        description: "Đang chờ phản hồi",
+        title: t("friends.sentRequest"),
+        description: t("friends.waitingResponse"),
       });
 
       // Refresh data
@@ -267,8 +269,8 @@ export default function Friends() {
       if (error) throw error;
 
       toast({
-        title: "Đã chấp nhận lời mời",
-        description: "Các bạn đã trở thành bạn bè",
+        title: t("friends.accepted"),
+        description: t("friends.nowFriends"),
       });
 
       if (currentUserId) {
@@ -296,7 +298,7 @@ export default function Friends() {
       if (error) throw error;
 
       toast({
-        title: "Đã từ chối lời mời",
+        title: t("friends.rejected"),
       });
 
       if (currentUserId) {
@@ -321,7 +323,7 @@ export default function Friends() {
       if (error) throw error;
 
       toast({
-        title: "Đã hủy lời mời kết bạn",
+        title: t("friends.cancelled"),
       });
 
       if (currentUserId) {
@@ -346,7 +348,7 @@ export default function Friends() {
       if (error) throw error;
 
       toast({
-        title: "Đã hủy kết bạn",
+        title: t("friends.unfriended"),
       });
 
       if (currentUserId) {
@@ -371,7 +373,7 @@ export default function Friends() {
       </Avatar>
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-foreground truncate">
-          {profile?.full_name || "Người dùng"}
+          {profile?.full_name || t("messages.user")}
         </h4>
         {profile?.bio && (
           <p className="text-sm text-muted-foreground truncate">{profile.bio}</p>
@@ -397,8 +399,8 @@ export default function Friends() {
   return (
     <>
       <Helmet>
-        <title>Bạn bè - FUN Charity</title>
-        <meta name="description" content="Quản lý bạn bè và kết nối với cộng đồng FUN Charity" />
+        <title>{t("friends.title")} - FUN Charity</title>
+        <meta name="description" content={t("friends.description")} />
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -407,8 +409,8 @@ export default function Friends() {
         <main className="pt-20 pb-12">
           <div className="max-w-4xl mx-auto px-4">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-foreground mb-2">Bạn bè</h1>
-              <p className="text-muted-foreground">Kết nối với cộng đồng và tìm kiếm bạn mới</p>
+              <h1 className="text-2xl font-bold text-foreground mb-2">{t("friends.title")}</h1>
+              <p className="text-muted-foreground">{t("friends.description")}</p>
             </div>
 
             {/* Search */}
@@ -417,7 +419,7 @@ export default function Friends() {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
-                    placeholder="Tìm kiếm bạn bè theo tên..."
+                    placeholder={t("friends.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -425,14 +427,14 @@ export default function Friends() {
                   />
                 </div>
                 <Button onClick={handleSearch} disabled={searching}>
-                  {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : "Tìm kiếm"}
+                  {searching ? <Loader2 className="w-4 h-4 animate-spin" /> : t("friends.search")}
                 </Button>
               </div>
 
               {/* Search Results */}
               {searchResults.length > 0 && (
                 <div className="mt-4 space-y-3">
-                  <h3 className="font-semibold text-sm text-muted-foreground">Kết quả tìm kiếm</h3>
+                  <h3 className="font-semibold text-sm text-muted-foreground">{t("friends.searchResults")}</h3>
                   {searchResults.map((profile) => (
                     <FriendCard
                       key={profile.id}
@@ -440,7 +442,7 @@ export default function Friends() {
                       actions={
                         <Button size="sm" onClick={() => sendFriendRequest(profile.user_id)}>
                           <UserPlus className="w-4 h-4 mr-1" />
-                          Kết bạn
+                          {t("friends.addFriend")}
                         </Button>
                       }
                     />
@@ -453,19 +455,19 @@ export default function Friends() {
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="friends" className="gap-2">
                   <Users className="w-4 h-4" />
-                  Bạn bè ({friends.length})
+                  {t("friends.title")} ({friends.length})
                 </TabsTrigger>
                 <TabsTrigger value="requests" className="gap-2">
                   <Clock className="w-4 h-4" />
-                  Lời mời ({pendingRequests.length})
+                  {t("friends.requests")} ({pendingRequests.length})
                 </TabsTrigger>
                 <TabsTrigger value="sent" className="gap-2">
                   <UserPlus className="w-4 h-4" />
-                  Đã gửi ({sentRequests.length})
+                  {t("friends.sent")} ({sentRequests.length})
                 </TabsTrigger>
                 <TabsTrigger value="suggestions" className="gap-2">
                   <UserCheck className="w-4 h-4" />
-                  Gợi ý
+                  {t("friends.suggestions")}
                 </TabsTrigger>
               </TabsList>
 
@@ -483,7 +485,7 @@ export default function Friends() {
                           onClick={() => unfriend(friendship.id)}
                         >
                           <UserX className="w-4 h-4 mr-1" />
-                          Hủy kết bạn
+                          {t("friends.unfriend")}
                         </Button>
                       }
                     />
@@ -491,7 +493,7 @@ export default function Friends() {
                 ) : (
                   <div className="glass-card p-8 text-center">
                     <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Bạn chưa có bạn bè nào</p>
+                    <p className="text-muted-foreground">{t("friends.noFriends")}</p>
                   </div>
                 )}
               </TabsContent>
@@ -506,14 +508,14 @@ export default function Friends() {
                       actions={
                         <>
                           <Button size="sm" onClick={() => acceptFriendRequest(request.id)}>
-                            Chấp nhận
+                            {t("friends.accept")}
                           </Button>
                           <Button 
                             variant="outline" 
                             size="sm"
                             onClick={() => rejectFriendRequest(request.id)}
                           >
-                            Từ chối
+                            {t("friends.decline")}
                           </Button>
                         </>
                       }
@@ -522,7 +524,7 @@ export default function Friends() {
                 ) : (
                   <div className="glass-card p-8 text-center">
                     <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Không có lời mời kết bạn nào</p>
+                    <p className="text-muted-foreground">{t("friends.noPendingRequests")}</p>
                   </div>
                 )}
               </TabsContent>
@@ -540,7 +542,7 @@ export default function Friends() {
                           size="sm"
                           onClick={() => cancelFriendRequest(request.id)}
                         >
-                          Hủy lời mời
+                          {t("friends.cancel")}
                         </Button>
                       }
                     />
@@ -548,7 +550,7 @@ export default function Friends() {
                 ) : (
                   <div className="glass-card p-8 text-center">
                     <UserPlus className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Bạn chưa gửi lời mời nào</p>
+                    <p className="text-muted-foreground">{t("friends.noSentRequests")}</p>
                   </div>
                 )}
               </TabsContent>
@@ -563,7 +565,7 @@ export default function Friends() {
                       actions={
                         <Button size="sm" onClick={() => sendFriendRequest(profile.user_id)}>
                           <UserPlus className="w-4 h-4 mr-1" />
-                          Kết bạn
+                          {t("friends.addFriend")}
                         </Button>
                       }
                     />
@@ -571,7 +573,7 @@ export default function Friends() {
                 ) : (
                   <div className="glass-card p-8 text-center">
                     <UserCheck className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">Không có gợi ý nào</p>
+                    <p className="text-muted-foreground">{t("friends.noSuggestions")}</p>
                   </div>
                 )}
               </TabsContent>
