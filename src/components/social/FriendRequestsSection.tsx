@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, UserPlus, X, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, UserPlus, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -64,6 +64,22 @@ export function FriendRequestsSection() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+  
+  // Refs for scroll containers
+  const friendRequestsRef = useRef<HTMLDivElement>(null);
+  const sentRequestsRef = useRef<HTMLDivElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Scroll navigation function
+  const handleScroll = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+    if (ref.current) {
+      const scrollAmount = 300;
+      ref.current.scrollBy({
+        left: direction === 'right' ? scrollAmount : -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -468,8 +484,18 @@ export function FriendRequestsSection() {
             </button>
           </div>
 
-          <div className="relative -mx-1 sm:mx-0">
-            <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 px-1 sm:px-0 scroll-smooth-ios">
+          <div className="relative -mx-1 sm:mx-0 group">
+            {/* Left navigation arrow */}
+            {friendRequests.length > 3 && (
+              <button 
+                onClick={() => handleScroll(friendRequestsRef, 'left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
+                <ChevronLeft className="w-4 h-4 text-foreground" />
+              </button>
+            )}
+            
+            <div ref={friendRequestsRef} className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 px-1 sm:px-0 scroll-smooth-ios">
               {friendRequests.map((request, index) => (
                 <motion.div
                   key={request.id}
@@ -555,12 +581,17 @@ export function FriendRequestsSection() {
                   </div>
                 </motion.div>
               ))}
-              
-              {/* Navigation arrow */}
-              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+            </div>
+            
+            {/* Right navigation arrow */}
+            {friendRequests.length > 3 && (
+              <button 
+                onClick={() => handleScroll(friendRequestsRef, 'right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
                 <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
-            </div>
+            )}
           </div>
           
           <Link to="/friends" className="text-sm text-primary hover:underline mt-3 mx-auto block text-center font-medium">
@@ -579,8 +610,18 @@ export function FriendRequestsSection() {
             </span>
           </div>
 
-          <div className="relative">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+          <div className="relative group">
+            {/* Left navigation arrow */}
+            {sentRequests.length > 3 && (
+              <button 
+                onClick={() => handleScroll(sentRequestsRef, 'left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
+                <ChevronLeft className="w-4 h-4 text-foreground" />
+              </button>
+            )}
+            
+            <div ref={sentRequestsRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
               {sentRequests.map((request, index) => (
                 <motion.div
                   key={request.id}
@@ -635,12 +676,17 @@ export function FriendRequestsSection() {
                   </div>
                 </motion.div>
               ))}
-              
-              {/* Navigation arrow */}
-              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+            </div>
+            
+            {/* Right navigation arrow */}
+            {sentRequests.length > 3 && (
+              <button 
+                onClick={() => handleScroll(sentRequestsRef, 'right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
                 <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -655,8 +701,18 @@ export function FriendRequestsSection() {
             </button>
           </div>
 
-          <div className="relative">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+          <div className="relative group">
+            {/* Left navigation arrow */}
+            {suggestions.length > 3 && (
+              <button 
+                onClick={() => handleScroll(suggestionsRef, 'left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
+                <ChevronLeft className="w-4 h-4 text-foreground" />
+              </button>
+            )}
+            
+            <div ref={suggestionsRef} className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
               {suggestions.map((suggestion, index) => (
                 <motion.div
                   key={suggestion.userId}
@@ -743,12 +799,17 @@ export function FriendRequestsSection() {
                   </div>
                 </motion.div>
               ))}
-              
-              {/* Navigation arrow */}
-              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+            </div>
+            
+            {/* Right navigation arrow */}
+            {suggestions.length > 3 && (
+              <button 
+                onClick={() => handleScroll(suggestionsRef, 'right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-white/90 shadow-lg border border-border flex items-center justify-center hover:bg-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+              >
                 <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
-            </div>
+            )}
           </div>
           
           <Link to="/friends" className="text-sm text-primary hover:underline mt-3 mx-auto block text-center font-medium">
