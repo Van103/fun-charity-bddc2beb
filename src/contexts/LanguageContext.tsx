@@ -230,9 +230,9 @@ export const translations: Translations = {
 
   // Right Sidebar - Honor Board
   "honor.title": {
-    en: "RECOGNITION", vi: "BẢNG VINH DANH", zh: "荣誉榜", ja: "表彰", ko: "인정",
-    th: "เกียรติยศ", fr: "RECONNAISSANCE", de: "ANERKENNUNG", es: "RECONOCIMIENTO",
-    pt: "RECONHECIMENTO", ru: "ПРИЗНАНИЕ", ar: "التقدير", hi: "मान्यता"
+    en: "✨HONOR BOARD✨", vi: "✨BẢNG VINH DANH✨", zh: "✨荣誉榜✨", ja: "✨表彰✨", ko: "✨인정✨",
+    th: "✨เกียรติยศ✨", fr: "✨TABLEAU D'HONNEUR✨", de: "✨EHRENLISTE✨", es: "✨CUADRO DE HONOR✨",
+    pt: "✨QUADRO DE HONRA✨", ru: "✨ДОСКА ПОЧЁТА✨", ar: "✨لوحة الشرف✨", hi: "✨सम्मान बोर्ड✨"
   },
   "honor.topProfile": {
     en: "Total Featured Profiles", vi: "Hồ Sơ Nổi Bật", zh: "精选资料总数", ja: "注目プロフィール総数", ko: "주요 프로필 총계",
