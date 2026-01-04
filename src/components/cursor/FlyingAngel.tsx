@@ -936,6 +936,50 @@ const FlyingAngel = () => {
             }}
             draggable={false}
           />
+          {/* Crown overlay for all fairy angels */}
+          <motion.div
+            className="absolute pointer-events-none"
+            style={{
+              top: -8,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 28,
+              height: 18,
+            }}
+            animate={{
+              y: isSitting ? [0, -1, 0] : [0, -2, 0, 2, 0],
+              rotate: [0, 2, 0, -2, 0],
+            }}
+            transition={{
+              y: { duration: isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
+              rotate: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+            }}
+          >
+            <svg viewBox="0 0 32 22" className="w-full h-full drop-shadow-lg">
+              <defs>
+                <linearGradient id="crownGradFairy" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{ stopColor: '#FFD700' }} />
+                  <stop offset="50%" style={{ stopColor: '#FFC107' }} />
+                  <stop offset="100%" style={{ stopColor: '#FFA500' }} />
+                </linearGradient>
+              </defs>
+              {/* Crown base */}
+              <path 
+                d="M4 18 L6 8 L10 12 L16 4 L22 12 L26 8 L28 18 Z" 
+                fill="url(#crownGradFairy)"
+                stroke="#B8860B"
+                strokeWidth="0.5"
+              />
+              {/* Crown gems */}
+              <circle cx="16" cy="8" r="2.5" fill="#EC4899" stroke="#fff" strokeWidth="0.3" />
+              <circle cx="10" cy="12" r="1.8" fill="#9333EA" stroke="#fff" strokeWidth="0.3" />
+              <circle cx="22" cy="12" r="1.8" fill="#9333EA" stroke="#fff" strokeWidth="0.3" />
+              {/* Crown sparkles */}
+              <circle cx="16" cy="5" r="0.8" fill="#fff" opacity="0.9" />
+              <circle cx="7" cy="10" r="0.5" fill="#fff" opacity="0.7" />
+              <circle cx="25" cy="10" r="0.5" fill="#fff" opacity="0.7" />
+            </svg>
+          </motion.div>
         </motion.div>
       </motion.div>
     </>
