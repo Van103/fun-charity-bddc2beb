@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.agora-token]
 verify_jwt = false
+
+[functions.volunteer-matching]
+verify_jwt = false

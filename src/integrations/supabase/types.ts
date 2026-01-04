@@ -892,6 +892,81 @@ export type Database = {
         }
         Relationships: []
       }
+      help_requests: {
+        Row: {
+          category: string
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          estimated_duration_hours: number | null
+          id: string
+          is_verified: boolean | null
+          latitude: number | null
+          location_name: string | null
+          longitude: number | null
+          media_urls: Json | null
+          requester_id: string
+          scheduled_date: string | null
+          skills_required: string[] | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          urgency: string | null
+          verified_by: string | null
+          volunteers_matched: number | null
+          volunteers_needed: number | null
+        }
+        Insert: {
+          category: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          media_urls?: Json | null
+          requester_id: string
+          scheduled_date?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          urgency?: string | null
+          verified_by?: string | null
+          volunteers_matched?: number | null
+          volunteers_needed?: number | null
+        }
+        Update: {
+          category?: string
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          media_urls?: Json | null
+          requester_id?: string
+          scheduled_date?: string | null
+          skills_required?: string[] | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          urgency?: string | null
+          verified_by?: string | null
+          volunteers_matched?: number | null
+          volunteers_needed?: number | null
+        }
+        Relationships: []
+      }
       kyc_requests: {
         Row: {
           additional_docs: Json | null
@@ -1627,6 +1702,140 @@ export type Database = {
           is_2fa_enabled?: boolean | null
           pin_hash?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      volunteer_matches: {
+        Row: {
+          accepted_at: string | null
+          checked_in_at: string | null
+          checked_out_at: string | null
+          created_at: string | null
+          hours_logged: number | null
+          id: string
+          match_score: number | null
+          matched_at: string | null
+          notes: string | null
+          request_id: string
+          requester_feedback: string | null
+          requester_rating: number | null
+          status: string | null
+          updated_at: string | null
+          volunteer_feedback: string | null
+          volunteer_id: string
+          volunteer_rating: number | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          checked_in_at?: string | null
+          checked_out_at?: string | null
+          created_at?: string | null
+          hours_logged?: number | null
+          id?: string
+          match_score?: number | null
+          matched_at?: string | null
+          notes?: string | null
+          request_id: string
+          requester_feedback?: string | null
+          requester_rating?: number | null
+          status?: string | null
+          updated_at?: string | null
+          volunteer_feedback?: string | null
+          volunteer_id: string
+          volunteer_rating?: number | null
+        }
+        Update: {
+          accepted_at?: string | null
+          checked_in_at?: string | null
+          checked_out_at?: string | null
+          created_at?: string | null
+          hours_logged?: number | null
+          id?: string
+          match_score?: number | null
+          matched_at?: string | null
+          notes?: string | null
+          request_id?: string
+          requester_feedback?: string | null
+          requester_rating?: number | null
+          status?: string | null
+          updated_at?: string | null
+          volunteer_feedback?: string | null
+          volunteer_id?: string
+          volunteer_rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_matches_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "help_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      volunteer_profiles: {
+        Row: {
+          availability: Json | null
+          bio: string | null
+          certifications: string[] | null
+          completed_tasks: number | null
+          created_at: string | null
+          experience_level: string | null
+          id: string
+          is_available: boolean | null
+          latitude: number | null
+          location_name: string | null
+          longitude: number | null
+          phone: string | null
+          rating: number | null
+          rating_count: number | null
+          service_radius_km: number | null
+          skills: string[] | null
+          total_hours: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          availability?: Json | null
+          bio?: string | null
+          certifications?: string[] | null
+          completed_tasks?: number | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          is_available?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          phone?: string | null
+          rating?: number | null
+          rating_count?: number | null
+          service_radius_km?: number | null
+          skills?: string[] | null
+          total_hours?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          availability?: Json | null
+          bio?: string | null
+          certifications?: string[] | null
+          completed_tasks?: number | null
+          created_at?: string | null
+          experience_level?: string | null
+          id?: string
+          is_available?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          phone?: string | null
+          rating?: number | null
+          rating_count?: number | null
+          service_radius_km?: number | null
+          skills?: string[] | null
+          total_hours?: number | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []

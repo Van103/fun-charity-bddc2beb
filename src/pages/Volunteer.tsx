@@ -12,6 +12,12 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Navbar } from '@/components/layout/Navbar';
 import { LogActivityModal } from '@/components/volunteer/LogActivityModal';
+import { VolunteerRegistrationForm } from '@/components/volunteer/VolunteerRegistrationForm';
+import { CreateHelpRequestModal } from '@/components/volunteer/CreateHelpRequestModal';
+import { HelpRequestCard } from '@/components/volunteer/HelpRequestCard';
+import { MatchDashboard } from '@/components/volunteer/MatchDashboard';
+import { useVolunteerProfile } from '@/hooks/useVolunteerProfile';
+import { useHelpRequests, CATEGORY_OPTIONS } from '@/hooks/useHelpRequests';
 import { 
   Heart, 
   Users, 
@@ -37,7 +43,11 @@ import {
   Plus,
   User,
   History,
-  Trophy
+  Trophy,
+  AlertCircle,
+  Handshake,
+  UserPlus,
+  HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -169,9 +179,19 @@ const Volunteer = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [activeTab, setActiveTab] = useState('help-requests');
   const [userSkills, setUserSkills] = useState<string[]>(['Teaching', 'Communication', 'Leadership']);
   const [logModalOpen, setLogModalOpen] = useState(false);
+  const [createRequestModalOpen, setCreateRequestModalOpen] = useState(false);
+  
+  // Hooks for new matching system
+  const { profile: volunteerProfile, loading: volunteerProfileLoading } = useVolunteerProfile();
+  const { requests: helpRequests, loading: requestsLoading, refetch: refetchRequests } = useHelpRequests({
+    category: selectedCategory || undefined,
+    search: searchQuery || undefined,
+    status: 'open',
+  });
+  
   const [volunteerStats, setVolunteerStats] = useState({
     hoursCompleted: 0,
     tasksCompleted: 0,
@@ -486,18 +506,26 @@ const Volunteer = () => {
           {/* Main Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <TabsList className="bg-card/50 backdrop-blur-sm border border-border/50 p-1">
+              <TabsList className="bg-card/50 backdrop-blur-sm border border-border/50 p-1 flex-wrap">
+                <TabsTrigger value="help-requests" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <HelpCircle className="w-4 h-4" />
+                  {language === 'vi' ? 'Yêu cầu trợ giúp' : 'Help Requests'}
+                </TabsTrigger>
+                <TabsTrigger value="my-matches" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Handshake className="w-4 h-4" />
+                  {language === 'vi' ? 'Nhiệm vụ của tôi' : 'My Matches'}
+                </TabsTrigger>
+                <TabsTrigger value="register" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <UserPlus className="w-4 h-4" />
+                  {language === 'vi' ? 'Đăng ký TNV' : 'Register'}
+                </TabsTrigger>
                 <TabsTrigger value="tasks" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
                   <Target className="w-4 h-4" />
-                  {language === 'vi' ? 'Nhiệm vụ' : 'Tasks'}
+                  {language === 'vi' ? 'Nhiệm vụ mẫu' : 'Sample Tasks'}
                 </TabsTrigger>
                 <TabsTrigger value="my-activity" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
                   <History className="w-4 h-4" />
                   {language === 'vi' ? 'Hoạt động' : 'My Activity'}
-                </TabsTrigger>
-                <TabsTrigger value="skills" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
-                  <Sparkles className="w-4 h-4" />
-                  {language === 'vi' ? 'Kỹ năng' : 'Skills'}
                 </TabsTrigger>
                 <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
                   <Trophy className="w-4 h-4" />
@@ -505,13 +533,196 @@ const Volunteer = () => {
                 </TabsTrigger>
               </TabsList>
 
-              {user && (
-                <Button onClick={() => setLogModalOpen(true)} className="gap-2">
-                  <Plus className="w-4 h-4" />
-                  {language === 'vi' ? 'Ghi nhận hoạt động' : 'Log Activity'}
-                </Button>
-              )}
+              <div className="flex gap-2">
+                {user && activeTab === 'help-requests' && (
+                  <Button onClick={() => setCreateRequestModalOpen(true)} variant="default" className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    {language === 'vi' ? 'Tạo yêu cầu' : 'Create Request'}
+                  </Button>
+                )}
+                {user && (
+                  <Button onClick={() => setLogModalOpen(true)} variant="outline" className="gap-2">
+                    <Plus className="w-4 h-4" />
+                    {language === 'vi' ? 'Ghi nhận' : 'Log Activity'}
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {/* Help Requests Tab - NEW */}
+            <TabsContent value="help-requests" className="space-y-6">
+              {/* Search & Filter */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    placeholder={language === 'vi' ? 'Tìm kiếm yêu cầu...' : 'Search requests...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-card/50 border-border/50"
+                  />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  <Button
+                    variant={selectedCategory === null ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(null)}
+                    className="whitespace-nowrap"
+                  >
+                    {language === 'vi' ? 'Tất cả' : 'All'}
+                  </Button>
+                  {CATEGORY_OPTIONS.slice(0, 6).map((category) => (
+                    <Button
+                      key={category.id}
+                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category.id)}
+                      className="gap-1 whitespace-nowrap"
+                    >
+                      <span>{category.icon}</span>
+                      {language === 'vi' ? category.labelVi : category.labelEn}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Help Requests Grid */}
+              {requestsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                </div>
+              ) : helpRequests.length === 0 ? (
+                <Card className="bg-muted/30">
+                  <CardContent className="p-12 text-center">
+                    <AlertCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="font-semibold text-lg mb-2">
+                      {language === 'vi' ? 'Chưa có yêu cầu nào' : 'No help requests yet'}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {language === 'vi' 
+                        ? 'Hãy tạo yêu cầu đầu tiên hoặc quay lại sau!' 
+                        : 'Create the first request or check back later!'}
+                    </p>
+                    {user && (
+                      <Button onClick={() => setCreateRequestModalOpen(true)} className="gap-2">
+                        <Plus className="w-4 h-4" />
+                        {language === 'vi' ? 'Tạo yêu cầu trợ giúp' : 'Create Help Request'}
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {helpRequests.map((request) => (
+                    <HelpRequestCard 
+                      key={request.id} 
+                      request={request}
+                      onApply={() => {
+                        if (!user) {
+                          toast({
+                            title: language === 'vi' ? 'Vui lòng đăng nhập' : 'Please login',
+                            description: language === 'vi' 
+                              ? 'Bạn cần đăng nhập để đăng ký hỗ trợ' 
+                              : 'You need to login to apply for help',
+                            variant: 'destructive',
+                          });
+                          navigate('/auth');
+                          return;
+                        }
+                        if (!volunteerProfile) {
+                          toast({
+                            title: language === 'vi' ? 'Chưa đăng ký TNV' : 'Not registered',
+                            description: language === 'vi' 
+                              ? 'Vui lòng đăng ký làm tình nguyện viên trước' 
+                              : 'Please register as a volunteer first',
+                          });
+                          setActiveTab('register');
+                          return;
+                        }
+                        toast({
+                          title: language === 'vi' ? 'Đã gửi đăng ký!' : 'Application sent!',
+                          description: language === 'vi' 
+                            ? 'Chúng tôi sẽ thông báo khi bạn được ghép với yêu cầu này' 
+                            : "We'll notify you when you're matched with this request",
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* My Matches Tab - NEW */}
+            <TabsContent value="my-matches" className="space-y-6">
+              {!user ? (
+                <Card className="bg-muted/30">
+                  <CardContent className="p-12 text-center">
+                    <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="font-semibold text-lg mb-2">
+                      {language === 'vi' ? 'Vui lòng đăng nhập' : 'Please login'}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {language === 'vi' 
+                        ? 'Đăng nhập để xem các nhiệm vụ được ghép với bạn' 
+                        : 'Login to see your matched tasks'}
+                    </p>
+                    <Button onClick={() => navigate('/auth')}>
+                      {language === 'vi' ? 'Đăng nhập' : 'Login'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <MatchDashboard />
+              )}
+            </TabsContent>
+
+            {/* Register as Volunteer Tab - NEW */}
+            <TabsContent value="register" className="space-y-6">
+              {!user ? (
+                <Card className="bg-muted/30">
+                  <CardContent className="p-12 text-center">
+                    <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="font-semibold text-lg mb-2">
+                      {language === 'vi' ? 'Vui lòng đăng nhập' : 'Please login'}
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      {language === 'vi' 
+                        ? 'Đăng nhập để đăng ký làm tình nguyện viên' 
+                        : 'Login to register as a volunteer'}
+                    </p>
+                    <Button onClick={() => navigate('/auth')}>
+                      {language === 'vi' ? 'Đăng nhập' : 'Login'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="max-w-3xl mx-auto">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold mb-2">
+                      {volunteerProfile 
+                        ? (language === 'vi' ? 'Cập nhật hồ sơ TNV' : 'Update Volunteer Profile')
+                        : (language === 'vi' ? 'Đăng ký tình nguyện viên' : 'Register as Volunteer')}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      {language === 'vi' 
+                        ? 'Điền thông tin để chúng tôi ghép bạn với các yêu cầu trợ giúp phù hợp' 
+                        : 'Fill in your information so we can match you with suitable help requests'}
+                    </p>
+                  </div>
+                  <VolunteerRegistrationForm 
+                    onSuccess={() => {
+                      toast({
+                        title: language === 'vi' ? 'Thành công!' : 'Success!',
+                        description: language === 'vi' 
+                          ? 'Bạn đã sẵn sàng nhận các nhiệm vụ tình nguyện' 
+                          : "You're now ready to receive volunteer tasks",
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </TabsContent>
+
 
             {/* Tasks Tab */}
             <TabsContent value="tasks" className="space-y-6">
@@ -948,6 +1159,13 @@ const Volunteer = () => {
         open={logModalOpen} 
         onOpenChange={setLogModalOpen}
         onActivityLogged={refreshStats}
+      />
+
+      {/* Create Help Request Modal */}
+      <CreateHelpRequestModal
+        open={createRequestModalOpen}
+        onOpenChange={setCreateRequestModalOpen}
+        onSuccess={refetchRequests}
       />
     </>
   );
