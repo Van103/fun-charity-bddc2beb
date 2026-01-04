@@ -922,6 +922,42 @@ const FlyingAngel = () => {
             y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
+          {/* Crown on top of fairy head */}
+          <svg 
+            viewBox="0 0 24 12" 
+            className="absolute w-7 h-4 z-10"
+            style={{
+              left: '50%',
+              top: '-2px',
+              transform: 'translateX(-50%)',
+              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+            }}
+          >
+            <defs>
+              <linearGradient id="crownGradFairy" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#FFD700' }} />
+                <stop offset="50%" style={{ stopColor: '#FFA500' }} />
+                <stop offset="100%" style={{ stopColor: '#FFD700' }} />
+              </linearGradient>
+            </defs>
+            {/* Crown base shape - centered */}
+            <path 
+              d="M4 10 L5 4 L7.5 7 L12 2 L16.5 7 L19 4 L20 10 L19 11 L5 11 Z" 
+              fill="url(#crownGradFairy)"
+              stroke="#B8860B"
+              strokeWidth="0.3"
+            />
+            {/* Center jewel - pink */}
+            <circle cx="12" cy="4.5" r="1.2" fill="#EC4899" />
+            {/* Side jewels - purple */}
+            <circle cx="7" cy="6.5" r="0.8" fill="#9333EA" />
+            <circle cx="17" cy="6.5" r="0.8" fill="#9333EA" />
+            {/* Sparkle dots on crown */}
+            <circle cx="5.5" cy="8" r="0.4" fill="#FFFACD" />
+            <circle cx="18.5" cy="8" r="0.4" fill="#FFFACD" />
+            <circle cx="12" cy="7" r="0.3" fill="#FFFACD" />
+          </svg>
+          
           <motion.img
             src={processedFairySrc ?? displayedFairy}
             alt="Fairy cursor"
