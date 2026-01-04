@@ -323,9 +323,10 @@ export function useCreateFeedPost() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["feed-posts-infinite"] });
       toast({
-        title: "Đã đăng bài",
-        description: "Bài viết của bạn đã được đăng thành công!",
+        title: "Đã gửi bài viết",
+        description: "Bài viết của bạn đang chờ kiểm duyệt và sẽ hiển thị sau khi được phê duyệt.",
       });
     },
     onError: (error) => {

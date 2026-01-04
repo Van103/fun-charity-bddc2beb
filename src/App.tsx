@@ -47,6 +47,7 @@ import VerifyEmail from "./pages/VerifyEmail";
 import AuthCallback from "./pages/AuthCallback";
 import LiveStream from "./pages/LiveStream";
 import HonorBoard from "./pages/HonorBoard";
+import AdminModeration from "./pages/AdminModeration";
 
 const queryClient = new QueryClient();
 
@@ -169,6 +170,7 @@ const App = () => (
                 <Route path="/friends" element={<Friends />} />
                 <Route path="/my-campaigns" element={<MyCampaigns />} />
                 <Route path="/admin/verify" element={<AdminVerify />} />
+                <Route path="/admin/moderation" element={<AdminModeration />} />
                 <Route path="/volunteer" element={<Volunteer />} />
                 <Route path="/install" element={<Install />} />
                 <Route path="/live/:streamId" element={<LiveStream />} />

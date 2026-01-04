@@ -702,6 +702,10 @@ export type Database = {
           longitude: number | null
           matched_with_id: string | null
           media_urls: Json | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_note: string | null
+          moderation_status: string
           offered_skills: string[] | null
           post_type: Database["public"]["Enums"]["feed_post_type"]
           region: string | null
@@ -733,6 +737,10 @@ export type Database = {
           longitude?: number | null
           matched_with_id?: string | null
           media_urls?: Json | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
+          moderation_status?: string
           offered_skills?: string[] | null
           post_type?: Database["public"]["Enums"]["feed_post_type"]
           region?: string | null
@@ -764,6 +772,10 @@ export type Database = {
           longitude?: number | null
           matched_with_id?: string | null
           media_urls?: Json | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_note?: string | null
+          moderation_status?: string
           offered_skills?: string[] | null
           post_type?: Database["public"]["Enums"]["feed_post_type"]
           region?: string | null
@@ -2017,6 +2029,8 @@ export type Database = {
         | "comment_reply"
         | "system_announcement"
         | "missed_call"
+        | "post_approved"
+        | "post_rejected"
       payment_method:
         | "fiat_card"
         | "fiat_bank_transfer"
@@ -2226,6 +2240,8 @@ export const Constants = {
         "comment_reply",
         "system_announcement",
         "missed_call",
+        "post_approved",
+        "post_rejected",
       ],
       payment_method: [
         "fiat_card",
