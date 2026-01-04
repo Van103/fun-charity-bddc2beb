@@ -283,11 +283,71 @@ export function useCreateFeedPost() {
 
   return useMutation({
     mutationFn: async (input: CreateFeedPostInput) => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error("Not authenticated");
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Not authenticated");
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) throw new Error("No session");
+
+      // Check content with AI moderation before saving
+      const contentToCheck = {
+        text: [input.title, input.content].filter(Boolean).join(" "),
+        imageUrls: input.media_urls || [],
+        userId: userData.user.id,
+      };
+
+      // Only check if there's content
+      if (contentToCheck.text || contentToCheck.imageUrls.length > 0) {
+        try {
+          const moderationResponse = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/content-moderation`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionData.session.access_token}`,
+              },
+              body: JSON.stringify(contentToCheck),
+            }
+          );
+
+          if (moderationResponse.ok) {
+            const moderationResult = await moderationResponse.json();
+            
+            if (!moderationResult.safe) {
+              // Content is not safe - delete uploaded media and throw error
+              if (input.media_urls && input.media_urls.length > 0) {
+                const filePaths = input.media_urls
+                  .map(url => {
+                    const match = url.match(/post-images\/(.+)$/);
+                    return match ? match[1] : null;
+                  })
+                  .filter(Boolean) as string[];
+                
+                if (filePaths.length > 0) {
+                  await supabase.storage.from("post-images").remove(filePaths);
+                }
+              }
+              
+              throw new Error(
+                moderationResult.reason || 
+                "Nội dung vi phạm tiêu chuẩn cộng đồng. Vui lòng kiểm tra lại."
+              );
+            }
+          }
+        } catch (moderationError) {
+          // If it's our custom error, rethrow it
+          if (moderationError instanceof Error && 
+              moderationError.message.includes("vi phạm")) {
+            throw moderationError;
+          }
+          // Otherwise log and continue (don't block on moderation failures)
+          console.error("Moderation check failed:", moderationError);
+        }
+      }
 
       const insertData: Record<string, any> = {
-        user_id: user.user.id,
+        user_id: userData.user.id,
         post_type: input.post_type,
         title: input.title || null,
         content: input.content || null,
@@ -331,7 +391,7 @@ export function useCreateFeedPost() {
     },
     onError: (error) => {
       toast({
-        title: "Lỗi",
+        title: "Nội dung không phù hợp",
         description: error.message,
         variant: "destructive",
       });

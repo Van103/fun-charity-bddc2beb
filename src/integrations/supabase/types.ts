@@ -1129,6 +1129,42 @@ export type Database = {
           },
         ]
       }
+      moderation_logs: {
+        Row: {
+          ai_score: number | null
+          categories: string[] | null
+          content: string | null
+          content_type: string
+          created_at: string | null
+          id: string
+          media_urls: string[] | null
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          ai_score?: number | null
+          categories?: string[] | null
+          content?: string | null
+          content_type: string
+          created_at?: string | null
+          id?: string
+          media_urls?: string[] | null
+          reason: string
+          user_id: string
+        }
+        Update: {
+          ai_score?: number | null
+          categories?: string[] | null
+          content?: string | null
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          media_urls?: string[] | null
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           created_at: string
