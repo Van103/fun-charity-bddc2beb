@@ -18,6 +18,7 @@ import { HelpRequestCard } from '@/components/volunteer/HelpRequestCard';
 import { MatchDashboard } from '@/components/volunteer/MatchDashboard';
 import { useVolunteerProfile } from '@/hooks/useVolunteerProfile';
 import { useHelpRequests, CATEGORY_OPTIONS } from '@/hooks/useHelpRequests';
+import { HelpRequestsMap } from '@/components/volunteer/HelpRequestsMap';
 import { 
   Heart, 
   Users, 
@@ -47,7 +48,8 @@ import {
   AlertCircle,
   Handshake,
   UserPlus,
-  HelpCircle
+  HelpCircle,
+  Map
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -523,6 +525,10 @@ const Volunteer = () => {
                   <Target className="w-4 h-4" />
                   {language === 'vi' ? 'Nhiệm vụ mẫu' : 'Sample Tasks'}
                 </TabsTrigger>
+                <TabsTrigger value="map" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
+                  <Map className="w-4 h-4" />
+                  {language === 'vi' ? 'Bản đồ' : 'Map'}
+                </TabsTrigger>
                 <TabsTrigger value="my-activity" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-white">
                   <History className="w-4 h-4" />
                   {language === 'vi' ? 'Hoạt động' : 'My Activity'}
@@ -856,6 +862,29 @@ const Volunteer = () => {
                   })}
                 </AnimatePresence>
               </div>
+            </TabsContent>
+
+            {/* Map Tab */}
+            <TabsContent value="map" className="space-y-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold mb-2">
+                  {language === 'vi' ? 'Bản đồ yêu cầu trợ giúp' : 'Help Requests Map'}
+                </h2>
+                <p className="text-muted-foreground">
+                  {language === 'vi' 
+                    ? 'Xem các yêu cầu trợ giúp theo vị trí địa lý để dễ dàng tìm kiếm trong khu vực của bạn' 
+                    : 'View help requests by location to easily find opportunities in your area'}
+                </p>
+              </div>
+              <HelpRequestsMap 
+                requests={helpRequests}
+                onSelectRequest={(request) => {
+                  toast({
+                    title: request.title,
+                    description: request.location_name || (language === 'vi' ? 'Không có vị trí' : 'No location'),
+                  });
+                }}
+              />
             </TabsContent>
 
             {/* My Activity Tab */}
