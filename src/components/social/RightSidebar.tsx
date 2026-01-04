@@ -110,7 +110,7 @@ export function RightSidebar() {
         
         <Link to="/honor-board" className="relative block border-b border-yellow-400/40 bg-gradient-to-r from-purple-900/60 via-purple-800/70 to-purple-900/60 hover:from-purple-800/70 hover:via-purple-700/80 hover:to-purple-800/70 transition-all">
           <h3 className="py-3 px-2 font-extrabold text-center tracking-widest drop-shadow-lg w-full" style={{ color: '#FFD700', fontSize: '20px' }}>
-            <span className="animate-sparkle inline-block">✨</span> {t("honor.title")} <span className="animate-sparkle-delay inline-block">✨</span>
+            <span className="animate-sparkle inline-block">🏆</span> {t("honor.title")} <span className="animate-sparkle-delay inline-block">🏆</span>
           </h3>
         </Link>
         <div className="relative p-3 space-y-2">
