@@ -155,6 +155,26 @@ export const translations: Translations = {
     th: "ผู้ใช้", fr: "Utilisateurs", de: "Benutzer", es: "Usuarios",
     pt: "Usuários", ru: "Пользователи", ar: "المستخدمون", hi: "उपयोगकर्ता"
   },
+  "sidebar.quickActions": {
+    en: "Quick Actions", vi: "Truy cập nhanh", zh: "快速操作", ja: "クイックアクション", ko: "빠른 작업",
+    th: "การทำงานด่วน", fr: "Actions rapides", de: "Schnellaktionen", es: "Acciones rápidas",
+    pt: "Ações rápidas", ru: "Быстрые действия", ar: "إجراءات سريعة", hi: "त्वरित कार्य"
+  },
+  "sidebar.honorBoard": {
+    en: "Honor Board", vi: "Bảng Vinh Danh", zh: "荣誉榜", ja: "栄誉の殿堂", ko: "명예의 전당",
+    th: "เกียรติยศ", fr: "Tableau d'honneur", de: "Ehrentafel", es: "Cuadro de Honor",
+    pt: "Quadro de Honra", ru: "Доска почета", ar: "لوحة الشرف", hi: "सम्मान बोर्ड"
+  },
+  "sidebar.trading": {
+    en: "Trading", vi: "Giao dịch", zh: "交易", ja: "取引", ko: "거래",
+    th: "การซื้อขาย", fr: "Trading", de: "Handel", es: "Comercio",
+    pt: "Negociação", ru: "Торговля", ar: "التداول", hi: "व्यापार"
+  },
+  "sidebar.volunteer": {
+    en: "Volunteer", vi: "Tình nguyện", zh: "志愿者", ja: "ボランティア", ko: "자원봉사",
+    th: "อาสาสมัคร", fr: "Bénévolat", de: "Freiwilligenarbeit", es: "Voluntariado",
+    pt: "Voluntariado", ru: "Волонтерство", ar: "التطوع", hi: "स्वयंसेवा"
+  },
 
   // Menu items
   "menu.profile": {

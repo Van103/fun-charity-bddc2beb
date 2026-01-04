@@ -14,11 +14,14 @@ import {
   Sprout,
   Gamepad2,
   MessageCircle,
+  Trophy,
+  HandHeart,
 } from "lucide-react";
 import funProfileLogo from "@/assets/fun-profile-logo.webp";
 import funPlayLogo from "@/assets/fun-play-logo.png";
 import funPlanetLogo from "@/assets/fun-planet-logo.png";
 import funFarmLogo from "@/assets/fun-farm-logo.png";
+
 interface MenuItem {
   icon?: React.ComponentType<{ className?: string }>;
   image?: string;
@@ -40,6 +43,38 @@ const menuItems: MenuItem[] = [
   { icon: Scale, labelKey: "menu.legal", href: "/legal", external: false },
 ];
 
+interface QuickActionItem {
+  icon: React.ComponentType<{ className?: string }>;
+  labelKey: string;
+  href: string;
+  gradient: string;
+  iconColor: string;
+}
+
+const quickActions: QuickActionItem[] = [
+  { 
+    icon: Trophy, 
+    labelKey: "sidebar.honorBoard", 
+    href: "/honor-board",
+    gradient: "from-amber-500/20 to-yellow-500/20",
+    iconColor: "text-amber-500"
+  },
+  { 
+    icon: TrendingUp, 
+    labelKey: "sidebar.trading", 
+    href: "/trading",
+    gradient: "from-emerald-500/20 to-green-500/20",
+    iconColor: "text-emerald-500"
+  },
+  { 
+    icon: HandHeart, 
+    labelKey: "sidebar.volunteer", 
+    href: "/volunteer",
+    gradient: "from-pink-500/20 to-rose-500/20",
+    iconColor: "text-pink-500"
+  },
+];
+
 interface LeftSidebarProps {
   profile?: {
     full_name: string | null;
@@ -55,6 +90,40 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
   return (
     <aside className="w-64 shrink-0 h-[calc(100vh-6rem)] overflow-y-auto scrollbar-purple scrollbar-left pl-1">
       <div className="space-y-4 w-full">
+        {/* Quick Actions */}
+        <div className="glass-card p-4 hover-luxury-glow bg-gradient-to-br from-primary/5 to-accent/5">
+          <h3 className="font-semibold mb-3 text-[#4C1D95] flex items-center gap-2" style={{ fontSize: '18px' }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            {t("sidebar.quickActions")}
+          </h3>
+          
+          <nav className="space-y-2">
+            {quickActions.map((item) => {
+              const isActive = location.pathname === item.href;
+              const Icon = item.icon;
+              
+              return (
+                <Link
+                  key={item.labelKey}
+                  to={item.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group ${
+                    isActive 
+                      ? "glossy-btn glossy-btn-gradient shadow-lg font-semibold" 
+                      : `bg-gradient-to-r ${item.gradient} hover:scale-[1.02] active:scale-[0.98] border border-transparent hover:border-primary/20`
+                  }`}
+                >
+                  <div className={`p-1.5 rounded-lg ${isActive ? "bg-white/20" : `bg-gradient-to-br ${item.gradient}`}`}>
+                    <Icon className={`w-4 h-4 ${isActive ? "text-white" : item.iconColor} transition-transform group-hover:scale-110`} />
+                  </div>
+                  <span className={`font-medium ${isActive ? "text-white" : "text-foreground"}`} style={{ fontSize: '15px' }}>
+                    {t(item.labelKey)}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
         {/* Platform Ecosystem */}
         <div className="glass-card p-4 hover-luxury-glow">
           <h3 className="font-semibold mb-1 text-[#4C1D95]" style={{ fontSize: '20px' }}>
