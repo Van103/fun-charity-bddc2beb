@@ -298,12 +298,15 @@ export function useCreateFeedPost() {
         userId: userData.user.id,
       };
 
+      console.log("🔍 Starting AI moderation check:", contentToCheck);
+
       // Determine moderation status based on AI result
-      let moderationStatus = "pending"; // Default to pending for manual review
+      let moderationStatus = "approved"; // Default to approved, only change if AI says otherwise
       
       // Only check if there's content
       if (contentToCheck.text || contentToCheck.imageUrls.length > 0) {
         try {
+          console.log("📡 Calling moderation API...");
           const moderationResponse = await fetch(
             `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/content-moderation`,
             {
@@ -316,11 +319,15 @@ export function useCreateFeedPost() {
             }
           );
 
+          console.log("📬 Moderation response status:", moderationResponse.status);
+
           if (moderationResponse.ok) {
             const moderationResult = await moderationResponse.json();
+            console.log("📋 Moderation result:", JSON.stringify(moderationResult, null, 2));
             
             // Handle different moderation decisions
             if (moderationResult.decision === "HARD_VIOLATION") {
+              console.log("🚫 HARD_VIOLATION detected - blocking post");
               // Delete uploaded media for hard violations
               if (input.media_urls && input.media_urls.length > 0) {
                 const filePaths = input.media_urls
@@ -341,6 +348,7 @@ export function useCreateFeedPost() {
             }
             
             if (moderationResult.decision === "SOFT_VIOLATION") {
+              console.log("⚠️ SOFT_VIOLATION detected - asking user to revise");
               // Delete uploaded media for soft violations too
               if (input.media_urls && input.media_urls.length > 0) {
                 const filePaths = input.media_urls
@@ -360,10 +368,14 @@ export function useCreateFeedPost() {
               );
             }
             
-            // SAFE content - auto-approve
+            // SAFE content - keep as approved (already set as default)
             if (moderationResult.decision === "SAFE") {
+              console.log("✅ Content is SAFE - auto-approving");
               moderationStatus = "approved";
             }
+          } else {
+            console.error("❌ Moderation API error:", moderationResponse.status, await moderationResponse.text());
+            // Keep as approved if moderation fails - don't block users
           }
         } catch (moderationError) {
           // If it's our custom error (violations), rethrow it
@@ -371,13 +383,14 @@ export function useCreateFeedPost() {
               (moderationError.message.includes("🚫") || moderationError.message.includes("⚠️"))) {
             throw moderationError;
           }
-          // Otherwise log and continue with manual review
-          console.error("Moderation check failed:", moderationError);
+          // Otherwise log and continue with auto-approve
+          console.error("⚠️ Moderation check failed, auto-approving:", moderationError);
         }
       } else {
-        // No content to check, auto-approve
-        moderationStatus = "approved";
+        console.log("📝 No content to check - auto-approving");
       }
+
+      console.log("📊 Final moderation status:", moderationStatus);
 
       const insertData: Record<string, any> = {
         user_id: userData.user.id,
