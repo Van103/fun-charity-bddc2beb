@@ -400,9 +400,9 @@ export const translations: Translations = {
 
   // Create Post
   "post.thinking": {
-    en: "What's on your mind?", vi: "Bạn đang nghĩ gì?", zh: "你在想什么？", ja: "何を考えていますか？", ko: "무슨 생각을 하고 계세요?",
-    th: "คุณกำลังคิดอะไรอยู่?", fr: "À quoi pensez-vous ?", de: "Was denkst du gerade?", es: "¿Qué estás pensando?",
-    pt: "No que você está pensando?", ru: "О чем вы думаете?", ar: "بماذا تفكر؟", hi: "आप क्या सोच रहे हैं?"
+    en: "What do you want to share today? Fun Charity is here to listen to you", vi: "Hôm nay bạn muốn chia sẻ điều gì? Fun Charity ở đây để lắng nghe bạn", zh: "今天你想分享什么？Fun Charity在这里倾听你", ja: "今日は何を共有したいですか？Fun Charityがあなたの声を聴いています", ko: "오늘 무엇을 나누고 싶으세요? Fun Charity가 여기서 들어드릴게요",
+    th: "วันนี้คุณอยากแบ่งปันอะไร? Fun Charity พร้อมรับฟังคุณ", fr: "Qu'aimeriez-vous partager aujourd'hui ? Fun Charity est là pour vous écouter", de: "Was möchtest du heute teilen? Fun Charity hört dir zu", es: "¿Qué quieres compartir hoy? Fun Charity está aquí para escucharte",
+    pt: "O que você quer compartilhar hoje? Fun Charity está aqui para te ouvir", ru: "Чем вы хотите поделиться сегодня? Fun Charity здесь, чтобы выслушать вас", ar: "ماذا تريد مشاركته اليوم؟ Fun Charity هنا للاستماع إليك", hi: "आज आप क्या साझा करना चाहते हैं? Fun Charity आपकी बात सुनने के लिए यहां है"
   },
   "post.photo": {
     en: "Photo", vi: "Ảnh", zh: "照片", ja: "写真", ko: "사진",
