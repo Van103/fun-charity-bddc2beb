@@ -65,37 +65,53 @@ serve(async (req) => {
       );
     }
 
-    // Call Lovable AI for content moderation
-    const moderationPrompt = `Bạn là hệ thống kiểm duyệt nội dung cho một cộng đồng thiện nguyện và chữa lành.
+    // Call Lovable AI for content moderation - FUN Charity Hub specific rules
+    const moderationPrompt = `Bạn là hệ thống kiểm duyệt nội dung cho FUN Charity Hub - cộng đồng kết hợp TÂM LINH + CRYPTO + TỪ THIỆN.
 
-Hãy phân tích nội dung sau với tinh thần bảo vệ con người, không phán xét, không cực đoan, nhưng kiên quyết với nội dung gây tổn thương.
+## QUY TẮC QUAN TRỌNG - LUÔN CHO PHÉP 100% (decision = "SAFE"):
 
-Đánh giá các yếu tố:
-1. NSFW: Nội dung khiêu dâm, gợi dục, hình ảnh nhạy cảm
-2. VIOLENCE: Bạo lực, đe dọa, máu me, ghê rợn
-3. HATE_SPEECH: Ngôn từ xúc phạm, thù ghét, kích động, phân biệt chủng tộc/giới tính/tôn giáo
-4. SPAM: Quảng cáo spam, lừa đảo, phishing
-5. PROFANITY: Từ ngữ thô tục, chửi bậy (tiếng Việt và tiếng Anh)
+Các chủ đề sau là NỘI DUNG CỐT LÕI của cộng đồng, KHÔNG BAO GIỜ flag hoặc block:
+- Tôn giáo: Phật giáo, Công giáo, Tin lành, Hồi giáo, Hindu, v.v.
+- Tâm linh: thiền định, năng lượng tích cực, chữa lành, chakra, reiki
+- "Cha vũ trụ", "Cha Thiên Thượng", vũ trụ, năng lượng vũ trụ, luật hấp dẫn
+- Cryptocurrency: Bitcoin, Ethereum, Solana, blockchain, NFT, DeFi, đầu tư crypto, ví tiền số
+- Từ thiện: quyên góp, giúp đỡ, volunteer, charity, donation
+- Kiến thức tài chính, kinh doanh online, passive income
+- Lời chúc phúc, cầu nguyện, mantra, affirmation
+
+Ví dụ LUÔN OK:
+- "Cha vũ trụ ơi con yêu cha, Bitcoin sẽ moon!"
+- "Thiền 15 phút mỗi ngày để kết nối năng lượng"
+- "Quyên góp 1 SOL cho trẻ em nghèo"
+- "Hôm nay BTC lên 100k USD, cảm ơn Cha Thiên Thượng"
+
+## CHỈ BLOCK (decision = "HARD_VIOLATION") khi VI PHẠM RÕ RÀNG (toxicity > 0.8):
+
+- Chửi bới thô tục TRỰC TIẾP: "đm", "con đĩ", "chết mẹ mày", "địt"
+- Hate speech cực đoan: kêu gọi bạo lực, kỳ thị chủng tộc/giới tính
+- Nội dung khiêu dâm, nude, sex rõ ràng
+- Bạo lực máu me, gore, ma túy
+- Lừa đảo RÕ RÀNG: "Chuyển 1 USDT nhận 100 USDT", pyramid scheme
+
+## CẢNH BÁO NHẸ (decision = "SOFT_VIOLATION") - hiếm khi dùng:
+
+- Spam quảng cáo quá mức (>20 hashtag, link spam)
+- Ngôn ngữ có thể gây hiểu nhầm nhưng không rõ ràng vi phạm
+
+## NGUYÊN TẮC:
+- Mặc định là SAFE - chỉ flag khi chắc chắn >80% vi phạm
+- Ưu tiên context tích cực của FUN Charity Hub
+- KHÔNG flag nội dung tâm linh, tôn giáo, crypto dù có vẻ "lạ"
 
 Nội dung cần kiểm tra:
 ${contentToAnalyze}
 
-QUAN TRỌNG:
-- Nếu có URL hình ảnh, hãy mô tả những gì có thể có trong hình dựa trên ngữ cảnh và tên file
-- Ưu tiên hướng dẫn người dùng sửa nội dung nếu có thể
-- Chỉ từ chối hoàn toàn khi nội dung gây tổn thương rõ ràng
-
-Phân loại kết quả:
-- SAFE: Nội dung an toàn, có thể đăng
-- SOFT_VIOLATION: Chưa phù hợp, có thể chỉnh sửa và đăng lại
-- HARD_VIOLATION: Không thể chấp nhận, từ chối hoàn toàn
-
-Trả về CHÍNH XÁC theo định dạng JSON:
+Trả về JSON:
 {
   "decision": "SAFE | SOFT_VIOLATION | HARD_VIOLATION",
-  "reason": "Giải thích ngắn gọn, mang tính hướng dẫn (null nếu SAFE)",
-  "categories": ["danh sách các category vi phạm nếu có"],
-  "confidence_score": số từ 0.0-1.0 thể hiện mức độ chắc chắn
+  "reason": "Giải thích ngắn (null nếu SAFE)",
+  "categories": ["danh sách vi phạm nếu có"],
+  "confidence_score": 0.0-1.0
 }`;
 
     console.log("Calling Lovable AI for content moderation...");
