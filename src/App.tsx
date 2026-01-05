@@ -49,7 +49,9 @@ import LiveStream from "./pages/LiveStream";
 import HonorBoard from "./pages/HonorBoard";
 import AdminModeration from "./pages/AdminModeration";
 import Wallet from "./pages/Wallet";
+import Leaderboard from "./pages/Leaderboard";
 import { RewardNotification } from "@/components/rewards/RewardNotification";
+import { MilestoneAnimation } from "@/components/rewards/MilestoneAnimation";
 import ModerationLogs from "./pages/ModerationLogs";
 
 const queryClient = new QueryClient();
@@ -146,6 +148,7 @@ const App = () => (
               <IncomingCallListener />
               <GlobalEmailVerificationBanner />
               <RewardNotification />
+              <MilestoneAnimation />
               <Routes>
               <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
@@ -181,6 +184,7 @@ const App = () => (
                 <Route path="/live/:streamId" element={<LiveStream />} />
                 <Route path="/honor-board" element={<HonorBoard />} />
                 <Route path="/wallet" element={<Wallet />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

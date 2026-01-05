@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift } from 'lucide-react';
+import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy } from 'lucide-react';
 import { useUserBalances, useRewardTransactions, useReferralCode, formatCurrency, getCurrencyIcon, getActionName } from '@/hooks/useRewards';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { ClaimRewardsButton } from './ClaimRewardsButton';
 import { vi } from 'date-fns/locale';
 
 export function MyWallet() {
@@ -63,13 +65,20 @@ export function MyWallet() {
                       Chính
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground text-sm">Camly Coin</p>
+                  <p className="text-muted-foreground text-sm">Camly Coin (Claimable)</p>
                   <p className="text-3xl font-bold text-amber-500">
                     {totalCamly.toLocaleString()}
                   </p>
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
+                      <span>+{(balances?.find(b => b.currency === 'CAMLY')?.total_earned || 0).toLocaleString()} tổng</span>
+                    </div>
+                    <ClaimRewardsButton claimableAmount={totalCamly} />
+                  </div>
                   <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <TrendingUp className="w-4 h-4 text-green-500" />
-                    <span>+{balances?.find(b => b.currency === 'CAMLY')?.total_earned || 0} tổng nhận</span>
+                    <Check className="w-4 h-4 text-primary" />
+                    <span>Đã nhận: {(balances?.find(b => b.currency === 'CAMLY')?.total_withdrawn || 0).toLocaleString()}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -138,6 +147,24 @@ export function MyWallet() {
           </CardContent>
         </Card>
       )}
+
+      {/* Leaderboard Link */}
+      <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 border-primary/20">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Trophy className="w-8 h-8 text-primary" />
+            <div>
+              <p className="font-semibold">Bảng Xếp Hạng</p>
+              <p className="text-sm text-muted-foreground">Xem thứ hạng của bạn trong cộng đồng</p>
+            </div>
+          </div>
+          <Link to="/leaderboard">
+            <Button variant="outline" size="sm">
+              Xem ngay
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
 
       {/* Tabs: History */}
       <Tabs defaultValue="history" className="w-full">
