@@ -89,7 +89,7 @@ export function useFeedComments(postId: string) {
     },
   });
 
-  // Add comment mutation
+  // Add comment mutation with AI moderation
   const addComment = useMutation({
     mutationFn: async ({
       content,
@@ -102,6 +102,53 @@ export function useFeedComments(postId: string) {
     }) => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Not authenticated");
+
+      // AI Content Moderation for comments
+      try {
+        const moderationPayload: { text?: string; imageUrls?: string[]; userId: string } = {
+          userId: user.user.id,
+        };
+
+        if (content?.trim()) {
+          moderationPayload.text = content;
+        }
+
+        if (imageUrl) {
+          moderationPayload.imageUrls = [imageUrl];
+        }
+
+        const { data: moderationResult, error: moderationError } = await supabase.functions.invoke(
+          'content-moderation',
+          { body: moderationPayload }
+        );
+
+        if (moderationError) {
+          console.error('Moderation error:', moderationError);
+          // Continue posting if moderation fails
+        } else if (moderationResult) {
+          const decision = moderationResult.decision || 'SAFE';
+
+          if (decision === 'HARD_VIOLATION') {
+            throw new Error(
+              moderationResult.reason || 
+              'Bình luận vi phạm quy định cộng đồng. Vui lòng chỉnh sửa nội dung.'
+            );
+          }
+
+          if (decision === 'SOFT_VIOLATION') {
+            // Show warning but allow posting
+            toast({
+              title: "⚠️ Lưu ý nhẹ",
+              description: moderationResult.reason || "Bình luận có thể cần xem xét lại ngôn từ",
+            });
+          }
+        }
+      } catch (moderationError: any) {
+        if (moderationError.message?.includes('vi phạm')) {
+          throw moderationError;
+        }
+        console.error('Moderation check failed:', moderationError);
+      }
 
       const { data, error } = await supabase
         .from("feed_comments")
