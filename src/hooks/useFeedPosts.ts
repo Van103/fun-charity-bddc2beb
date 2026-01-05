@@ -279,6 +279,36 @@ export function useFeedPosts(filters?: FeedFilters) {
   return query;
 }
 
+// Cute success messages - FUN Charity Hub style
+const SUCCESS_MESSAGES = [
+  { title: "Yayyy! 💖✨", description: "Bài của bạn siêu ấm áp và tràn đầy yêu thương luôn á!" },
+  { title: "Ôi dễ thương quá trời! 🌟", description: "Cộng đồng FUN Charity đang chờ bài này lắm nè!" },
+  { title: "Hoàn hảo luôn! 😍", description: "Cha vũ trụ cũng mỉm cười với bài đăng này rồi á! Đăng thôi!" },
+  { title: "Bài xinh xắn lung linh! 🥰", description: "Cảm ơn bạn đã lan tỏa năng lượng tốt đẹp nhé!" },
+  { title: "Tuyệt vời lắm nha! 💕", description: "Năng lượng yêu thương đang lan tỏa khắp cộng đồng rồi!" },
+  { title: "Chuẩn luôn bạn ơi! 🌈", description: "Bài viết đẹp lắm, gia đình FUN Charity cảm ơn bạn nha!" },
+];
+
+// Soft warning messages - still warm and loving
+const SOFT_WARNING_MESSAGES = [
+  { title: "Ủa khoan khoan bé ơi 🥺", description: "Có vài từ hơi mạnh mẽ quá, mình chỉnh nhẹ cho dịu dàng hơn nhé? Cộng đồng mình thích năng lượng tích cực lắm á 💕" },
+  { title: "Bài hay lắm mà... 🌈", description: "Có chút xíu không hợp với vibe yêu thương của FUN Charity nè! Bạn sửa tí xíu thôi là đăng liền á!" },
+  { title: "Chúng mình muốn giữ không gian thật sạch đẹp 🥰", description: "Bạn chỉnh lại chút cho dễ thương hơn được không?" },
+  { title: "Ôi có chút năng lượng chưa tích cực lắm á 🙏", description: "Mình cùng chỉnh để lan tỏa yêu thương nhiều hơn nhé!" },
+];
+
+// Hard rejection messages - still gentle, no judgment
+const HARD_REJECTION_MESSAGES = [
+  { title: "Bài này chưa phù hợp lắm nè 💔", description: "Gia đình lớn FUN Charity mình thích năng lượng tích cực hơn! Bạn thử viết lại nhé, tụi mình luôn chờ bạn á!" },
+  { title: "Chúng mình muốn mọi người đều vui vẻ ở đây 🫶", description: "Nội dung này chưa ổn lắm, bạn chỉnh lại nha!" },
+  { title: "Hmm... mình cần điều chỉnh chút nha 💕", description: "Để không gian này luôn ấm áp, bạn thử viết theo cách khác nhé!" },
+];
+
+// Helper to get random message
+const getRandomMessage = (messages: typeof SUCCESS_MESSAGES) => {
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
 export function useCreateFeedPost() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -342,9 +372,8 @@ export function useCreateFeedPost() {
                 }
               }
               
-              throw new Error(
-                `🚫 ${moderationResult.reason || "Nội dung vi phạm nghiêm trọng tiêu chuẩn cộng đồng."}\n\nNội dung này không được phép đăng.`
-              );
+              const msg = getRandomMessage(HARD_REJECTION_MESSAGES);
+              throw new Error(`HARD_VIOLATION::${msg.title}::${msg.description}`);
             }
             
             if (moderationResult.decision === "SOFT_VIOLATION") {
@@ -363,9 +392,8 @@ export function useCreateFeedPost() {
                 }
               }
               
-              throw new Error(
-                `⚠️ ${moderationResult.reason || "Nội dung chưa phù hợp."}\n\nVui lòng chỉnh sửa nội dung và thử lại.`
-              );
+              const msg = getRandomMessage(SOFT_WARNING_MESSAGES);
+              throw new Error(`SOFT_VIOLATION::${msg.title}::${msg.description}`);
             }
             
             // SAFE content - keep as approved (already set as default)
@@ -380,7 +408,7 @@ export function useCreateFeedPost() {
         } catch (moderationError) {
           // If it's our custom error (violations), rethrow it
           if (moderationError instanceof Error && 
-              (moderationError.message.includes("🚫") || moderationError.message.includes("⚠️"))) {
+              (moderationError.message.includes("HARD_VIOLATION") || moderationError.message.includes("SOFT_VIOLATION"))) {
             throw moderationError;
           }
           // Otherwise log and continue with auto-approve
@@ -431,17 +459,31 @@ export function useCreateFeedPost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
       queryClient.invalidateQueries({ queryKey: ["feed-posts-infinite"] });
+      const msg = getRandomMessage(SUCCESS_MESSAGES);
       toast({
-        title: "Đăng bài thành công! 🎉",
-        description: "Bài viết của bạn đã được AI kiểm duyệt và hiển thị ngay.",
+        title: msg.title,
+        description: msg.description,
       });
     },
     onError: (error) => {
-      toast({
-        title: "Nội dung không phù hợp",
-        description: error.message,
-        variant: "destructive",
-      });
+      const errorMsg = error.message;
+      
+      // Parse our custom error format: TYPE::TITLE::DESCRIPTION
+      if (errorMsg.includes("HARD_VIOLATION::") || errorMsg.includes("SOFT_VIOLATION::")) {
+        const parts = errorMsg.split("::");
+        toast({
+          title: parts[1] || "Ôi... 💔",
+          description: parts[2] || "Nội dung chưa phù hợp lắm nha!",
+          variant: errorMsg.includes("HARD") ? "destructive" : "default",
+        });
+      } else {
+        // Generic error
+        toast({
+          title: "Có lỗi xảy ra rồi 😢",
+          description: "Bạn thử lại nhé, tụi mình luôn ở đây!",
+          variant: "destructive",
+        });
+      }
     },
   });
 }
