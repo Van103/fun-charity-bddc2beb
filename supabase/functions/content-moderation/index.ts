@@ -13,10 +13,12 @@ interface ModerationRequest {
 }
 
 interface ModerationResult {
-  safe: boolean;
-  reason: string | undefined;
+  decision: "SAFE" | "SOFT_VIOLATION" | "HARD_VIOLATION";
+  reason: string | null;
   categories: string[];
-  score: number;
+  confidence_score: number;
+  // Backward compatible field
+  safe: boolean;
 }
 
 serve(async (req) => {
@@ -48,35 +50,48 @@ serve(async (req) => {
 
     if (!contentToAnalyze.trim()) {
       return new Response(
-        JSON.stringify({ safe: true, reason: undefined, categories: [], score: 0 }),
+        JSON.stringify({ 
+          decision: "SAFE", 
+          safe: true, 
+          reason: null, 
+          categories: [], 
+          confidence_score: 1.0 
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     // Call Lovable AI for content moderation
-    const moderationPrompt = `Bạn là hệ thống kiểm duyệt nội dung. Phân tích nội dung sau và xác định xem có vi phạm tiêu chuẩn cộng đồng không.
+    const moderationPrompt = `Bạn là hệ thống kiểm duyệt nội dung cho một cộng đồng thiện nguyện và chữa lành.
 
-Tiêu chí kiểm tra:
+Hãy phân tích nội dung sau với tinh thần bảo vệ con người, không phán xét, không cực đoan, nhưng kiên quyết với nội dung gây tổn thương.
+
+Đánh giá các yếu tố:
 1. NSFW: Nội dung khiêu dâm, gợi dục, hình ảnh nhạy cảm
 2. VIOLENCE: Bạo lực, đe dọa, máu me, ghê rợn
-3. HATE_SPEECH: Phân biệt chủng tộc, giới tính, tôn giáo, kích động thù hận
+3. HATE_SPEECH: Ngôn từ xúc phạm, thù ghét, kích động, phân biệt chủng tộc/giới tính/tôn giáo
 4. SPAM: Quảng cáo spam, lừa đảo, phishing
 5. PROFANITY: Từ ngữ thô tục, chửi bậy (tiếng Việt và tiếng Anh)
 
 Nội dung cần kiểm tra:
 ${contentToAnalyze}
 
-QUAN TRỌNG: 
+QUAN TRỌNG:
 - Nếu có URL hình ảnh, hãy mô tả những gì có thể có trong hình dựa trên ngữ cảnh và tên file
-- Nếu nội dung AN TOÀN, trả về safe = true
-- Nếu vi phạm BẤT KỲ tiêu chí nào, trả về safe = false
+- Ưu tiên hướng dẫn người dùng sửa nội dung nếu có thể
+- Chỉ từ chối hoàn toàn khi nội dung gây tổn thương rõ ràng
+
+Phân loại kết quả:
+- SAFE: Nội dung an toàn, có thể đăng
+- SOFT_VIOLATION: Chưa phù hợp, có thể chỉnh sửa và đăng lại
+- HARD_VIOLATION: Không thể chấp nhận, từ chối hoàn toàn
 
 Trả về CHÍNH XÁC theo định dạng JSON:
 {
-  "safe": boolean,
-  "reason": "Lý do bằng tiếng Việt nếu không an toàn, null nếu an toàn",
-  "categories": ["danh sách các category vi phạm, ví dụ: NSFW, VIOLENCE, etc"],
-  "score": số từ 0-1 thể hiện mức độ chắc chắn
+  "decision": "SAFE | SOFT_VIOLATION | HARD_VIOLATION",
+  "reason": "Giải thích ngắn gọn, mang tính hướng dẫn (null nếu SAFE)",
+  "categories": ["danh sách các category vi phạm nếu có"],
+  "confidence_score": số từ 0.0-1.0 thể hiện mức độ chắc chắn
 }`;
 
     console.log("Calling Lovable AI for content moderation...");
@@ -119,7 +134,13 @@ Trả về CHÍNH XÁC theo định dạng JSON:
       // If AI fails, default to safe to not block legitimate content
       console.log("AI failed, defaulting to safe");
       return new Response(
-        JSON.stringify({ safe: true, reason: undefined, categories: [], score: 0 }),
+        JSON.stringify({ 
+          decision: "SAFE", 
+          safe: true, 
+          reason: null, 
+          categories: [], 
+          confidence_score: 0.5 
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -142,12 +163,21 @@ Trả về CHÍNH XÁC theo định dạng JSON:
     } catch (parseError) {
       console.error("Failed to parse AI response:", parseError);
       // Default to safe if parsing fails
-      result = { safe: true, reason: undefined, categories: [], score: 0 };
+      result = { 
+        decision: "SAFE", 
+        safe: true, 
+        reason: null, 
+        categories: [], 
+        confidence_score: 0.5 
+      };
     }
 
-    // If content is not safe, log it to moderation_logs
-    if (!result.safe) {
-      console.log("Content blocked:", result.reason);
+    // Add backward compatible 'safe' field based on decision
+    result.safe = result.decision === "SAFE";
+
+    // If content is not safe (SOFT or HARD violation), log it to moderation_logs
+    if (result.decision !== "SAFE") {
+      console.log("Content flagged:", result.decision, result.reason);
       
       const supabaseUrl = Deno.env.get("SUPABASE_URL");
       const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -160,9 +190,9 @@ Trả về CHÍNH XÁC theo định dạng JSON:
           content_type: imageUrls?.length ? (text ? "mixed" : "image") : "text",
           content: text || null,
           media_urls: imageUrls || null,
-          reason: result.reason || "Vi phạm tiêu chuẩn cộng đồng",
+          reason: result.reason || `${result.decision}: Vi phạm tiêu chuẩn cộng đồng`,
           categories: result.categories || [],
-          ai_score: result.score || 0,
+          ai_score: result.confidence_score || 0,
         });
       }
     }
