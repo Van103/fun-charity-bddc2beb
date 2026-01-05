@@ -298,6 +298,9 @@ export function useCreateFeedPost() {
         userId: userData.user.id,
       };
 
+      // Determine moderation status based on AI result
+      let moderationStatus = "pending"; // Default to pending for manual review
+      
       // Only check if there's content
       if (contentToCheck.text || contentToCheck.imageUrls.length > 0) {
         try {
@@ -316,8 +319,9 @@ export function useCreateFeedPost() {
           if (moderationResponse.ok) {
             const moderationResult = await moderationResponse.json();
             
-            if (!moderationResult.safe) {
-              // Content is not safe - delete uploaded media and throw error
+            // Handle different moderation decisions
+            if (moderationResult.decision === "HARD_VIOLATION") {
+              // Delete uploaded media for hard violations
               if (input.media_urls && input.media_urls.length > 0) {
                 const filePaths = input.media_urls
                   .map(url => {
@@ -332,20 +336,47 @@ export function useCreateFeedPost() {
               }
               
               throw new Error(
-                moderationResult.reason || 
-                "Nội dung vi phạm tiêu chuẩn cộng đồng. Vui lòng kiểm tra lại."
+                `🚫 ${moderationResult.reason || "Nội dung vi phạm nghiêm trọng tiêu chuẩn cộng đồng."}\n\nNội dung này không được phép đăng.`
               );
+            }
+            
+            if (moderationResult.decision === "SOFT_VIOLATION") {
+              // Delete uploaded media for soft violations too
+              if (input.media_urls && input.media_urls.length > 0) {
+                const filePaths = input.media_urls
+                  .map(url => {
+                    const match = url.match(/post-images\/(.+)$/);
+                    return match ? match[1] : null;
+                  })
+                  .filter(Boolean) as string[];
+                
+                if (filePaths.length > 0) {
+                  await supabase.storage.from("post-images").remove(filePaths);
+                }
+              }
+              
+              throw new Error(
+                `⚠️ ${moderationResult.reason || "Nội dung chưa phù hợp."}\n\nVui lòng chỉnh sửa nội dung và thử lại.`
+              );
+            }
+            
+            // SAFE content - auto-approve
+            if (moderationResult.decision === "SAFE") {
+              moderationStatus = "approved";
             }
           }
         } catch (moderationError) {
-          // If it's our custom error, rethrow it
+          // If it's our custom error (violations), rethrow it
           if (moderationError instanceof Error && 
-              moderationError.message.includes("vi phạm")) {
+              (moderationError.message.includes("🚫") || moderationError.message.includes("⚠️"))) {
             throw moderationError;
           }
-          // Otherwise log and continue (don't block on moderation failures)
+          // Otherwise log and continue with manual review
           console.error("Moderation check failed:", moderationError);
         }
+      } else {
+        // No content to check, auto-approve
+        moderationStatus = "approved";
       }
 
       const insertData: Record<string, any> = {
@@ -361,6 +392,7 @@ export function useCreateFeedPost() {
         target_amount: input.target_amount || 0,
         beneficiaries_count: input.beneficiaries_count || 0,
         campaign_id: input.campaign_id || null,
+        moderation_status: moderationStatus, // Auto-set based on AI decision
       };
 
       // Add shared_post_id if provided
@@ -387,8 +419,8 @@ export function useCreateFeedPost() {
       queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
       queryClient.invalidateQueries({ queryKey: ["feed-posts-infinite"] });
       toast({
-        title: "Đã gửi bài viết",
-        description: "Bài viết của bạn đang chờ kiểm duyệt và sẽ hiển thị sau khi được phê duyệt.",
+        title: "Đăng bài thành công! 🎉",
+        description: "Bài viết của bạn đã được AI kiểm duyệt và hiển thị ngay.",
       });
     },
     onError: (error) => {

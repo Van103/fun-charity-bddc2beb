@@ -19,6 +19,8 @@ interface ModerationResult {
   confidence_score: number;
   // Backward compatible field
   safe: boolean;
+  // Suggested moderation status for auto-approval
+  suggested_status: "approved" | "pending" | "rejected";
 }
 
 const AI_MODEL = "google/gemini-2.5-flash";
@@ -170,12 +172,18 @@ Trả về CHÍNH XÁC theo định dạng JSON:
         safe: true, 
         reason: null, 
         categories: [], 
-        confidence_score: 0.5 
+        confidence_score: 0.5,
+        suggested_status: "approved"
       };
     }
 
     // Add backward compatible 'safe' field based on decision
     result.safe = result.decision === "SAFE";
+    
+    // Add suggested_status for auto-approval
+    result.suggested_status = result.decision === "SAFE" ? "approved" : 
+                              result.decision === "SOFT_VIOLATION" ? "pending" : 
+                              "rejected";
 
     // If content is not safe (SOFT or HARD violation), log it to moderation_logs
     if (result.decision !== "SAFE") {
