@@ -12,6 +12,7 @@ import { PhotosPreviewCard, PhotosTab } from "@/components/profile/PhotosTab";
 import { DonationHistoryCard } from "@/components/donations/DonationHistoryCard";
 import { CallHistoryCard } from "@/components/chat/CallHistoryCard";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileHonorBoard } from "@/components/profile/ProfileHonorBoard";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
 import { 
@@ -269,9 +270,16 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {/* Main Content - Two Column Layout like Facebook */}
-          <div className="max-w-5xl mx-auto px-4 py-4">
+          {/* Main Content - Three Column Layout */}
+          <div className="max-w-6xl mx-auto px-4 py-4">
             <div className="flex flex-col lg:flex-row gap-4">
+              {/* Honor Board - Fixed Right on Desktop */}
+              <div className="hidden xl:block fixed right-4 top-24 z-40">
+                <ProfileHonorBoard 
+                  userId={profile?.user_id || null} 
+                  userName={profile?.full_name} 
+                />
+              </div>
               {/* Left Column - Intro/About */}
               <div className="lg:w-[360px] shrink-0 space-y-4">
                 <ProfileIntroCard profile={profile} onEdit={() => setEditModalOpen(true)} />
@@ -308,6 +316,14 @@ export default function UserProfile() {
 
                 {/* Call History Card */}
                 <CallHistoryCard userId={profile?.user_id || null} limit={5} />
+
+                {/* Honor Board for Mobile/Tablet */}
+                <div className="xl:hidden">
+                  <ProfileHonorBoard 
+                    userId={profile?.user_id || null} 
+                    userName={profile?.full_name} 
+                  />
+                </div>
               </div>
 
               {/* Right Column - Content based on active tab */}
