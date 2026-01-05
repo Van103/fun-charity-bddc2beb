@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock, UserMinus, ChevronDown, Phone, Video } from "lucide-react";
+import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -295,6 +296,9 @@ export default function PublicProfile() {
           {profile.cover_url && (
             <img src={profile.cover_url} alt="Cover" className="w-full h-full object-cover" />
           )}
+          
+          {/* Personal Honor Board */}
+          <PersonalHonorBoard userId={userId || null} />
         </div>
 
         {/* Profile Header */}

@@ -11,6 +11,7 @@ import { PullToRefresh } from "@/components/social/PullToRefresh";
 import { PhotosPreviewCard, PhotosTab } from "@/components/profile/PhotosTab";
 import { DonationHistoryCard } from "@/components/donations/DonationHistoryCard";
 import { CallHistoryCard } from "@/components/chat/CallHistoryCard";
+import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
@@ -161,6 +162,10 @@ export default function UserProfile() {
                 ) : (
                   <div className="w-full h-full bg-gradient-to-r from-secondary/20 via-primary/10 to-secondary/20" />
                 )}
+                
+                {/* Personal Honor Board */}
+                <PersonalHonorBoard userId={profile?.user_id || null} />
+                
                 <Button
                   variant="secondary"
                   size="sm"
