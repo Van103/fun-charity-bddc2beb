@@ -48,6 +48,8 @@ import AuthCallback from "./pages/AuthCallback";
 import LiveStream from "./pages/LiveStream";
 import HonorBoard from "./pages/HonorBoard";
 import AdminModeration from "./pages/AdminModeration";
+import Wallet from "./pages/Wallet";
+import { RewardNotification } from "@/components/rewards/RewardNotification";
 import ModerationLogs from "./pages/ModerationLogs";
 
 const queryClient = new QueryClient();
@@ -143,6 +145,7 @@ const App = () => (
               <EnergyBokeh />
               <IncomingCallListener />
               <GlobalEmailVerificationBanner />
+              <RewardNotification />
               <Routes>
               <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
@@ -177,6 +180,7 @@ const App = () => (
                 <Route path="/install" element={<Install />} />
                 <Route path="/live/:streamId" element={<LiveStream />} />
                 <Route path="/honor-board" element={<HonorBoard />} />
+                <Route path="/wallet" element={<Wallet />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
