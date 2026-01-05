@@ -1131,6 +1131,7 @@ export type Database = {
       }
       moderation_logs: {
         Row: {
+          ai_model: string | null
           ai_score: number | null
           categories: string[] | null
           content: string | null
@@ -1142,6 +1143,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_model?: string | null
           ai_score?: number | null
           categories?: string[] | null
           content?: string | null
@@ -1153,6 +1155,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_model?: string | null
           ai_score?: number | null
           categories?: string[] | null
           content?: string | null
