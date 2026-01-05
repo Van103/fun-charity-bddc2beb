@@ -1021,6 +1021,36 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard_cache: {
+        Row: {
+          extra_data: Json | null
+          id: string
+          leaderboard_type: string
+          rank: number | null
+          score: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          extra_data?: Json | null
+          id?: string
+          leaderboard_type: string
+          rank?: number | null
+          score?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          extra_data?: Json | null
+          id?: string
+          leaderboard_type?: string
+          rank?: number | null
+          score?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       live_comments: {
         Row: {
           avatar_url: string | null
@@ -1128,6 +1158,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      milestone_achievements: {
+        Row: {
+          achieved_at: string | null
+          id: string
+          milestone_type: string
+          milestone_value: number
+          notified: boolean | null
+          user_id: string
+        }
+        Insert: {
+          achieved_at?: string | null
+          id?: string
+          milestone_type: string
+          milestone_value: number
+          notified?: boolean | null
+          user_id: string
+        }
+        Update: {
+          achieved_at?: string | null
+          id?: string
+          milestone_type?: string
+          milestone_value?: number
+          notified?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
       }
       moderation_logs: {
         Row: {
@@ -2158,6 +2215,15 @@ export type Database = {
         }
         Returns: string
       }
+      check_milestones: {
+        Args: { p_user_id: string }
+        Returns: {
+          is_new: boolean
+          milestone_type: string
+          milestone_value: number
+        }[]
+      }
+      claim_rewards: { Args: { p_user_id: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
       get_campaign_donations: {
         Args: { _campaign_id: string }
