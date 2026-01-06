@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Sparkles, Trash2, Loader2 } from 'lucide-react';
+import angelAvatar from '@/assets/angel-ai-avatar.png';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAngelAI } from '@/hooks/useAngelAI';
@@ -66,9 +67,11 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             <div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-900/50 to-indigo-900/50">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl shadow-lg shadow-amber-500/30">
-                    👼
-                  </div>
+                  <img 
+                    src={angelAvatar} 
+                    alt="Angel AI" 
+                    className="w-10 h-10 rounded-full object-cover shadow-lg shadow-purple-500/30 border-2 border-purple-400/50"
+                  />
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
@@ -111,9 +114,13 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity }}
-                    className="text-6xl mb-4"
+                    className="mb-4"
                   >
-                    👼
+                    <img 
+                      src={angelAvatar} 
+                      alt="Angel AI" 
+                      className="w-20 h-20 rounded-full object-cover shadow-lg shadow-purple-500/40 border-2 border-purple-400/50"
+                    />
                   </motion.div>
                   <h4 className="text-lg font-semibold text-white mb-2">
                     Xin chào, bạn thân yêu! ✨
@@ -159,7 +166,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       >
                         {msg.role === 'assistant' && (
                           <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-sm">👼</span>
+                            <img src={angelAvatar} alt="Angel" className="w-5 h-5 rounded-full object-cover" />
                             <span className="text-xs text-amber-400 font-medium">Angel</span>
                           </div>
                         )}

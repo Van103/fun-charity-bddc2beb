@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import { AngelAIChatModal } from './AngelAIChatModal';
 import { supabase } from '@/integrations/supabase/client';
+import angelAvatar from '@/assets/angel-ai-avatar.png';
 
 export function AngelAIButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,13 +65,14 @@ export function AngelAIButton() {
         />
         
         {/* Button */}
-        <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 shadow-lg shadow-amber-500/40 flex items-center justify-center text-2xl hover:scale-110 transition-transform duration-200 border-2 border-white/30">
-          <motion.span
-            animate={{ y: [0, -3, 0] }}
+        <div className="relative w-14 h-14 rounded-full shadow-lg shadow-purple-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-200 overflow-hidden border-2 border-purple-400/50">
+          <motion.img
+            src={angelAvatar}
+            alt="Angel AI"
+            animate={{ scale: [1, 1.02, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-          >
-            👼
-          </motion.span>
+            className="w-full h-full object-cover"
+          />
           
           {/* Sparkles */}
           <motion.div
