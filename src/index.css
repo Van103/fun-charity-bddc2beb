@@ -1119,7 +1119,7 @@ label,
 /* Metal Gold Border for Honor Board */
 .metal-gold-border {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 0.6) 0%, rgba(245, 230, 184, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(254, 249, 225, 0.4) 0%, rgba(245, 230, 184, 0.4) 100%);
   border-radius: 9999px;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.5), 0 0 24px rgba(212, 175, 55, 0.3);
 }
@@ -1143,7 +1143,7 @@ label,
 
 .metal-gold-border-button {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 0.6) 0%, rgba(245, 230, 184, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(254, 249, 225, 0.4) 0%, rgba(245, 230, 184, 0.4) 100%);
   border-radius: 1.5rem;
   box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), 0 0 32px rgba(212, 175, 55, 0.4);
 }
