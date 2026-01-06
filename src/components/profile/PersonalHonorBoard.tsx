@@ -35,15 +35,15 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ scale: 1.02 }}
-      className="metal-gold-border flex items-center justify-between gap-2 px-3 py-1 w-[200px]"
+      className="metal-gold-border flex items-center justify-between gap-2 px-4 py-1.5 w-[210px]"
     >
       <div className="flex items-center gap-2">
-        <span className="text-purple-600 flex-shrink-0">{icon}</span>
-        <span className="text-[12px] uppercase tracking-wide text-purple-600 font-bold">
+        <span className="text-purple-500 flex-shrink-0">{icon}</span>
+        <span className="text-[13px] uppercase tracking-wide text-purple-500 font-semibold">
           {label}
         </span>
       </div>
-      <span className="text-[20px] font-normal text-purple-800">{displayValue}</span>
+      <span className="text-[13px] font-semibold text-purple-500">{displayValue}</span>
     </motion.div>
   );
 };
@@ -94,9 +94,9 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
         whileHover={{ scale: 1.05 }}
         className="absolute top-3 left-3 z-10"
       >
-        <div className="metal-gold-border-button flex items-center gap-2 px-4 py-2 cursor-pointer">
-          <Users className="text-purple-700" size={16} />
-          <span className="text-sm font-bold text-purple-800">
+        <div className="metal-gold-border-button flex items-center gap-2 px-5 py-2 cursor-pointer">
+          <Users className="text-purple-500" size={18} />
+          <span className="text-[15px] font-semibold text-purple-500">
             {formatNumber(stats.featuredScore || 100000)} Users
           </span>
         </div>
