@@ -7,7 +7,7 @@ export interface PersonalStats {
   postsCount: number;
   videosCount: number;
   friendsCount: number;
-  nftCount: number;
+  totalRewards: number;
 }
 
 export function usePersonalStats(userId: string | null) {
@@ -21,7 +21,7 @@ export function usePersonalStats(userId: string | null) {
           postsCount: 0,
           videosCount: 0,
           friendsCount: 0,
-          nftCount: 0,
+          totalRewards: 0,
         };
       }
 
@@ -32,7 +32,7 @@ export function usePersonalStats(userId: string | null) {
         postsResult,
         videosResult,
         friendsResult,
-        badgesResult,
+        rewardsResult,
       ] = await Promise.all([
         // Featured score from profiles
         supabase
@@ -69,12 +69,16 @@ export function usePersonalStats(userId: string | null) {
           .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
           .eq("status", "accepted"),
 
-        // NFT count (user badges)
+        // Total rewards from reward_transactions
         supabase
-          .from("user_badges")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", userId),
+          .from("reward_transactions")
+          .select("amount")
+          .eq("user_id", userId)
+          .eq("status", "completed"),
       ]);
+
+      // Calculate total rewards
+      const totalRewardsAmount = rewardsResult.data?.reduce((sum, r) => sum + (r.amount || 0), 0) || 0;
 
       return {
         featuredScore: profileResult.data?.reputation_score || 0,
@@ -82,7 +86,7 @@ export function usePersonalStats(userId: string | null) {
         postsCount: postsResult.count || 0,
         videosCount: videosResult.count || 0,
         friendsCount: friendsResult.count || 0,
-        nftCount: badgesResult.count || 0,
+        totalRewards: totalRewardsAmount,
       };
     },
     enabled: !!userId,
