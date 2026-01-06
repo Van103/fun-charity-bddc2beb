@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAngelAI } from '@/hooks/useAngelAI';
 import { cn } from '@/lib/utils';
+import angelAiBg from '@/assets/angel-ai-bg.png';
 
 interface AngelAIChatModalProps {
   isOpen: boolean;
@@ -71,7 +72,12 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] bg-gradient-to-br from-purple-950/95 via-indigo-950/95 to-violet-950/95 rounded-2xl shadow-2xl border border-purple-500/30 z-[101] flex flex-col overflow-hidden"
+            className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] rounded-2xl shadow-2xl border border-purple-500/30 z-[101] flex flex-col overflow-hidden"
+            style={{
+              backgroundImage: `url(${angelAiBg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-900/50 to-indigo-900/50">
