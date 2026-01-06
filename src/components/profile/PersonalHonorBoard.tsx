@@ -94,10 +94,13 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
         whileHover={{ scale: 1.05 }}
         className="absolute top-3 left-3 z-10"
       >
-        <div className="metal-gold-border-button flex items-center gap-2 px-4 py-2 cursor-pointer">
-          <Users className="text-purple-700" size={16} />
-          <span className="text-sm font-bold text-purple-800">
-            {formatNumber(stats.featuredScore || 100000)} Users
+        <div className="metal-gold-border-button flex flex-col items-center justify-center w-24 h-28 cursor-pointer">
+          <Users className="text-purple-700 mb-1" size={28} />
+          <span className="text-xl font-bold text-purple-800">
+            {formatNumber(stats.featuredScore || 100000)}
+          </span>
+          <span className="text-[10px] uppercase tracking-wide text-purple-600 font-semibold">
+            Users
           </span>
         </div>
       </motion.div>
