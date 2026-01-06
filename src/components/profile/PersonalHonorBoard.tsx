@@ -35,15 +35,15 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ scale: 1.02 }}
-      className="metal-gold-border flex items-center justify-between gap-2 px-4 py-2 w-[180px]"
+      className="metal-gold-border flex items-center justify-between gap-2 px-3 py-1 w-[200px]"
     >
       <div className="flex items-center gap-2">
         <span className="text-purple-600 flex-shrink-0">{icon}</span>
-        <span className="text-[11px] uppercase tracking-wide text-purple-600 font-semibold">
+        <span className="text-[12px] uppercase tracking-wide text-purple-600 font-bold">
           {label}
         </span>
       </div>
-      <span className="text-[18px] font-bold text-purple-800">{displayValue}</span>
+      <span className="text-[20px] font-normal text-purple-800">{displayValue}</span>
     </motion.div>
   );
 };
