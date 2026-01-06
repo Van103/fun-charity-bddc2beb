@@ -55,24 +55,13 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
-            onClick={onClose}
-          />
-          
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] bg-gradient-to-br from-purple-950/95 via-indigo-950/95 to-violet-950/95 rounded-2xl shadow-2xl border border-purple-500/30 z-[101] flex flex-col overflow-hidden"
-          >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] bg-gradient-to-br from-purple-950/95 via-indigo-950/95 to-violet-950/95 rounded-2xl shadow-2xl border border-purple-500/30 z-[100] flex flex-col overflow-hidden"
+        >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-900/50 to-indigo-900/50">
               <div className="flex items-center gap-3">
@@ -219,8 +208,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 Powered by FUN Charity 💜
               </p>
             </div>
-          </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );
