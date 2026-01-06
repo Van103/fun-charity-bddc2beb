@@ -54,18 +54,27 @@ export function AngelAIButton() {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-20 md:bottom-8 right-4 md:right-8 z-50 group"
       >
-        {/* Glow effect */}
+        {/* Golden glow effect */}
         <motion.div
           animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
+            scale: [1, 1.3, 1],
+            opacity: [0.6, 1, 0.6],
           }}
           transition={{ duration: 2, repeat: Infinity }}
           className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 blur-xl"
+          style={{
+            boxShadow: '0 0 40px rgba(251, 191, 36, 0.8), 0 0 80px rgba(251, 191, 36, 0.5)'
+          }}
         />
         
         {/* Button */}
-        <div className="relative w-14 h-14 rounded-full shadow-lg shadow-purple-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-200 overflow-hidden border-2 border-purple-400/50">
+        <div 
+          className="relative w-14 h-14 rounded-full flex items-center justify-center hover:scale-110 transition-transform duration-200 overflow-hidden"
+          style={{
+            border: '3px solid rgba(251, 191, 36, 0.9)',
+            boxShadow: '0 0 20px rgba(251, 191, 36, 0.7), 0 0 40px rgba(251, 191, 36, 0.5), inset 0 0 10px rgba(251, 191, 36, 0.3)'
+          }}
+        >
           <motion.img
             src={angelAvatar}
             alt="Angel AI"
@@ -74,16 +83,37 @@ export function AngelAIButton() {
             className="w-full h-full object-cover"
           />
           
-          {/* Sparkles */}
+          {/* Rotating sparkles */}
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-            className="absolute inset-0"
+            className="absolute inset-0 pointer-events-none"
           >
-            <Sparkles className="absolute -top-1 left-1/2 w-3 h-3 text-yellow-200" />
-            <Sparkles className="absolute -bottom-1 right-0 w-2.5 h-2.5 text-amber-200" />
-            <Sparkles className="absolute top-1/2 -left-1 w-2 h-2 text-yellow-100" />
+            <Sparkles className="absolute -top-1 left-1/2 w-3 h-3 text-yellow-300 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" />
+            <Sparkles className="absolute -bottom-1 right-0 w-2.5 h-2.5 text-amber-300 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" />
+            <Sparkles className="absolute top-1/2 -left-1 w-2 h-2 text-yellow-200 drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" />
           </motion.div>
+          
+          {/* Extra sparkle particles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-yellow-300 rounded-full"
+              style={{
+                left: `${20 + Math.random() * 60}%`,
+                top: `${20 + Math.random() * 60}%`,
+              }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.3,
+              }}
+            />
+          ))}
         </div>
 
         {/* Tooltip */}
