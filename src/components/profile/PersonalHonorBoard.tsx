@@ -31,19 +31,19 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
+      transition={{ duration: 0.4, delay }}
       whileHover={{ scale: 1.02 }}
-      className="metal-gold-border flex items-center gap-2 px-3 py-2 min-w-[120px]"
+      className="metal-gold-border flex items-center justify-between gap-2 px-3 py-1.5 min-w-[140px]"
     >
-      <div className="text-purple-600 flex-shrink-0">{icon}</div>
-      <div className="flex flex-col">
-        <span className="text-[9px] uppercase tracking-wide text-purple-500 font-medium">
+      <div className="flex items-center gap-2">
+        <span className="text-purple-600 flex-shrink-0">{icon}</span>
+        <span className="text-[10px] uppercase tracking-wide text-purple-600 font-semibold">
           {label}
         </span>
-        <span className="text-xs font-bold text-purple-800">{displayValue}</span>
       </div>
+      <span className="text-sm font-bold text-purple-800">{displayValue}</span>
     </motion.div>
   );
 };
@@ -53,65 +53,84 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
 
   if (isLoading) {
     return (
-      <div className="absolute bottom-4 left-4 right-4 z-10 hidden md:flex items-center justify-center gap-3">
-        <div className="metal-gold-border-button w-20 h-16 bg-amber-100/50 animate-pulse" />
-        <div className="grid grid-cols-3 gap-2">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="metal-gold-border w-28 h-10 bg-amber-100/50 animate-pulse" />
+      <>
+        {/* Users Button - Top Left */}
+        <div className="absolute top-3 left-3 z-10">
+          <div className="metal-gold-border-button px-4 py-2 bg-amber-100/50 animate-pulse w-28 h-8" />
+        </div>
+        {/* Stats Grid - Right Side */}
+        <div className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-1.5">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex gap-2">
+              <div className="metal-gold-border w-36 h-8 bg-amber-100/50 animate-pulse" />
+              <div className="metal-gold-border w-36 h-8 bg-amber-100/50 animate-pulse" />
+            </div>
           ))}
         </div>
-      </div>
+      </>
     );
   }
 
   if (!stats) return null;
 
   const statsData = [
-    { icon: <Trophy size={14} />, label: "Hồ Sơ Nổi Bật", value: stats.featuredScore || 0 },
-    { icon: <Coins size={14} />, label: "Thu Nhập", value: stats.income || 0 },
-    { icon: <FileText size={14} />, label: "Bài Viết", value: stats.postsCount || 0 },
-    { icon: <Video size={14} />, label: "Video", value: stats.videosCount || 0 },
-    { icon: <UserPlus size={14} />, label: "Bạn Bè", value: stats.friendsCount || 0 },
+    { icon: <Trophy size={14} />, label: "Top Charity", value: "8/150" },
+    { icon: <Heart size={14} />, label: "Charity Giving", value: stats.income || 0 },
+    { icon: <UserPlus size={14} />, label: "Friends", value: stats.friendsCount || 0 },
+    { icon: <FileText size={14} />, label: "Posts", value: stats.postsCount || 0 },
+    { icon: <Video size={14} />, label: "Videos", value: stats.videosCount || 0 },
     { icon: <Award size={14} />, label: "Số NFT", value: stats.nftCount || 0 },
+    { icon: <Coins size={14} />, label: "Claimed", value: stats.income || 0 },
+    { icon: <Gift size={14} />, label: "Total Reward", value: (stats.income || 0) + (stats.featuredScore || 0) },
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="absolute bottom-4 left-4 right-4 z-10 hidden md:flex items-center justify-center gap-3"
-    >
-      {/* User Stats Button - Left Side */}
+    <>
+      {/* Users Button - Top Left */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
         whileHover={{ scale: 1.05 }}
-        className="metal-gold-border-button flex flex-col items-center justify-center px-4 py-3 cursor-pointer"
+        className="absolute top-3 left-3 z-10"
       >
-        <Users className="text-purple-700 mb-0.5" size={20} />
-        <span className="text-lg font-bold text-purple-800">
-          {formatNumber(stats.featuredScore || 0)}
-        </span>
-        <span className="text-[9px] uppercase tracking-wider text-purple-600 font-medium">
-          Điểm
-        </span>
+        <div className="metal-gold-border-button flex items-center gap-2 px-4 py-2 cursor-pointer">
+          <Users className="text-purple-700" size={16} />
+          <span className="text-sm font-bold text-purple-800">
+            {formatNumber(stats.featuredScore || 100000)} Users
+          </span>
+        </div>
       </motion.div>
 
       {/* Stats Grid - Right Side */}
-      <div className="grid grid-cols-3 gap-2">
-        {statsData.map((stat, index) => (
-          <StatCell
-            key={stat.label}
-            icon={stat.icon}
-            label={stat.label}
-            value={stat.value}
-            delay={0.3 + index * 0.05}
-          />
-        ))}
-      </div>
-    </motion.div>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-1.5"
+      >
+        {/* Row 1: TOP CHARITY | CHARITY GIVING */}
+        <div className="flex gap-2">
+          <StatCell icon={statsData[0].icon} label={statsData[0].label} value={statsData[0].value} delay={0.1} />
+          <StatCell icon={statsData[1].icon} label={statsData[1].label} value={statsData[1].value} delay={0.15} />
+        </div>
+        {/* Row 2: FRIENDS | POSTS */}
+        <div className="flex gap-2">
+          <StatCell icon={statsData[2].icon} label={statsData[2].label} value={statsData[2].value} delay={0.2} />
+          <StatCell icon={statsData[3].icon} label={statsData[3].label} value={statsData[3].value} delay={0.25} />
+        </div>
+        {/* Row 3: VIDEOS | SỐ NFT */}
+        <div className="flex gap-2">
+          <StatCell icon={statsData[4].icon} label={statsData[4].label} value={statsData[4].value} delay={0.3} />
+          <StatCell icon={statsData[5].icon} label={statsData[5].label} value={statsData[5].value} delay={0.35} />
+        </div>
+        {/* Row 4: CLAIMED | TOTAL REWARD */}
+        <div className="flex gap-2">
+          <StatCell icon={statsData[6].icon} label={statsData[6].label} value={statsData[6].value} delay={0.4} />
+          <StatCell icon={statsData[7].icon} label={statsData[7].label} value={statsData[7].value} delay={0.45} />
+        </div>
+      </motion.div>
+    </>
   );
 }
 
