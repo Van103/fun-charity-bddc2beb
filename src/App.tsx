@@ -19,6 +19,7 @@ import { useEffect, useState, useCallback, lazy, Suspense } from "react";
 import PageLoader from "@/components/ui/PageLoader";
 import { RewardNotification } from "@/components/rewards/RewardNotification";
 import { MilestoneAnimation } from "@/components/rewards/MilestoneAnimation";
+import { AngelAIButton } from "@/components/angel/AngelAIButton";
 
 // Lazy load all pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -159,6 +160,7 @@ const App = () => (
               <GlobalEmailVerificationBanner />
               <RewardNotification />
               <MilestoneAnimation />
+              <AngelAIButton />
               <Suspense fallback={<PageLoader />}>
                 <Routes>
                   <Route path="/" element={<Index />} />

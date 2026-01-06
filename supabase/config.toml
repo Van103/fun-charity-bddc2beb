@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.content-moderation]
 verify_jwt = true
+
+[functions.angel-ai]
+verify_jwt = false
