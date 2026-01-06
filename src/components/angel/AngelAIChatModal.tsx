@@ -80,7 +80,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-purple-500/30 bg-gradient-to-r from-purple-900/50 to-indigo-900/50">
+            <div className="flex items-center justify-between p-4 border-b border-purple-200 bg-white/80 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl shadow-lg shadow-amber-500/30">
@@ -89,15 +89,15 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   <motion.div
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-purple-950"
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
                   />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white flex items-center gap-1">
+                  <h3 className="font-bold text-purple-800 flex items-center gap-1">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-4 h-4 text-amber-500" />
                   </h3>
-                  <p className="text-xs text-purple-300">Thiên thần trợ lý của bạn</p>
+                  <p className="text-xs text-purple-500">Thiên thần trợ lý của bạn</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   variant="ghost"
                   size="icon"
                   onClick={clearConversation}
-                  className="h-8 w-8 text-purple-300 hover:text-white hover:bg-purple-800/50"
+                  className="h-8 w-8 text-purple-400 hover:text-purple-600 hover:bg-purple-100/50"
                   title="Xóa hội thoại"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -114,7 +114,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   variant="ghost"
                   size="icon"
                   onClick={onClose}
-                  className="h-8 w-8 text-purple-300 hover:text-white hover:bg-purple-800/50"
+                  className="h-8 w-8 text-purple-400 hover:text-purple-600 hover:bg-purple-100/50"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -132,10 +132,10 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   >
                     👼
                   </motion.div>
-                  <h4 className="text-lg font-semibold text-white mb-2">
+                  <h4 className="text-lg font-semibold text-purple-800 mb-2">
                     Xin chào, bạn thân yêu! ✨
                   </h4>
-                  <p className="text-purple-300 text-sm mb-6 max-w-xs">
+                  <p className="text-purple-600 text-sm mb-6 max-w-xs">
                     Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                   </p>
                   
@@ -147,7 +147,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleQuickAction(action.prompt)}
-                        className="px-3 py-1.5 text-xs bg-purple-800/50 hover:bg-purple-700/50 text-purple-200 rounded-full border border-purple-500/30 transition-colors"
+                        className="px-3 py-1.5 text-xs bg-white/70 hover:bg-white/90 text-purple-700 rounded-full border border-purple-300 shadow-sm transition-colors"
                       >
                         {action.label}
                       </motion.button>
@@ -170,19 +170,19 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                         className={cn(
                           'max-w-[85%] rounded-2xl px-4 py-2.5',
                           msg.role === 'user'
-                            ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-br-md'
-                            : 'bg-purple-900/60 text-purple-100 rounded-bl-md border border-purple-500/20'
+                            ? 'bg-gradient-to-br from-purple-600/95 to-indigo-600/95 text-white rounded-br-md shadow-md'
+                            : 'bg-white/80 backdrop-blur-sm text-purple-900 rounded-bl-md border border-purple-200 shadow-sm'
                         )}
                       >
                         {msg.role === 'assistant' && (
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="text-sm">👼</span>
-                            <span className="text-xs text-amber-400 font-medium">Angel</span>
+                            <span className="text-xs text-purple-600 font-medium">Angel</span>
                           </div>
                         )}
                         <p className="text-sm whitespace-pre-wrap leading-relaxed">
                           {msg.content || (
-                            <span className="inline-flex items-center gap-1">
+                            <span className="inline-flex items-center gap-1 text-purple-500">
                               <Loader2 className="w-3 h-3 animate-spin" />
                               Đang suy nghĩ...
                             </span>
@@ -197,7 +197,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             </ScrollArea>
 
             {/* Input */}
-            <div className="p-4 border-t border-purple-500/30 bg-purple-950/50">
+            <div className="p-4 border-t border-purple-200 bg-white/80 backdrop-blur-md">
               <div className="flex items-end gap-2">
                 <textarea
                   ref={inputRef}
@@ -206,7 +206,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   onKeyDown={handleKeyDown}
                   placeholder="Nhắn tin cho Angel..."
                   rows={1}
-                  className="flex-1 resize-none bg-purple-900/50 border border-purple-500/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 max-h-32"
+                  className="flex-1 resize-none bg-white/90 border border-purple-200 rounded-xl px-4 py-2.5 text-sm text-purple-900 placeholder-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-400/50 max-h-32"
                   style={{ minHeight: '44px' }}
                 />
                 <Button
@@ -221,7 +221,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-purple-400 text-center mt-2">
+              <p className="text-xs text-purple-500 text-center mt-2">
                 Powered by FUN Charity 💜
               </p>
             </div>
