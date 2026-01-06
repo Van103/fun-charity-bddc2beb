@@ -35,15 +35,15 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ scale: 1.02 }}
-      className="metal-gold-border flex items-center justify-between gap-2 px-3 py-1.5 min-w-[140px]"
+      className="metal-gold-border flex items-center justify-between gap-2 px-4 py-2 w-[180px]"
     >
       <div className="flex items-center gap-2">
         <span className="text-purple-600 flex-shrink-0">{icon}</span>
-        <span className="text-[10px] uppercase tracking-wide text-purple-600 font-semibold">
+        <span className="text-[11px] uppercase tracking-wide text-purple-600 font-semibold">
           {label}
         </span>
       </div>
-      <span className="text-sm font-bold text-purple-800">{displayValue}</span>
+      <span className="text-[18px] font-bold text-purple-800">{displayValue}</span>
     </motion.div>
   );
 };
@@ -107,25 +107,25 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-1.5"
+        className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-3"
       >
         {/* Row 1: TOP CHARITY | CHARITY GIVING */}
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <StatCell icon={statsData[0].icon} label={statsData[0].label} value={statsData[0].value} delay={0.1} />
           <StatCell icon={statsData[1].icon} label={statsData[1].label} value={statsData[1].value} delay={0.15} />
         </div>
         {/* Row 2: FRIENDS | POSTS */}
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <StatCell icon={statsData[2].icon} label={statsData[2].label} value={statsData[2].value} delay={0.2} />
           <StatCell icon={statsData[3].icon} label={statsData[3].label} value={statsData[3].value} delay={0.25} />
         </div>
         {/* Row 3: VIDEOS | SỐ NFT */}
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <StatCell icon={statsData[4].icon} label={statsData[4].label} value={statsData[4].value} delay={0.3} />
           <StatCell icon={statsData[5].icon} label={statsData[5].label} value={statsData[5].value} delay={0.35} />
         </div>
         {/* Row 4: CLAIMED | TOTAL REWARD */}
-        <div className="flex gap-2">
+        <div className="flex gap-4">
           <StatCell icon={statsData[6].icon} label={statsData[6].label} value={statsData[6].value} delay={0.4} />
           <StatCell icon={statsData[7].icon} label={statsData[7].label} value={statsData[7].value} delay={0.45} />
         </div>
