@@ -61,8 +61,11 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden"
+          className="fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh] rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden"
           style={{
+            backgroundImage: 'url(/images/angel-chat-bg.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
             border: '2px solid rgba(251, 191, 36, 0.7)',
             boxShadow: '0 0 30px rgba(251, 191, 36, 0.5), 0 0 60px rgba(251, 191, 36, 0.3), 0 0 90px rgba(251, 191, 36, 0.2), inset 0 0 20px rgba(251, 191, 36, 0.1)'
           }}
