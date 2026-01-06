@@ -104,12 +104,15 @@ export const AnimatedBackground = memo(({
 }: AnimatedBackgroundProps) => {
   const { reduceMotion, backgroundEnabled } = useMotion();
 
-  // Generate random positions for elements
+  // Generate random positions for elements - OPTIMIZED for performance
   const elements = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    
+    // Reduced counts for better performance
     const counts = {
-      low: { diamonds: 8, crowns: 4, angels: 2, hearts: 6 },
-      medium: { diamonds: 15, crowns: 8, angels: 4, hearts: 10 },
-      high: { diamonds: 25, crowns: 12, angels: 6, hearts: 15 },
+      low: { diamonds: isMobile ? 3 : 5, crowns: isMobile ? 1 : 2, angels: 1, hearts: isMobile ? 2 : 4 },
+      medium: { diamonds: isMobile ? 5 : 10, crowns: isMobile ? 2 : 5, angels: isMobile ? 1 : 2, hearts: isMobile ? 3 : 6 },
+      high: { diamonds: isMobile ? 8 : 15, crowns: isMobile ? 4 : 8, angels: isMobile ? 2 : 4, hearts: isMobile ? 5 : 10 },
     };
 
     const count = counts[intensity];

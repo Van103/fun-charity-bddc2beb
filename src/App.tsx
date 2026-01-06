@@ -15,46 +15,56 @@ import { IncomingCallNotification } from "@/components/chat/IncomingCallNotifica
 import { GlobalEmailVerificationBanner } from "@/components/layout/GlobalEmailVerificationBanner";
 import { usePushNotification } from "@/hooks/usePushNotification";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState, useCallback } from "react";
-import Index from "./pages/Index";
-import About from "./pages/About";
-import Campaigns from "./pages/Campaigns";
-import CampaignDetail from "./pages/CampaignDetail";
-import Dashboard from "./pages/Dashboard";
-import NeedsMap from "./pages/NeedsMap";
-import Profiles from "./pages/Profiles";
-import Reviews from "./pages/Reviews";
-import Auth from "./pages/Auth";
-import UserProfile from "./pages/UserProfile";
-import PublicProfile from "./pages/PublicProfile";
-import SocialFeed from "./pages/SocialFeed";
-import Messages from "./pages/Messages";
-import Life from "./pages/Life";
-import Academy from "./pages/Academy";
-import Trading from "./pages/Trading";
-import Investment from "./pages/Investment";
-import Farm from "./pages/Farm";
-import Play from "./pages/Play";
-import Legal from "./pages/Legal";
-import Planet from "./pages/Planet";
-import Friends from "./pages/Friends";
-import MyCampaigns from "./pages/MyCampaigns";
-import AdminVerify from "./pages/AdminVerify";
-import Volunteer from "./pages/Volunteer";
-import Install from "./pages/Install";
-import NotFound from "./pages/NotFound";
-import VerifyEmail from "./pages/VerifyEmail";
-import AuthCallback from "./pages/AuthCallback";
-import LiveStream from "./pages/LiveStream";
-import HonorBoard from "./pages/HonorBoard";
-import AdminModeration from "./pages/AdminModeration";
-import Wallet from "./pages/Wallet";
-import Leaderboard from "./pages/Leaderboard";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
+import PageLoader from "@/components/ui/PageLoader";
 import { RewardNotification } from "@/components/rewards/RewardNotification";
 import { MilestoneAnimation } from "@/components/rewards/MilestoneAnimation";
-import ModerationLogs from "./pages/ModerationLogs";
 
-const queryClient = new QueryClient();
+// Lazy load all pages for better performance
+const Index = lazy(() => import("./pages/Index"));
+const About = lazy(() => import("./pages/About"));
+const Campaigns = lazy(() => import("./pages/Campaigns"));
+const CampaignDetail = lazy(() => import("./pages/CampaignDetail"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const NeedsMap = lazy(() => import("./pages/NeedsMap"));
+const Profiles = lazy(() => import("./pages/Profiles"));
+const Reviews = lazy(() => import("./pages/Reviews"));
+const Auth = lazy(() => import("./pages/Auth"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
+const PublicProfile = lazy(() => import("./pages/PublicProfile"));
+const SocialFeed = lazy(() => import("./pages/SocialFeed"));
+const Messages = lazy(() => import("./pages/Messages"));
+const Life = lazy(() => import("./pages/Life"));
+const Academy = lazy(() => import("./pages/Academy"));
+const Trading = lazy(() => import("./pages/Trading"));
+const Investment = lazy(() => import("./pages/Investment"));
+const Farm = lazy(() => import("./pages/Farm"));
+const Play = lazy(() => import("./pages/Play"));
+const Legal = lazy(() => import("./pages/Legal"));
+const Planet = lazy(() => import("./pages/Planet"));
+const Friends = lazy(() => import("./pages/Friends"));
+const MyCampaigns = lazy(() => import("./pages/MyCampaigns"));
+const AdminVerify = lazy(() => import("./pages/AdminVerify"));
+const Volunteer = lazy(() => import("./pages/Volunteer"));
+const Install = lazy(() => import("./pages/Install"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const LiveStream = lazy(() => import("./pages/LiveStream"));
+const HonorBoard = lazy(() => import("./pages/HonorBoard"));
+const AdminModeration = lazy(() => import("./pages/AdminModeration"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const ModerationLogs = lazy(() => import("./pages/ModerationLogs"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60, // 1 minute
+      gcTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
 
 // Background variant selector based on route
 function BackgroundWithVariant() {
@@ -149,44 +159,46 @@ const App = () => (
               <GlobalEmailVerificationBanner />
               <RewardNotification />
               <MilestoneAnimation />
-              <Routes>
-              <Route path="/" element={<Index />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/campaigns" element={<Campaigns />} />
-                <Route path="/campaigns/:id" element={<CampaignDetail />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/needs-map" element={<NeedsMap />} />
-                <Route path="/profiles" element={<Profiles />} />
-                <Route path="/reviews" element={<Reviews />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/profile" element={<UserProfile />} />
-                <Route path="/user/:userId" element={<PublicProfile />} />
-                <Route path="/messages" element={<Messages />} />
-                <Route path="/feed" element={<SocialFeed />} />
-                <Route path="/social" element={<SocialFeed />} />
-                <Route path="/life" element={<Life />} />
-                <Route path="/academy" element={<Academy />} />
-                <Route path="/trading" element={<Trading />} />
-                <Route path="/investment" element={<Investment />} />
-                <Route path="/farm" element={<Farm />} />
-                <Route path="/play" element={<Play />} />
-                <Route path="/legal" element={<Legal />} />
-                <Route path="/planet" element={<Planet />} />
-                <Route path="/friends" element={<Friends />} />
-                <Route path="/my-campaigns" element={<MyCampaigns />} />
-                <Route path="/admin/verify" element={<AdminVerify />} />
-                <Route path="/admin/moderation" element={<AdminModeration />} />
-                <Route path="/admin/moderation-logs" element={<ModerationLogs />} />
-                <Route path="/volunteer" element={<Volunteer />} />
-                <Route path="/install" element={<Install />} />
-                <Route path="/live/:streamId" element={<LiveStream />} />
-                <Route path="/honor-board" element={<HonorBoard />} />
-                <Route path="/wallet" element={<Wallet />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/campaigns" element={<Campaigns />} />
+                  <Route path="/campaigns/:id" element={<CampaignDetail />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/needs-map" element={<NeedsMap />} />
+                  <Route path="/profiles" element={<Profiles />} />
+                  <Route path="/reviews" element={<Reviews />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/profile" element={<UserProfile />} />
+                  <Route path="/user/:userId" element={<PublicProfile />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/feed" element={<SocialFeed />} />
+                  <Route path="/social" element={<SocialFeed />} />
+                  <Route path="/life" element={<Life />} />
+                  <Route path="/academy" element={<Academy />} />
+                  <Route path="/trading" element={<Trading />} />
+                  <Route path="/investment" element={<Investment />} />
+                  <Route path="/farm" element={<Farm />} />
+                  <Route path="/play" element={<Play />} />
+                  <Route path="/legal" element={<Legal />} />
+                  <Route path="/planet" element={<Planet />} />
+                  <Route path="/friends" element={<Friends />} />
+                  <Route path="/my-campaigns" element={<MyCampaigns />} />
+                  <Route path="/admin/verify" element={<AdminVerify />} />
+                  <Route path="/admin/moderation" element={<AdminModeration />} />
+                  <Route path="/admin/moderation-logs" element={<ModerationLogs />} />
+                  <Route path="/volunteer" element={<Volunteer />} />
+                  <Route path="/install" element={<Install />} />
+                  <Route path="/live/:streamId" element={<LiveStream />} />
+                  <Route path="/honor-board" element={<HonorBoard />} />
+                  <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </CursorProvider>

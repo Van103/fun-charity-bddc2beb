@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useMotion } from '@/contexts/MotionContext';
-import { useCursor, CursorType } from '@/contexts/CursorContext';
+import { useCursor } from '@/contexts/CursorContext';
 
 interface Particle {
   x: number;
@@ -24,8 +24,17 @@ const CustomCursor = () => {
   const lastMouseRef = useRef({ x: 0, y: 0 });
   const animationRef = useRef<number>();
   const { reduceMotion } = useMotion();
-  const { cursorType, particlesEnabled, currentCursor } = useCursor();
+  const { cursorType, particlesEnabled } = useCursor();
   const [isVisible, setIsVisible] = useState(false);
+
+  // Check if mobile - disable on mobile for performance
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+  }, []);
+
+  // Reduced particle limit for better performance
+  const PARTICLE_LIMIT = isMobile ? 25 : 45;
 
   const createParticle = useCallback((x: number, y: number): Particle => {
     // Gold/yellow sparkle color palette
@@ -118,9 +127,9 @@ const CustomCursor = () => {
     const dy = mouseRef.current.y - lastMouseRef.current.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Spawn sparkles based on movement
+    // Spawn sparkles based on movement - reduced rate on mobile
     if (distance > 2 && particlesEnabled && cursorType !== 'default') {
-      const particleCount = Math.min(Math.floor(distance / 8), 4);
+      const particleCount = Math.min(Math.floor(distance / (isMobile ? 12 : 8)), isMobile ? 2 : 4);
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push(
           createParticle(
@@ -131,8 +140,8 @@ const CustomCursor = () => {
       }
     }
 
-    // Spawn some sparkles even when moving slowly
-    if (particlesEnabled && cursorType !== 'default' && Math.random() < 0.12) {
+    // Spawn some sparkles even when moving slowly - reduced on mobile
+    if (particlesEnabled && cursorType !== 'default' && Math.random() < (isMobile ? 0.06 : 0.12)) {
       particlesRef.current.push(
         createParticle(
           mouseRef.current.x + (Math.random() - 0.5) * 40,
@@ -160,12 +169,12 @@ const CustomCursor = () => {
     });
 
     // Limit particles for performance
-    if (particlesRef.current.length > 60) {
-      particlesRef.current = particlesRef.current.slice(-60);
+    if (particlesRef.current.length > PARTICLE_LIMIT) {
+      particlesRef.current = particlesRef.current.slice(-PARTICLE_LIMIT);
     }
 
     animationRef.current = requestAnimationFrame(animate);
-  }, [createParticle, drawFourPointStar, particlesEnabled, cursorType]);
+  }, [createParticle, drawFourPointStar, particlesEnabled, cursorType, isMobile, PARTICLE_LIMIT]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -223,9 +232,8 @@ const CustomCursor = () => {
     };
   }, [animate]);
 
-  // Only hide if particles are disabled or using default cursor
-  // Angel cursors can also have particles/fairy dust
-  if (!particlesEnabled || cursorType === 'default') return null;
+  // Disable on mobile for better performance or if particles disabled
+  if (isMobile || !particlesEnabled || cursorType === 'default') return null;
 
   return (
     <canvas

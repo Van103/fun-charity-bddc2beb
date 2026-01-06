@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useMemo } from "react";
 import { useMotion } from "@/contexts/MotionContext";
 
 const GOLD_COLORS = ['#F5C77A', '#FFD700', '#FFEAA7', '#FFC857', '#FFB347'];
@@ -57,15 +57,21 @@ export function EnergyBokeh() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<BokehParticle[]>([]);
   const animationRef = useRef<number>();
+  
+  // Check if mobile
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth < 768;
+  }, []);
 
   const initParticles = useCallback((width: number, height: number, count: number) => {
-    const isMobile = window.innerWidth < 768;
-    const actualCount = isMobile ? Math.round(count * 0.5) : count;
+    // Reduce particles by 60% on mobile
+    const actualCount = isMobile ? Math.round(count * 0.4) : count;
     
     particlesRef.current = Array.from({ length: actualCount }, () => 
       createParticle(width, height, false)
     );
-  }, []);
+  }, [isMobile]);
 
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
@@ -137,8 +143,8 @@ export function EnergyBokeh() {
     if (!canvas || reduceMotion || !bokehEnabled) return;
     
     const currentCount = particlesRef.current.length;
-    const isMobile = window.innerWidth < 768;
-    const targetCount = isMobile ? Math.round(bokehParticleCount * 0.5) : bokehParticleCount;
+    // Reduce by 60% on mobile
+    const targetCount = isMobile ? Math.round(bokehParticleCount * 0.4) : bokehParticleCount;
     
     if (targetCount > currentCount) {
       // Add more particles
@@ -149,7 +155,7 @@ export function EnergyBokeh() {
       // Remove particles
       particlesRef.current = particlesRef.current.slice(0, targetCount);
     }
-  }, [bokehParticleCount, reduceMotion, bokehEnabled]);
+  }, [bokehParticleCount, reduceMotion, bokehEnabled, isMobile]);
 
   if (reduceMotion || !bokehEnabled) return null;
 

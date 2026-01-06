@@ -182,7 +182,10 @@ async function removeBackgroundByEdgeFloodFill(src: string): Promise<Blob> {
 const FlyingAngel = () => {
   const { cursorType, fairyColor, auraColor } = useCursor();
 
-  const isAngelCursor = cursorType.startsWith('angel');
+  // Disable on mobile for better performance
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  
+  const isAngelCursor = cursorType.startsWith('angel') && !isMobile;
 
   const selectedFairy = useMemo(() => {
     if (fairyColor === 'random') {
@@ -257,7 +260,7 @@ const FlyingAngel = () => {
   const sparkleIntervalRef = useRef<number | null>(null);
   const trailIntervalRef = useRef<number | null>(null);
 
-  // Create sparkle with fairy-specific colors
+  // Create sparkle with fairy-specific colors - reduced count for performance
   const createSparkle = useCallback((centerX: number, centerY: number) => {
     const angle = Math.random() * Math.PI * 2;
     const distance = 20 + Math.random() * 30;
@@ -270,7 +273,8 @@ const FlyingAngel = () => {
       color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * 360,
     };
-    setSparkles((prev) => [...prev.slice(-15), sparkle]);
+    // Reduced from 15 to 8 for performance
+    setSparkles((prev) => [...prev.slice(-8), sparkle]);
     
     // Remove after animation
     setTimeout(() => {
@@ -278,7 +282,7 @@ const FlyingAngel = () => {
     }, 1000);
   }, [currentSparkleColors]);
 
-  // Create trail point with more vibrant effect
+  // Create trail point with more vibrant effect - reduced for performance
   const createTrailPoint = useCallback((x: number, y: number) => {
     const trailPoint: TrailPoint = {
       id: trailIdRef.current++,
@@ -286,7 +290,8 @@ const FlyingAngel = () => {
       y,
       opacity: 1,
     };
-    setTrail((prev) => [...prev.slice(-18), trailPoint]);
+    // Reduced from 18 to 10 for performance
+    setTrail((prev) => [...prev.slice(-10), trailPoint]);
     
     // Remove after animation
     setTimeout(() => {
@@ -325,7 +330,8 @@ const FlyingAngel = () => {
       newRays.push(ray);
     }
     
-    setLightRays((prev) => [...prev.slice(-25), ...newRays]);
+    // Reduced from 25 to 12 for performance
+    setLightRays((prev) => [...prev.slice(-12), ...newRays]);
     
     // Remove after animation
     setTimeout(() => {
