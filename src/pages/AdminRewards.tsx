@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
   LayoutDashboard, Settings, Users, Gift, History, 
   Link as LinkIcon, Loader2, Search, Plus, Edit, Trash2,
-  TrendingUp, Coins, Award, RefreshCw, Check, X
+  TrendingUp, Coins, Award, RefreshCw, Check, X, BarChart3, Wallet
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
@@ -37,6 +37,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
+import { BlockchainMonitor } from "@/components/admin/BlockchainMonitor";
+import { ReportsTab } from "@/components/admin/ReportsTab";
 
 export default function AdminRewards() {
   const navigate = useNavigate();
@@ -170,6 +172,14 @@ export default function AdminRewards() {
               <TabsTrigger value="transactions" className="data-[state=active]:bg-purple-600">
                 <History className="w-4 h-4 mr-2" />
                 Giao dịch
+              </TabsTrigger>
+              <TabsTrigger value="blockchain" className="data-[state=active]:bg-purple-600">
+                <Wallet className="w-4 h-4 mr-2" />
+                Blockchain
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="data-[state=active]:bg-purple-600">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Báo cáo
               </TabsTrigger>
             </TabsList>
 
