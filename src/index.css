@@ -1200,7 +1200,7 @@ label,
 /* Metal Gold Border for Honor Board - Semi-transparent */
 .metal-gold-border {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 0.8) 0%, rgba(245, 230, 184, 0.8) 100%);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 9999px;
@@ -1226,7 +1226,7 @@ label,
 
 .metal-gold-border-button {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 0.8) 0%, rgba(245, 230, 184, 0.8) 100%);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 1.5rem;
