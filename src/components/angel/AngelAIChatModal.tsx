@@ -187,19 +187,17 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <ScrollArea className="flex-1">
-                  <div className="h-full flex flex-col justify-end min-h-full p-4">
+              <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                 {messages.length === 0 ? (
-                  <div className="mt-auto text-center pb-4">
-                    <div className="w-full">
+                  <div className="flex-1 min-h-0 flex flex-col justify-end p-4 text-center">
+                    <div className="w-full pb-4">
                       <h4 className="text-lg font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
                       <p className="text-sm mb-6 max-w-xs mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
-                      
+
                       {/* Quick Actions */}
                       <div className="flex flex-wrap gap-2 justify-center">
                         {quickActions.map((action, i) => (
@@ -217,47 +215,47 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {messages.map((msg) => (
-                      <motion.div
-                        key={msg.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={cn(
-                          'flex',
-                          msg.role === 'user' ? 'justify-end' : 'justify-start'
-                        )}
-                      >
-                        <div
+                  <ScrollArea className="flex-1 min-h-0">
+                    <div className="space-y-4 p-4">
+                      {messages.map((msg) => (
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
                           className={cn(
-                            'max-w-[85%] rounded-2xl px-4 py-2.5',
-                            msg.role === 'user'
-                              ? 'bg-gradient-to-br from-amber-400 to-yellow-500 text-white rounded-br-md shadow-lg shadow-amber-500/20'
-                              : 'bg-white/90 text-purple-900 rounded-bl-md border border-amber-300/50 shadow-lg'
+                            'flex',
+                            msg.role === 'user' ? 'justify-end' : 'justify-start'
                           )}
                         >
-                          {msg.role === 'assistant' && (
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <span className="text-sm">👼</span>
-                              <span className="text-xs text-amber-500 font-medium">Angel</span>
-                            </div>
-                          )}
-                          <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                            {msg.content || (
-                              <span className="inline-flex items-center gap-1">
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                                Đang suy nghĩ...
-                              </span>
+                          <div
+                            className={cn(
+                              'max-w-[85%] rounded-2xl px-4 py-2.5',
+                              msg.role === 'user'
+                                ? 'bg-gradient-to-br from-amber-400 to-yellow-500 text-white rounded-br-md shadow-lg shadow-amber-500/20'
+                                : 'bg-white/90 text-purple-900 rounded-bl-md border border-amber-300/50 shadow-lg'
                             )}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
+                          >
+                            {msg.role === 'assistant' && (
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <span className="text-sm">👼</span>
+                                <span className="text-xs text-amber-500 font-medium">Angel</span>
+                              </div>
+                            )}
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                              {msg.content || (
+                                <span className="inline-flex items-center gap-1">
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  Đang suy nghĩ...
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </ScrollArea>
                 )}
-                  </div>
-                </ScrollArea>
               </div>
 
               {/* Input */}
