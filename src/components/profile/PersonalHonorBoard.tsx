@@ -54,12 +54,12 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
   if (isLoading) {
     return (
       <>
-        {/* Users Button - Top Left */}
-        <div className="absolute top-3 left-3 z-10">
-          <div className="metal-gold-border-button px-4 py-2 bg-amber-100/50 animate-pulse w-28 h-8" />
+        {/* Users Button - Top Left - Fixed position */}
+        <div className="absolute top-4 left-4 z-20">
+          <div className="metal-gold-border-button px-4 py-2 bg-amber-100/50 animate-pulse w-32 h-10" />
         </div>
         {/* Stats Grid - Right Side */}
-        <div className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-1.5">
+        <div className="absolute top-4 right-4 z-20 hidden md:flex flex-col gap-1.5">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex gap-2">
               <div className="metal-gold-border w-36 h-8 bg-amber-100/50 animate-pulse" />
@@ -86,48 +86,98 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
 
   return (
     <>
-      {/* Users Button - Top Left */}
+      {/* Users Button - Top Left - Fixed position with higher z-index */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
         whileHover={{ scale: 1.05 }}
-        className="absolute top-3 left-3 z-10"
+        className="absolute top-4 left-4 z-20"
       >
-        <div className="metal-gold-border-button flex items-center gap-2 px-5 py-2 cursor-pointer">
-          <Users className="text-purple-500" size={18} />
-          <span className="text-[15px] font-semibold text-purple-500">
+        <div className="metal-gold-border-button flex items-center gap-2 px-4 sm:px-5 py-2 cursor-pointer shadow-lg">
+          <Users className="text-purple-500" size={16} />
+          <span className="text-[13px] sm:text-[15px] font-semibold text-purple-500 whitespace-nowrap">
             {formatNumber(stats.featuredScore || 100000)} Users
           </span>
         </div>
       </motion.div>
 
-      {/* Stats Grid - Right Side */}
+      {/* Stats Grid - Right Side - Desktop */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="absolute top-3 right-3 bottom-3 z-10 hidden md:flex flex-col justify-center gap-3"
+        className="absolute top-4 right-4 z-20 hidden lg:flex flex-col gap-2"
       >
         {/* Row 1: TOP CHARITY | CHARITY GIVING */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <StatCell icon={statsData[0].icon} label={statsData[0].label} value={statsData[0].value} delay={0.1} />
           <StatCell icon={statsData[1].icon} label={statsData[1].label} value={statsData[1].value} delay={0.15} />
         </div>
         {/* Row 2: FRIENDS | POSTS */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <StatCell icon={statsData[2].icon} label={statsData[2].label} value={statsData[2].value} delay={0.2} />
           <StatCell icon={statsData[3].icon} label={statsData[3].label} value={statsData[3].value} delay={0.25} />
         </div>
         {/* Row 3: VIDEOS | SỐ NFT */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <StatCell icon={statsData[4].icon} label={statsData[4].label} value={statsData[4].value} delay={0.3} />
           <StatCell icon={statsData[5].icon} label={statsData[5].label} value={statsData[5].value} delay={0.35} />
         </div>
         {/* Row 4: CLAIMED | TOTAL REWARD */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <StatCell icon={statsData[6].icon} label={statsData[6].label} value={statsData[6].value} delay={0.4} />
           <StatCell icon={statsData[7].icon} label={statsData[7].label} value={statsData[7].value} delay={0.45} />
+        </div>
+      </motion.div>
+
+      {/* Stats Grid - Tablet (md) - Compact 2 columns */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="absolute top-4 right-4 z-20 hidden md:flex lg:hidden flex-col gap-1"
+      >
+        {[...Array(4)].map((_, rowIdx) => (
+          <div key={rowIdx} className="flex gap-2">
+            <StatCell 
+              icon={statsData[rowIdx * 2].icon} 
+              label={statsData[rowIdx * 2].label} 
+              value={statsData[rowIdx * 2].value} 
+              delay={0.1 + rowIdx * 0.05} 
+            />
+            <StatCell 
+              icon={statsData[rowIdx * 2 + 1].icon} 
+              label={statsData[rowIdx * 2 + 1].label} 
+              value={statsData[rowIdx * 2 + 1].value} 
+              delay={0.15 + rowIdx * 0.05} 
+            />
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Stats - Mobile - Horizontal scroll */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="absolute bottom-2 left-2 right-2 z-20 md:hidden"
+      >
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {statsData.slice(0, 4).map((stat, idx) => (
+            <div 
+              key={idx} 
+              className="metal-gold-border flex items-center gap-1.5 px-2 py-1 flex-shrink-0"
+            >
+              <span className="text-purple-500">{stat.icon}</span>
+              <span className="text-[10px] uppercase text-purple-500 font-semibold whitespace-nowrap">
+                {stat.label}
+              </span>
+              <span className="text-[10px] font-semibold text-purple-500">
+                {typeof stat.value === "number" ? formatNumber(stat.value) : stat.value}
+              </span>
+            </div>
+          ))}
         </div>
       </motion.div>
     </>
