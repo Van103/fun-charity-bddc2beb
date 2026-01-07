@@ -812,17 +812,8 @@ label,
     hsla(280, 90%, 50%, 1) 100%
   );
   
-  /* Diamond-cut border - bright shiny edge */
-  border: 2px solid;
-  border-image: linear-gradient(
-    135deg,
-    hsla(280, 100%, 90%, 1) 0%,
-    hsla(270, 100%, 80%, 1) 25%,
-    hsla(0, 0%, 100%, 1) 50%,
-    hsla(280, 100%, 85%, 1) 75%,
-    hsla(275, 100%, 90%, 1) 100%
-  ) 1;
-  border-radius: 9999px;
+  /* Diamond-cut border - bright shiny rounded edge */
+  border: 2px solid hsla(280, 100%, 85%, 0.9);
   
   /* Faceted diamond shadow effect */
   box-shadow: 
