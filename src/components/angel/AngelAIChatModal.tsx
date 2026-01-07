@@ -111,31 +111,42 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             layout
             className={cn(
               modalSize,
-              "rounded-3xl shadow-2xl z-[100] flex flex-col overflow-hidden"
+              "rounded-3xl shadow-2xl z-[100] flex flex-col overflow-hidden relative"
             )}
             style={{
-              background: 'linear-gradient(135deg, #d4a574 0%, #c9a227 25%, #daa520 50%, #c9a227 75%, #d4a574 100%)',
+              background: 'linear-gradient(135deg, #b8860b 0%, #daa520 15%, #ffd700 30%, #f0c420 50%, #ffd700 70%, #daa520 85%, #b8860b 100%)',
               padding: '4px',
+              boxShadow: '0 0 20px rgba(218, 165, 32, 0.5), 0 0 40px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.3)',
             }}
           >
+            {/* Sparkle overlay for border */}
+            <div 
+              className="absolute inset-0 rounded-3xl pointer-events-none"
+              style={{
+                background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)',
+                backgroundSize: '200% 200%',
+                animation: 'shimmer 3s ease-in-out infinite',
+              }}
+            />
             {/* Inner container with rounded corners */}
             <div 
-              className="flex-1 flex flex-col overflow-hidden rounded-[20px]"
+              className="flex-1 flex flex-col overflow-hidden rounded-[20px] relative"
               style={{
                 backgroundImage: `url(${angelQueenBg})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'top center',
               }}
             >
-            {/* Overlay for readability - Light gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-purple-100/20 to-white/40 rounded-[20px]" />
+            {/* Overlay for readability - Lighter gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/50 via-purple-50/40 to-white/60 rounded-[20px]" />
             {/* Content container */}
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
               <div 
                 className="flex items-center justify-between px-4 py-3 rounded-t-[20px]"
                 style={{
-                  background: 'linear-gradient(135deg, #d4a574 0%, #c9a227 25%, #daa520 50%, #c9a227 75%, #d4a574 100%)',
+                  background: 'linear-gradient(135deg, #b8860b 0%, #daa520 25%, #ffd700 50%, #daa520 75%, #b8860b 100%)',
+                  boxShadow: '0 2px 10px rgba(218, 165, 32, 0.3)',
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -268,8 +279,13 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-white/95 backdrop-blur-md rounded-b-[20px]">
-                <div className="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2">
+              <div 
+                className="p-4 rounded-b-[20px]"
+                style={{
+                  background: 'linear-gradient(135deg, #b8860b 0%, #daa520 25%, #ffd700 50%, #daa520 75%, #b8860b 100%)',
+                }}
+              >
+                <div className="flex items-center gap-3 bg-white/90 rounded-full px-4 py-2 shadow-inner">
                   <input
                     ref={inputRef}
                     type="text"
@@ -294,7 +310,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-center mt-3 text-gray-600">
+                <p className="text-xs text-center mt-3 text-amber-900 font-medium">
                   Powered by FUN Charity 💜
                 </p>
               </div>
