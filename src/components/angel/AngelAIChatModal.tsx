@@ -236,7 +236,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                           >
                             {msg.role === 'assistant' && (
                               <div className="flex items-center gap-1.5 mb-1">
-                                <span className="text-sm">👼</span>
+                                <img src={angelAvatar} alt="Angel" className="w-5 h-5 rounded-full object-cover" />
                                 <span className="text-xs text-amber-500 font-medium">Angel</span>
                               </div>
                             )}
