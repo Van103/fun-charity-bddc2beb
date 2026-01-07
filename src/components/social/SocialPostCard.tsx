@@ -119,6 +119,24 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
     },
   });
 
+  // Earned amount for this post (sum from reward_transactions)
+  const { data: earnedCamly = 0, isLoading: earnedCamlyLoading } = useQuery({
+    queryKey: ["post-earned-camly", post.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reward_transactions")
+        .select("amount")
+        .eq("reference_type", "feed_post")
+        .eq("reference_id", post.id)
+        .eq("currency", "CAMLY")
+        .eq("status", "completed");
+
+      if (error) throw error;
+      return (data ?? []).reduce((sum, row) => sum + Number(row.amount ?? 0), 0);
+    },
+    staleTime: 60_000,
+  });
+
   // Handle highlight and scroll
   useEffect(() => {
     if (highlightPostId === post.id && cardRef.current) {
@@ -286,7 +304,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
             
             {/* Earned amount badge - shows total Camly (CLC) received */}
             <Badge variant="outline" className="bg-gold-champagne/10 text-gold-dark border-gold-champagne/30 gap-1 text-xs font-medium">
-              +{(post.fulfilled_amount || 0).toLocaleString()} CLC
+              +{earnedCamlyLoading ? "…" : earnedCamly.toLocaleString()} CLC
             </Badge>
             
             {/* More options dropdown - only show for own posts */}
