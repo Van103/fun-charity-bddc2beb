@@ -32,3 +32,6 @@ verify_jwt = true
 
 [functions.angel-ai]
 verify_jwt = false
+
+[functions.process-claim]
+verify_jwt = false
