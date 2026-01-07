@@ -26,20 +26,21 @@ export function AngelThemePicker() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
+          type="button"
           className={cn(
-            "h-8 w-8 hover:bg-purple-800/50",
-            theme.id === 'violet' ? "text-purple-300 hover:text-white" : "text-purple-600 hover:text-purple-900"
+            "h-8 w-8 rounded-md flex items-center justify-center transition-colors",
+            theme.id === 'violet' 
+              ? "text-purple-300 hover:text-white hover:bg-purple-800/50" 
+              : "text-purple-600 hover:text-purple-900 hover:bg-purple-200/50"
           )}
           title="Chọn màu sắc"
         >
           <Palette className="w-4 h-4" />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-56 p-3 bg-white/95 backdrop-blur-lg border border-purple-200" 
+        className="w-56 p-3 bg-white/95 backdrop-blur-lg border border-purple-200 z-[200]" 
         align="end"
         sideOffset={8}
       >
@@ -53,6 +54,7 @@ export function AngelThemePicker() {
             {ANGEL_THEMES.map((t) => (
               <button
                 key={t.id}
+                type="button"
                 onClick={() => setThemeById(t.id)}
                 className={cn(
                   "relative w-10 h-10 rounded-lg transition-all duration-200",
