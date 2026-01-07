@@ -131,7 +131,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             {/* Content container */}
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-purple-200/50 bg-[#E8E0F0] backdrop-blur-md">
+              <div className="flex items-center justify-between p-4 border-b border-purple-200/50 bg-[#DDD6FE] backdrop-blur-md">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-purple-400/50">
@@ -265,7 +265,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t border-purple-200/50 bg-[#E8E0F0] backdrop-blur-md">
+              <div className="p-4 border-t border-purple-200/50 bg-[#DDD6FE] backdrop-blur-md">
                 <div className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
