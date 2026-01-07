@@ -4,8 +4,6 @@ import { X, Send, Sparkles, Trash2, Loader2, Maximize2, Minimize2, Save, Downloa
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAngelAI } from '@/hooks/useAngelAI';
-import { useAngelTheme } from './AngelThemeContext';
-import { AngelThemePicker } from './AngelThemePicker';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import angelQueenBg from '@/assets/angel-queen-bg.png';
@@ -30,7 +28,6 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { messages, isLoading, sendMessage, clearConversation } = useAngelAI();
-  const { theme } = useAngelTheme();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -92,9 +89,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
     setIsExpanded(!isExpanded);
   };
 
-  const isDarkTheme = theme.id === 'violet';
-
-  const modalSize = isExpanded 
+  const modalSize = isExpanded
     ? "fixed inset-4 md:inset-8 w-auto h-auto" 
     : "fixed bottom-4 right-4 md:bottom-8 md:right-8 w-[calc(100%-2rem)] md:w-[420px] h-[600px] max-h-[80vh]";
 
@@ -143,13 +138,12 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-purple-800">
+                  <h3 className="font-bold flex items-center gap-1 text-amber-500">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-purple-500" />
+                    <Sparkles className="w-4 h-4 text-amber-400" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
-                  <AngelThemePicker />
                   <Button
                     variant="ghost"
                     size="icon"
