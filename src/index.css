@@ -793,42 +793,33 @@ label,
 
 /* Base glassmorphism pill button - DEFAULT for all buttons */
 .glass-pill-btn {
-  @apply relative overflow-hidden font-semibold;
+  @apply relative overflow-hidden font-semibold text-white;
   @apply transition-all duration-300 ease-out;
   border-radius: 9999px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  /* Metallic gold text color */
-  color: hsl(45, 100%, 50%);
-  /* Purple diamond gradient */
+  /* Vibrant rainbow gradient like reference image */
   background: linear-gradient(
     135deg,
-    hsla(280, 90%, 50%, 1) 0%,
-    hsla(270, 95%, 60%, 1) 20%,
-    hsla(280, 100%, 70%, 1) 40%,
-    hsla(260, 85%, 55%, 1) 60%,
-    hsla(275, 90%, 65%, 1) 80%,
-    hsla(285, 95%, 55%, 1) 100%
+    hsla(280, 100%, 60%, 1) 0%,
+    hsla(320, 100%, 65%, 1) 20%,
+    hsla(350, 90%, 60%, 1) 40%,
+    hsla(40, 100%, 55%, 1) 60%,
+    hsla(180, 90%, 50%, 1) 80%,
+    hsla(220, 100%, 65%, 1) 100%
   );
   background-size: 200% 200%;
   animation: glass-gradient-shift 4s ease infinite;
-  /* Diamond-cut border with bright purple glow */
-  border: 2px solid hsla(280, 100%, 85%, 0.8);
-  /* Multi-faceted diamond shadow effect */
+  /* Glass border with bright glow */
+  border: 2px solid hsla(0, 0%, 100%, 0.5);
+  /* Multi-layer shadow for depth and glow */
   box-shadow: 
-    0 4px 24px hsla(280, 100%, 60%, 0.5),
-    0 2px 12px hsla(270, 100%, 70%, 0.4),
-    0 0 30px hsla(285, 80%, 60%, 0.35),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7),
-    inset 0 -2px 6px hsla(280, 80%, 40%, 0.3),
-    /* Diamond facet highlights */
-    inset 3px 3px 6px hsla(270, 100%, 85%, 0.5),
-    inset -3px -3px 6px hsla(280, 80%, 35%, 0.4);
-  /* Metallic gold text with shine effect */
-  text-shadow: 
-    0 1px 2px hsla(45, 100%, 30%, 0.5),
-    0 2px 4px hsla(40, 100%, 20%, 0.3),
-    0 0 8px hsla(45, 100%, 50%, 0.4);
+    0 4px 24px hsla(280, 100%, 60%, 0.4),
+    0 2px 12px hsla(320, 100%, 60%, 0.3),
+    0 0 30px hsla(280, 80%, 60%, 0.25),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.6),
+    inset 0 -2px 6px hsla(280, 80%, 40%, 0.3);
+  text-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.3);
 }
 
 @keyframes glass-gradient-shift {
