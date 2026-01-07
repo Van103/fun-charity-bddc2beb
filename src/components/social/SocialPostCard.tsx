@@ -284,9 +284,9 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
               </Badge>
             )}
             
-            {/* Earned amount badge - shows total gifts received */}
+            {/* Earned amount badge - shows total Camly (CLC) received */}
             <Badge variant="outline" className="bg-gold-champagne/10 text-gold-dark border-gold-champagne/30 gap-1 text-xs font-medium">
-              +{(post.fulfilled_amount || 0).toLocaleString()}₫
+              +{(post.fulfilled_amount || 0).toLocaleString()} CLC
             </Badge>
             
             {/* More options dropdown - only show for own posts */}
