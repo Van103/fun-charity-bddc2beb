@@ -126,7 +126,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             {/* Content container */}
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b-2 border-amber-400/50 bg-gradient-to-r from-purple-600/60 via-amber-500/40 to-purple-600/60 backdrop-blur-md">
+              <div className="flex items-center justify-between p-4 border-b-2 border-amber-400/50 bg-gradient-to-r from-amber-500/70 via-yellow-400/60 to-amber-500/70 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-amber-400/50">
@@ -260,7 +260,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t-2 border-amber-400/50 bg-gradient-to-r from-purple-600/60 via-amber-500/40 to-purple-600/60 backdrop-blur-md">
+              <div className="p-4 border-t-2 border-amber-400/50 bg-gradient-to-r from-amber-500/70 via-yellow-400/60 to-amber-500/70 backdrop-blur-md">
                 <div className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
