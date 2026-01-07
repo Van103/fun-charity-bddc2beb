@@ -145,6 +145,51 @@ export type Database = {
         }
         Relationships: []
       }
+      blockchain_claims: {
+        Row: {
+          chain: string | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          points_claimed: number
+          signature: string | null
+          status: string | null
+          tokens_minted: number
+          tx_hash: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          chain?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          points_claimed: number
+          signature?: string | null
+          status?: string | null
+          tokens_minted: number
+          tx_hash?: string | null
+          user_id: string
+          wallet_address: string
+        }
+        Update: {
+          chain?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          points_claimed?: number
+          signature?: string | null
+          status?: string | null
+          tokens_minted?: number
+          tx_hash?: string | null
+          user_id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       call_sessions: {
         Row: {
           call_type: string
@@ -1561,9 +1606,11 @@ export type Database = {
           is_verified: boolean | null
           reputation_score: number | null
           role: Database["public"]["Enums"]["user_role"] | null
+          total_tokens_claimed: number | null
           updated_at: string | null
           user_id: string
           wallet_address: string | null
+          wallet_verified_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -1575,9 +1622,11 @@ export type Database = {
           is_verified?: boolean | null
           reputation_score?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          total_tokens_claimed?: number | null
           updated_at?: string | null
           user_id: string
           wallet_address?: string | null
+          wallet_verified_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -1589,9 +1638,11 @@ export type Database = {
           is_verified?: boolean | null
           reputation_score?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          total_tokens_claimed?: number | null
           updated_at?: string | null
           user_id?: string
           wallet_address?: string | null
+          wallet_verified_at?: string | null
         }
         Relationships: []
       }
@@ -1770,6 +1821,9 @@ export type Database = {
           action_type: string
           bonus_conditions: Json | null
           created_at: string | null
+          display_name: string | null
+          display_name_vi: string | null
+          icon_name: string | null
           id: string
           is_active: boolean | null
           max_per_day: number | null
@@ -1777,12 +1831,17 @@ export type Database = {
           reward_amount: number
           reward_currency: string
           reward_percentage: number | null
+          sort_order: number | null
+          token_conversion_rate: number | null
           updated_at: string | null
         }
         Insert: {
           action_type: string
           bonus_conditions?: Json | null
           created_at?: string | null
+          display_name?: string | null
+          display_name_vi?: string | null
+          icon_name?: string | null
           id?: string
           is_active?: boolean | null
           max_per_day?: number | null
@@ -1790,12 +1849,17 @@ export type Database = {
           reward_amount?: number
           reward_currency?: string
           reward_percentage?: number | null
+          sort_order?: number | null
+          token_conversion_rate?: number | null
           updated_at?: string | null
         }
         Update: {
           action_type?: string
           bonus_conditions?: Json | null
           created_at?: string | null
+          display_name?: string | null
+          display_name_vi?: string | null
+          icon_name?: string | null
           id?: string
           is_active?: boolean | null
           max_per_day?: number | null
@@ -1803,6 +1867,8 @@ export type Database = {
           reward_amount?: number
           reward_currency?: string
           reward_percentage?: number | null
+          sort_order?: number | null
+          token_conversion_rate?: number | null
           updated_at?: string | null
         }
         Relationships: []

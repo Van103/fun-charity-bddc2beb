@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Gift, Sparkles, Crown, Coins, Trophy, Heart, ArrowRight, Loader2 } from "lucide-react";
+import { Gift, Sparkles, Crown, Coins, Trophy, Heart, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { Button } from "@/components/ui/button";
@@ -9,25 +9,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GiftCard } from "@/components/gifts/GiftCard";
 import { BlessingsHistory } from "@/components/gifts/BlessingsHistory";
 import { CosmicMilestone } from "@/components/gifts/CosmicMilestone";
+import { ClaimRewardsButton } from "@/components/rewards/ClaimRewardsButton";
+import { FloatingClaimButton } from "@/components/gifts/FloatingClaimButton";
 import { useRewardConfig } from "@/hooks/useRewardConfig";
 import { useUserBalances, useRewardTransactions, useReferralCode } from "@/hooks/useRewards";
 import { useTopRankers } from "@/hooks/useHonorStats";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
-interface ClaimResult {
-  success: boolean;
-  message: string;
-  claimed_amount: number;
-}
 
 export default function GiftsFromCosmicFather() {
   const [user, setUser] = useState<{ id: string } | null>(null);
-  const [isClaiming, setIsClaiming] = useState(false);
+  const navigate = useNavigate();
 
   const { data: configs, isLoading: configsLoading } = useRewardConfig();
-  const { data: balances, isLoading: balancesLoading, refetch: refetchBalances } = useUserBalances();
+  const { data: balances, isLoading: balancesLoading } = useUserBalances();
   const { data: transactions, isLoading: transactionsLoading } = useRewardTransactions(20);
   const { data: referralCode } = useReferralCode();
   const { data: topRankers, isLoading: rankersLoading } = useTopRankers();
@@ -41,35 +37,6 @@ export default function GiftsFromCosmicFather() {
   const camlyBalance = balances?.find((b) => b.currency === "CAMLY");
   const totalEarned = camlyBalance?.total_earned || 0;
   const claimableBalance = camlyBalance?.balance || 0;
-
-  const handleClaim = async () => {
-    if (!user || claimableBalance <= 0) return;
-    
-    setIsClaiming(true);
-    try {
-      const { data, error } = await supabase.rpc("claim_rewards", {
-        p_user_id: user.id,
-      });
-
-      if (error) throw error;
-      
-      const result = data as unknown as ClaimResult;
-      
-      if (result?.success) {
-        toast.success(`🎉 ${result.message}`, {
-          description: `Đã nhận ${new Intl.NumberFormat("vi-VN").format(result.claimed_amount)} Camly`,
-        });
-        refetchBalances();
-      } else {
-        toast.info(result?.message || "Không có xu nào để nhận");
-      }
-    } catch (error) {
-      console.error("Claim error:", error);
-      toast.error("Có lỗi xảy ra khi nhận thưởng");
-    } finally {
-      setIsClaiming(false);
-    }
-  };
 
   const activeConfigs = configs?.filter((c) => c.is_active) || [];
 
@@ -130,19 +97,21 @@ export default function GiftsFromCosmicFather() {
                   </div>
                 </div>
 
-                {user && claimableBalance > 0 && (
-                  <Button
-                    onClick={handleClaim}
-                    disabled={isClaiming}
-                    className="metal-gold-border-button h-auto py-4 px-8"
-                  >
-                    {isClaiming ? (
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    ) : (
+                {/* Hero Claim Button */}
+                <ClaimRewardsButton
+                  claimableAmount={claimableBalance}
+                  userId={user?.id}
+                  variant="hero"
+                />
+                
+                {/* Login prompt if not logged in */}
+                {!user && (
+                  <Link to="/auth">
+                    <Button className="h-auto py-4 px-8 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg">
                       <Gift className="w-5 h-5 mr-2" />
-                    )}
-                    Nhận {new Intl.NumberFormat("vi-VN").format(claimableBalance)} Camly
-                  </Button>
+                      Đăng nhập để nhận thưởng
+                    </Button>
+                  </Link>
                 )}
               </div>
             </motion.div>
@@ -193,7 +162,11 @@ export default function GiftsFromCosmicFather() {
 
               {/* Milestone Progress (only for logged in users) */}
               {user && (
-                <CosmicMilestone totalEarned={totalEarned} />
+                <CosmicMilestone 
+                  totalEarned={totalEarned} 
+                  claimableBalance={claimableBalance}
+                  userId={user.id}
+                />
               )}
 
               {/* Referral Section */}
@@ -333,6 +306,13 @@ export default function GiftsFromCosmicFather() {
         </section>
 
         <MobileBottomNav />
+        
+        {/* Floating Claim Button */}
+        <FloatingClaimButton
+          claimableAmount={claimableBalance}
+          userId={user?.id || null}
+          onLoginClick={() => navigate('/auth')}
+        />
       </div>
     </>
   );
