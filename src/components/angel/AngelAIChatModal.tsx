@@ -206,7 +206,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleQuickAction(action.prompt)}
-                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-amber-500/30 hover:bg-amber-400/40 text-white border border-amber-400/50 shadow-sm backdrop-blur-sm"
+                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
                           >
                             {action.label}
                           </motion.button>
