@@ -111,14 +111,14 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             layout
             className={cn(
               modalSize,
-              "rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden p-[3px]"
+              "rounded-2xl shadow-2xl z-[100] flex flex-col p-[3px]"
             )}
             style={{
               background: 'linear-gradient(135deg, #fbbf24, #fde047, #f59e0b, #fbbf24)',
             }}
           >
             <div 
-              className="w-full h-full rounded-[14px] overflow-hidden flex flex-col relative"
+              className="w-full h-full rounded-[13px] overflow-hidden flex flex-col relative"
               style={{
                 backgroundImage: `url(${angelQueenBg})`,
                 backgroundSize: 'cover',
