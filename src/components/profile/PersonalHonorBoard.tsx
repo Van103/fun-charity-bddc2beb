@@ -35,15 +35,15 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay }}
       whileHover={{ scale: 1.02 }}
-      className="metal-gold-border flex items-center justify-between gap-2 px-4 py-1.5 w-[240px]"
+      className="metal-gold-border flex items-center justify-between gap-3 px-5 py-2.5 w-[280px]"
     >
-      <div className="flex items-center gap-2">
-        <span className="text-purple-500 flex-shrink-0">{icon}</span>
-        <span className="text-[13px] uppercase tracking-wide text-purple-500 font-semibold">
+      <div className="flex items-center gap-3">
+        <span className="text-purple-600 flex-shrink-0">{icon}</span>
+        <span className="text-[15px] uppercase tracking-wide text-purple-600 font-bold">
           {label}
         </span>
       </div>
-      <span className="text-[13px] font-semibold text-purple-500">{displayValue}</span>
+      <span className="text-[15px] font-bold text-purple-600">{displayValue}</span>
     </motion.div>
   );
 };
@@ -74,14 +74,14 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
   if (!stats) return null;
 
   const statsData = [
-    { icon: <Trophy size={14} />, label: "Top Charity", value: "8/150" },
-    { icon: <Heart size={14} />, label: "Charity Giving", value: stats.income || 0 },
-    { icon: <UserPlus size={14} />, label: "Friends", value: stats.friendsCount || 0 },
-    { icon: <FileText size={14} />, label: "Posts", value: stats.postsCount || 0 },
-    { icon: <Video size={14} />, label: "Videos", value: stats.videosCount || 0 },
-    { icon: <Award size={14} />, label: "Số NFT", value: stats.nftCount || 0 },
-    { icon: <Coins size={14} />, label: "Claimed", value: stats.income || 0 },
-    { icon: <Gift size={14} />, label: "Total Reward", value: (stats.income || 0) + (stats.featuredScore || 0) },
+    { icon: <Trophy size={18} />, label: "Top Charity", value: "8/150" },
+    { icon: <Heart size={18} />, label: "Charity Giving", value: stats.income || 0 },
+    { icon: <UserPlus size={18} />, label: "Friends", value: stats.friendsCount || 0 },
+    { icon: <FileText size={18} />, label: "Posts", value: stats.postsCount || 0 },
+    { icon: <Video size={18} />, label: "Videos", value: stats.videosCount || 0 },
+    { icon: <Award size={18} />, label: "Số NFT", value: stats.nftCount || 0 },
+    { icon: <Coins size={18} />, label: "Claimed", value: stats.income || 0 },
+    { icon: <Gift size={18} />, label: "Total Reward", value: (stats.income || 0) + (stats.featuredScore || 0) },
   ];
 
   return (
@@ -94,9 +94,9 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
         whileHover={{ scale: 1.05 }}
         className="absolute top-3 left-3 z-10"
       >
-        <div className="metal-gold-border-button flex items-center gap-2 px-5 py-2 cursor-pointer">
-          <Users className="text-purple-500" size={18} />
-          <span className="text-[15px] font-semibold text-purple-500">
+        <div className="metal-gold-border-button flex items-center gap-3 px-6 py-2.5 cursor-pointer">
+          <Users className="text-purple-600" size={20} />
+          <span className="text-[16px] font-bold text-purple-600">
             {formatNumber(stats.featuredScore || 100000)} Users
           </span>
         </div>
