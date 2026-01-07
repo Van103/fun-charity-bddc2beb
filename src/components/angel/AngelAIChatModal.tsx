@@ -197,8 +197,8 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               {/* Messages */}
               <ScrollArea className="flex-1 p-4">
                 {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                    <h4 className="text-lg font-semibold mb-2 text-white">
+                  <div className="flex flex-col items-center justify-end h-full text-center py-8 pb-4">
+                    <h4 className="text-xl font-semibold mb-2 text-white">
                       Xin chào, bạn thân yêu! ✨
                     </h4>
                     <p className="text-sm mb-6 max-w-xs text-amber-200">
