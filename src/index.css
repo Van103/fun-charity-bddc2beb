@@ -796,53 +796,69 @@ label,
   @apply relative overflow-hidden font-semibold text-white;
   @apply transition-all duration-300 ease-out;
   border-radius: 9999px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  /* Vibrant rainbow gradient like reference image */
   background: linear-gradient(
     135deg,
-    hsla(280, 70%, 70%, 0.85) 0%,
-    hsla(320, 70%, 75%, 0.85) 35%,
-    hsla(200, 70%, 75%, 0.85) 70%,
-    hsla(170, 60%, 75%, 0.85) 100%
+    hsla(280, 100%, 60%, 1) 0%,
+    hsla(320, 100%, 65%, 1) 20%,
+    hsla(350, 90%, 60%, 1) 40%,
+    hsla(40, 100%, 55%, 1) 60%,
+    hsla(180, 90%, 50%, 1) 80%,
+    hsla(220, 100%, 65%, 1) 100%
   );
-  border: 2px solid hsla(0, 0%, 100%, 0.4);
+  background-size: 200% 200%;
+  animation: glass-gradient-shift 4s ease infinite;
+  /* Glass border with bright glow */
+  border: 2px solid hsla(0, 0%, 100%, 0.5);
+  /* Multi-layer shadow for depth and glow */
   box-shadow: 
-    0 4px 20px hsla(280, 60%, 60%, 0.25),
-    0 2px 8px hsla(320, 60%, 60%, 0.2),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.5),
-    inset 0 -1px 2px hsla(280, 60%, 50%, 0.2);
-  text-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.15);
+    0 4px 24px hsla(280, 100%, 60%, 0.4),
+    0 2px 12px hsla(320, 100%, 60%, 0.3),
+    0 0 30px hsla(280, 80%, 60%, 0.25),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.6),
+    inset 0 -2px 6px hsla(280, 80%, 40%, 0.3);
+  text-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.3);
 }
 
-/* Glossy reflection overlay - top shine */
+@keyframes glass-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Glossy reflection overlay - top shine like glass */
 .glass-pill-btn::before {
   content: '';
   @apply absolute inset-x-0 top-0 pointer-events-none;
-  height: 50%;
+  height: 55%;
   background: linear-gradient(
     180deg,
-    hsla(0, 0%, 100%, 0.5) 0%,
-    hsla(0, 0%, 100%, 0.25) 30%,
-    hsla(0, 0%, 100%, 0.1) 60%,
+    hsla(0, 0%, 100%, 0.7) 0%,
+    hsla(0, 0%, 100%, 0.4) 25%,
+    hsla(0, 0%, 100%, 0.15) 50%,
     transparent 100%
   );
-  border-radius: 9999px 9999px 50% 50%;
+  border-radius: 9999px 9999px 60% 60%;
 }
 
 /* Sparkle/shimmer overlay */
 .glass-pill-btn::after {
   content: '';
-  @apply absolute inset-0 pointer-events-none opacity-0;
+  @apply absolute inset-0 pointer-events-none;
   @apply transition-opacity duration-500;
   background: linear-gradient(
-    90deg,
+    120deg,
     transparent 0%,
-    hsla(0, 0%, 100%, 0.4) 50%,
+    hsla(0, 0%, 100%, 0.5) 30%,
+    hsla(0, 0%, 100%, 0.6) 50%,
+    hsla(0, 0%, 100%, 0.5) 70%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: btn-shimmer 2s ease-in-out infinite;
+  animation: btn-shimmer 3s ease-in-out infinite;
   border-radius: inherit;
+  opacity: 0.5;
 }
 
 @keyframes btn-shimmer {
@@ -850,108 +866,123 @@ label,
   100% { background-position: -200% center; }
 }
 
-/* Hover state with glow */
+/* Hover state with intense glow */
 .glass-pill-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-  border-color: hsla(0, 0%, 100%, 0.6);
+  transform: translateY(-3px) scale(1.03);
+  border-color: hsla(0, 0%, 100%, 0.8);
+  animation-duration: 2s;
   box-shadow: 
-    0 8px 30px hsla(280, 70%, 60%, 0.35),
-    0 4px 15px hsla(320, 70%, 65%, 0.3),
-    0 0 20px hsla(200, 60%, 70%, 0.25),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6),
-    inset 0 -1px 2px hsla(280, 60%, 50%, 0.15);
+    0 10px 40px hsla(280, 100%, 60%, 0.5),
+    0 6px 20px hsla(320, 100%, 60%, 0.4),
+    0 0 50px hsla(280, 80%, 60%, 0.35),
+    0 0 30px hsla(200, 100%, 60%, 0.3),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7),
+    inset 0 -2px 6px hsla(280, 80%, 40%, 0.2);
 }
 
 .glass-pill-btn:hover::after {
-  @apply opacity-100;
+  @apply opacity-80;
 }
 
 /* Active/tap state */
 .glass-pill-btn:active {
   transform: translateY(-1px) scale(1.01);
   box-shadow: 
-    0 4px 15px hsla(280, 60%, 60%, 0.3),
-    0 2px 8px hsla(320, 60%, 60%, 0.2),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.4);
+    0 6px 25px hsla(280, 100%, 60%, 0.4),
+    0 4px 12px hsla(320, 100%, 60%, 0.3),
+    inset 0 2px 6px hsla(0, 0%, 100%, 0.5);
 }
 
 /* Focus visible state */
 .glass-pill-btn:focus-visible {
   outline: none;
   box-shadow: 
-    0 0 0 3px hsla(280, 70%, 60%, 0.5),
-    0 8px 30px hsla(280, 70%, 60%, 0.35),
-    0 4px 15px hsla(320, 70%, 65%, 0.3),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 0 0 4px hsla(280, 100%, 60%, 0.6),
+    0 10px 40px hsla(280, 100%, 60%, 0.5),
+    0 6px 20px hsla(320, 100%, 60%, 0.4),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
 /* ========================================
    GLASS PILL BUTTON VARIANTS
    ======================================== */
 
-/* Purple variant - primary */
+/* Purple-pink variant - primary */
 .glass-pill-primary {
   background: linear-gradient(
     135deg,
-    hsla(270, 75%, 65%, 0.9) 0%,
-    hsla(290, 70%, 70%, 0.9) 50%,
-    hsla(310, 65%, 75%, 0.9) 100%
+    hsla(280, 100%, 55%, 1) 0%,
+    hsla(300, 100%, 60%, 1) 30%,
+    hsla(320, 100%, 65%, 1) 60%,
+    hsla(340, 90%, 70%, 1) 100%
   );
+  background-size: 200% 200%;
+  animation: glass-gradient-shift 4s ease infinite;
 }
 
 .glass-pill-primary:hover {
   box-shadow: 
-    0 8px 30px hsla(270, 70%, 60%, 0.4),
-    0 0 25px hsla(290, 70%, 65%, 0.3),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 10px 40px hsla(280, 100%, 55%, 0.5),
+    0 0 35px hsla(300, 100%, 60%, 0.4),
+    0 0 50px hsla(320, 100%, 65%, 0.3),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
-/* Pink-purple variant - secondary */
+/* Pink-orange-gold variant - secondary */
 .glass-pill-secondary {
   background: linear-gradient(
     135deg,
-    hsla(320, 70%, 70%, 0.9) 0%,
-    hsla(340, 65%, 75%, 0.9) 50%,
-    hsla(20, 80%, 80%, 0.9) 100%
+    hsla(330, 100%, 60%, 1) 0%,
+    hsla(350, 100%, 65%, 1) 30%,
+    hsla(25, 100%, 60%, 1) 60%,
+    hsla(45, 100%, 55%, 1) 100%
   );
+  background-size: 200% 200%;
+  animation: glass-gradient-shift 4s ease infinite;
 }
 
 .glass-pill-secondary:hover {
   box-shadow: 
-    0 8px 30px hsla(320, 70%, 65%, 0.4),
-    0 0 25px hsla(340, 65%, 70%, 0.3),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 10px 40px hsla(330, 100%, 60%, 0.5),
+    0 0 35px hsla(350, 100%, 65%, 0.4),
+    0 0 50px hsla(25, 100%, 60%, 0.3),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
-/* Cyan-teal variant */
+/* Cyan-blue variant */
 .glass-pill-cyan {
   background: linear-gradient(
     135deg,
-    hsla(180, 70%, 60%, 0.9) 0%,
-    hsla(190, 75%, 65%, 0.9) 50%,
-    hsla(200, 70%, 70%, 0.9) 100%
+    hsla(180, 100%, 45%, 1) 0%,
+    hsla(195, 100%, 50%, 1) 30%,
+    hsla(210, 100%, 60%, 1) 60%,
+    hsla(230, 100%, 65%, 1) 100%
   );
+  background-size: 200% 200%;
+  animation: glass-gradient-shift 4s ease infinite;
 }
 
 .glass-pill-cyan:hover {
   box-shadow: 
-    0 8px 30px hsla(180, 70%, 55%, 0.4),
-    0 0 25px hsla(190, 70%, 60%, 0.3),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 10px 40px hsla(180, 100%, 45%, 0.5),
+    0 0 35px hsla(195, 100%, 50%, 0.4),
+    0 0 50px hsla(210, 100%, 60%, 0.3),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
-/* Rainbow gradient variant */
+/* Full rainbow gradient variant */
 .glass-pill-rainbow {
   background: linear-gradient(
     135deg,
-    hsla(280, 75%, 65%, 0.9) 0%,
-    hsla(320, 70%, 70%, 0.9) 25%,
-    hsla(40, 80%, 70%, 0.9) 50%,
-    hsla(170, 70%, 60%, 0.9) 75%,
-    hsla(200, 75%, 65%, 0.9) 100%
+    hsla(280, 100%, 60%, 1) 0%,
+    hsla(320, 100%, 65%, 1) 20%,
+    hsla(350, 90%, 60%, 1) 40%,
+    hsla(40, 100%, 55%, 1) 60%,
+    hsla(180, 90%, 50%, 1) 80%,
+    hsla(220, 100%, 65%, 1) 100%
   );
-  background-size: 200% 200%;
-  animation: rainbow-shift 4s ease infinite;
+  background-size: 300% 300%;
+  animation: rainbow-shift 5s ease infinite;
 }
 
 @keyframes rainbow-shift {
@@ -962,10 +993,11 @@ label,
 .glass-pill-rainbow:hover {
   animation-duration: 2s;
   box-shadow: 
-    0 8px 35px hsla(280, 70%, 60%, 0.35),
-    0 0 30px hsla(320, 70%, 65%, 0.25),
-    0 0 20px hsla(40, 80%, 65%, 0.2),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 12px 45px hsla(280, 100%, 60%, 0.5),
+    0 0 40px hsla(320, 100%, 65%, 0.4),
+    0 0 30px hsla(40, 100%, 55%, 0.35),
+    0 0 25px hsla(180, 90%, 50%, 0.3),
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
 /* Destructive variant */
