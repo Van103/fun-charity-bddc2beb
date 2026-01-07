@@ -47,6 +47,7 @@ import {
   BarChart3,
   Trophy,
   Gift,
+  Shield,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -83,6 +84,7 @@ export function Navbar() {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -91,6 +93,19 @@ export function Navbar() {
   useFriendRequestNotifications(user?.id || null);
   usePostNotifications(user?.id || null);
   useDonationNotifications(user?.id || null);
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user?.id) {
+        setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase.rpc('is_admin', { _user_id: user.id });
+      setIsAdmin(data === true);
+    };
+    checkAdminStatus();
+  }, [user?.id]);
 
   // Fetch unread message count
   useEffect(() => {
@@ -492,6 +507,18 @@ export function Navbar() {
                         </div>
                       </PopoverContent>
                     </Popover>
+                    
+                    <DropdownMenuSeparator className="my-2" />
+
+                    {/* Admin Rewards - only for admins */}
+                    {isAdmin && (
+                      <DropdownMenuItem asChild className="cursor-pointer p-3 rounded-lg hover:bg-primary/10">
+                        <Link to="/admin/rewards" className="flex items-center gap-3">
+                          <Shield className="w-5 h-5 text-primary" />
+                          <span className="font-medium">{t("admin.rewards") || "Quản lý phần thưởng"}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     
                     <DropdownMenuSeparator className="my-2" />
                     
