@@ -111,7 +111,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             layout
             className={cn(
               modalSize,
-              "rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden border-2 border-amber-400 shadow-amber-400/40"
+              "rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden border-4 border-amber-400 shadow-amber-400/50"
             )}
             style={{
               boxShadow: '0 0 30px rgba(251, 191, 36, 0.5), inset 0 0 60px rgba(251, 191, 36, 0.1)',
@@ -126,7 +126,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             {/* Content container */}
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
+              <div className="flex items-center justify-between p-4 border-b-2 border-amber-400/50 bg-gradient-to-r from-purple-600/60 via-amber-500/40 to-purple-600/60 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-amber-400/50">
@@ -260,7 +260,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t-2 border-amber-400 bg-gradient-to-r from-amber-500/40 via-yellow-400/50 to-amber-500/40 backdrop-blur-md">
+              <div className="p-4 border-t-2 border-amber-400/50 bg-gradient-to-r from-purple-600/60 via-amber-500/40 to-purple-600/60 backdrop-blur-md">
                 <div className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
