@@ -14,10 +14,14 @@ const THEME_COLORS: Record<string, string> = {
   purple: 'bg-gradient-to-br from-purple-400 to-violet-500',
   violet: 'bg-gradient-to-br from-purple-700 to-violet-800',
   white: 'bg-gradient-to-br from-pink-100 to-purple-200',
+  orchid: 'bg-gradient-to-br from-fuchsia-300 to-purple-400',
+  grape: 'bg-gradient-to-br from-purple-500 to-indigo-500',
+  plum: 'bg-gradient-to-br from-purple-600 to-pink-600',
+  lilac: 'bg-gradient-to-br from-purple-300 to-pink-300',
+  amethyst: 'bg-gradient-to-br from-violet-400 to-purple-400',
+  wisteria: 'bg-gradient-to-br from-indigo-300 to-purple-400',
   rose: 'bg-gradient-to-br from-rose-300 to-pink-400',
   sky: 'bg-gradient-to-br from-sky-300 to-blue-400',
-  mint: 'bg-gradient-to-br from-emerald-300 to-teal-400',
-  peach: 'bg-gradient-to-br from-orange-300 to-amber-400',
 };
 
 export function AngelThemePicker() {
