@@ -102,14 +102,6 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Golden backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[99] bg-gradient-to-br from-amber-400/30 via-yellow-300/20 to-amber-500/30 backdrop-blur-sm"
-            onClick={onClose}
-          />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -197,27 +189,29 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               {/* Messages */}
               <ScrollArea className="flex-1 p-4">
                 {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                    <h4 className="text-lg font-semibold mb-2 text-white">
-                      Xin chào, bạn thân yêu! ✨
-                    </h4>
-                    <p className="text-sm mb-6 max-w-xs text-amber-200">
-                      Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
-                    </p>
-                    
-                    {/* Quick Actions */}
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {quickActions.map((action, i) => (
-                        <motion.button
-                          key={i}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleQuickAction(action.prompt)}
-                          className="px-3 py-1.5 text-xs rounded-full transition-colors bg-amber-500/30 hover:bg-amber-400/40 text-white border border-amber-400/50 shadow-sm backdrop-blur-sm"
-                        >
-                          {action.label}
-                        </motion.button>
-                      ))}
+                  <div className="flex flex-col items-end justify-end h-full text-center pb-4">
+                    <div className="w-full">
+                      <h4 className="text-lg font-semibold mb-2 text-white">
+                        Xin chào, bạn thân yêu! ✨
+                      </h4>
+                      <p className="text-sm mb-6 max-w-xs mx-auto text-amber-200">
+                        Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
+                      </p>
+                      
+                      {/* Quick Actions */}
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {quickActions.map((action, i) => (
+                          <motion.button
+                            key={i}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleQuickAction(action.prompt)}
+                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-amber-500/30 hover:bg-amber-400/40 text-white border border-amber-400/50 shadow-sm backdrop-blur-sm"
+                          >
+                            {action.label}
+                          </motion.button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ) : (
