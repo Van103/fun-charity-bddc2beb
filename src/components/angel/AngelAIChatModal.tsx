@@ -15,11 +15,10 @@ interface AngelAIChatModalProps {
 }
 
 const quickActions = [
-  { label: '🎯 Gợi ý chiến dịch cho tôi', prompt: 'Gợi ý những chiến dịch từ thiện phù hợp với tôi' },
-  { label: '💎 Hướng dẫn crypto', prompt: 'Làm sao để quyên góp bằng crypto?' },
-  { label: '🏆 Giải thích NFT từ thiện', prompt: 'Giải thích về NFT từ thiện và huy hiệu' },
-  { label: '🤝 Làm tình nguyện viên', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
-  { label: '💰 Rút tiền từ ví', prompt: 'Hướng dẫn rút tiền từ ví' },
+  { label: '🎯 Gợi ý chiến dịch', prompt: 'Gợi ý những chiến dịch từ thiện phù hợp với tôi' },
+  { label: '💝 Cách quyên góp', prompt: 'Hướng dẫn cách quyên góp từ thiện trên nền tảng' },
+  { label: '🤝 Đăng ký tình nguyện', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
+  { label: '🌟 Nhận phần thưởng', prompt: 'Làm sao để nhận phần thưởng khi làm từ thiện?' },
 ];
 
 export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
