@@ -193,19 +193,19 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       <h4 className="text-xl font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
-                      <p className="text-base mb-6 max-w-xs mx-auto text-amber-200">
+                      <p className="text-sm mb-6 max-w-[220px] mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
 
                       {/* Quick Actions - 2 rows grid */}
-                      <div className="grid grid-cols-2 gap-2 max-w-xs mx-auto">
+                      <div className="grid grid-cols-2 gap-2 max-w-[280px] mx-auto">
                         {quickActions.map((action, i) => (
                           <motion.button
                             key={i}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleQuickAction(action.prompt)}
-                            className="px-3 py-1.5 text-sm rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
+                            className="px-2 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm whitespace-nowrap"
                           >
                             {action.label}
                           </motion.button>
