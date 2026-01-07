@@ -168,7 +168,7 @@ export default function UserProfile() {
                 
                 <Button
                   size="sm"
-                  className="absolute bottom-4 right-4 gap-2 bg-purple-600 hover:bg-purple-700 text-white shadow-lg border-2 border-purple-300"
+                  className="absolute bottom-4 right-4 z-20 gap-2 bg-purple-600 hover:bg-purple-700 text-white shadow-lg border-2 border-purple-300"
                   onClick={() => setEditModalOpen(true)}
                 >
                   <Camera className="w-4 h-4" />
