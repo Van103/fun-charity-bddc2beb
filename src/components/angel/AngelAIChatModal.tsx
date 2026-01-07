@@ -111,9 +111,10 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             layout
             className={cn(
               modalSize,
-              "rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden border-2 border-amber-400/50"
+              "rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden border-2 border-amber-400 shadow-amber-400/40"
             )}
             style={{
+              boxShadow: '0 0 30px rgba(251, 191, 36, 0.5), inset 0 0 60px rgba(251, 191, 36, 0.1)',
               backgroundImage: `url(${angelQueenBg})`,
               backgroundSize: 'cover',
               backgroundPosition: 'top center',
@@ -137,9 +138,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-white">
+                  <h3 className="font-bold flex items-center gap-1 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent drop-shadow-lg">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-4 h-4 text-amber-400 drop-shadow-lg" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -259,7 +260,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
+              <div className="p-4 border-t-2 border-amber-400 bg-gradient-to-r from-amber-500/40 via-yellow-400/50 to-amber-500/40 backdrop-blur-md">
                 <div className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
