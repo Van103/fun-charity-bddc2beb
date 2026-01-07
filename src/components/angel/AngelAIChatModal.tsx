@@ -15,10 +15,11 @@ interface AngelAIChatModalProps {
 }
 
 const quickActions = [
-  { label: '🤝 Tình nguyện viên', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
-  { label: '💝 Cách quyên góp', prompt: 'Hướng dẫn tôi cách quyên góp từ thiện' },
-  { label: '🌍 Chiến dịch cần giúp', prompt: 'Cho tôi xem những chiến dịch đang cần sự giúp đỡ nhất' },
-  { label: '✨ Lan tỏa yêu thương', prompt: 'Làm sao để lan tỏa tinh thần thiện nguyện?' },
+  { label: '🎯 Gợi ý chiến dịch cho tôi', prompt: 'Gợi ý những chiến dịch từ thiện phù hợp với tôi' },
+  { label: '💎 Hướng dẫn crypto', prompt: 'Làm sao để quyên góp bằng crypto?' },
+  { label: '🏆 Giải thích NFT từ thiện', prompt: 'Giải thích về NFT từ thiện và huy hiệu' },
+  { label: '🤝 Làm tình nguyện viên', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
+  { label: '💰 Rút tiền từ ví', prompt: 'Hướng dẫn rút tiền từ ví' },
 ];
 
 export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
@@ -137,9 +138,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-amber-500 text-lg">
+                  <h3 className="font-bold flex items-center gap-1 text-amber-500">
                     Angel AI
-                    <Sparkles className="w-5 h-5 text-amber-400" />
+                    <Sparkles className="w-4 h-4 text-amber-400" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -190,22 +191,22 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 {messages.length === 0 ? (
                   <div className="flex-1 min-h-0 flex flex-col justify-end p-4 text-center">
                     <div className="w-full pb-4">
-                      <h4 className="text-xl font-semibold mb-2 text-white">
+                      <h4 className="text-lg font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
-                      <p className="text-sm mb-6 max-w-[220px] mx-auto text-amber-200">
+                      <p className="text-sm mb-6 max-w-xs mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
 
-                      {/* Quick Actions - 2 rows grid */}
-                      <div className="grid grid-cols-2 gap-2 max-w-[280px] mx-auto">
+                      {/* Quick Actions */}
+                      <div className="flex flex-wrap gap-2 justify-center">
                         {quickActions.map((action, i) => (
                           <motion.button
                             key={i}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleQuickAction(action.prompt)}
-                            className="px-2 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm whitespace-nowrap"
+                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
                           >
                             {action.label}
                           </motion.button>
@@ -282,7 +283,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-xs text-center mt-2 font-medium text-amber-500">
+                <p className="text-xs text-center mt-2 text-purple-500">
                   Powered by FUN Charity 💜
                 </p>
               </div>
