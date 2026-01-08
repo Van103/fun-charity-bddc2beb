@@ -265,15 +265,19 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                   </>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              {/* Live video indicator - Facebook style */}
+              {isLiveVideo ? (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    <span className="text-foreground">{t("social.wasLive")}</span>
+                  </span>
+                  <span>·</span>
+                  <span className="text-xs">{timeAgo}</span>
+                </div>
+              ) : (
                 <span className="text-xs text-muted-foreground">{timeAgo}</span>
-                {isLiveVideo && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-1 bg-red-500/10 text-red-500 border-red-500/20">
-                    <Video className="w-2.5 h-2.5" />
-                    {t("social.wasLive")}
-                  </Badge>
-                )}
-              </div>
+              )}
             </div>
           </div>
 
