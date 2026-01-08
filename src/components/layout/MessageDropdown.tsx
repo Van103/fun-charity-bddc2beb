@@ -268,15 +268,22 @@ export function MessageDropdown({ userId, unreadCount }: MessageDropdownProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative text-foreground hover:text-primary hover:bg-primary/10"
+          className="relative w-10 h-10 rounded-full bg-muted hover:bg-muted/80 transition-colors"
           title={t("nav.messages") || "Messages"}
         >
           <MessageCircle className="w-5 h-5" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] flex items-center justify-center text-[11px] font-bold text-white bg-red-500 rounded-full px-1.5 shadow-sm">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
-          )}
+          <AnimatePresence>
+            {unreadCount > 0 && (
+              <motion.span 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1.5 bg-red-500 text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-sm"
+              >
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Button>
       </PopoverTrigger>
       <PopoverContent
