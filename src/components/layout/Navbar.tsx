@@ -184,15 +184,13 @@ export function Navbar() {
       setConnectedWallet(data.wallet_address);
     }
 
-    // Check admin role
-    const { data: roleData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
-    
-    setIsAdmin(!!roleData);
+    // Check admin role (use backend function to avoid RLS issues)
+    const { data: isAdminRole } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+
+    setIsAdmin(!!isAdminRole);
   };
 
   const shortenAddress = (address: string) => {
