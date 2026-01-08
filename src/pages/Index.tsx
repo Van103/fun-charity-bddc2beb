@@ -12,12 +12,16 @@ import { FAQSection } from "@/components/home/FAQSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { PartnersSection } from "@/components/home/PartnersSection";
 import { VolunteerSignupSection } from "@/components/home/VolunteerSignupSection";
+import { TransparencyDashboard } from "@/components/transparency/TransparencyDashboard";
 
 const Index = () => {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
+      <div className="container mx-auto px-4">
+        <TransparencyDashboard />
+      </div>
       <AboutSection />
       <FeaturedCampaigns />
       <HowItWorks />
