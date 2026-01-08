@@ -108,8 +108,35 @@ serve(async (req) => {
     // Add current message
     messages.push({ role: "user", content: message });
 
+    // Fetch relevant knowledge from database
+    let knowledgeContext = "";
+    const searchTerms = message.toLowerCase().split(/\s+/).filter((w: string) => w.length > 2);
+    
+    if (searchTerms.length > 0) {
+      // Search knowledge base for relevant info
+      const { data: knowledge } = await supabase
+        .from("angel_knowledge")
+        .select("title, content, category")
+        .eq("is_active", true)
+        .order("priority", { ascending: false })
+        .limit(5);
+      
+      if (knowledge && knowledge.length > 0) {
+        // Filter by relevance (check if keywords match)
+        const relevantKnowledge = knowledge.filter((k: { title: string; content: string; keywords?: string[] }) => {
+          const combined = `${k.title} ${k.content}`.toLowerCase();
+          return searchTerms.some((term: string) => combined.includes(term));
+        });
+        
+        if (relevantKnowledge.length > 0) {
+          knowledgeContext = "\n\n📚 KIẾN THỨC QUAN TRỌNG:\n" + 
+            relevantKnowledge.map((k: { title: string; content: string }) => `【${k.title}】\n${k.content}`).join("\n\n");
+        }
+      }
+    }
+
     // Add context if provided
-    let enhancedSystemPrompt = SYSTEM_PROMPT;
+    let enhancedSystemPrompt = SYSTEM_PROMPT + knowledgeContext;
     if (context) {
       enhancedSystemPrompt += `\n\n📋 THÔNG TIN BỔ SUNG:\n${JSON.stringify(context, null, 2)}`;
     }
