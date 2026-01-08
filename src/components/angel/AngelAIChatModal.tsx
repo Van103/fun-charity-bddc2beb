@@ -219,7 +219,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                                 <span className="text-xs text-amber-500 font-medium">Angel</span>
                               </div>
                             )}
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                            <p className="text-[17px] whitespace-pre-wrap leading-relaxed">
                               {msg.content || (
                                 <span className="inline-flex items-center gap-1">
                                   <Loader2 className="w-3 h-3 animate-spin" />
