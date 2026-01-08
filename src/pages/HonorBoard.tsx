@@ -10,13 +10,14 @@ import { HonorStatsOverview } from "@/components/honor/HonorStatsOverview";
 import { HonorPodium } from "@/components/honor/HonorPodium";
 import { RankerCard } from "@/components/honor/RankerCard";
 import { BadgeCard } from "@/components/honor/BadgeCard";
+import { RecipientsList } from "@/components/recipients/RecipientsList";
 import { useTopRankers } from "@/hooks/useHonorStats";
 import { useVolunteerRanking } from "@/hooks/useVolunteerRanking";
 import { useBadges } from "@/hooks/useBadges";
-import { Loader2, Trophy, Heart, Award } from "lucide-react";
+import { Loader2, Trophy, Heart, Award, Users } from "lucide-react";
 
 export default function HonorBoard() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState("donors");
   
   // Enable realtime ranking updates with toast notifications
@@ -80,7 +81,7 @@ export default function HonorBoard() {
         {/* Tabs Section */}
         <section className="container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-lg mx-auto grid-cols-3 mb-8 bg-muted/50 p-1 rounded-xl">
+            <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-8 bg-muted/50 p-1 rounded-xl">
               <TabsTrigger 
                 value="donors" 
                 className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
@@ -88,6 +89,14 @@ export default function HonorBoard() {
                 <Trophy className="w-4 h-4" />
                 <span className="hidden sm:inline">{t("honorBoard.topDonors")}</span>
                 <span className="sm:hidden">{t("honorBoard.donors")}</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recipients"
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all"
+              >
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">{language === "vi" ? "Người Nhận" : "Recipients"}</span>
+                <span className="sm:hidden">{language === "vi" ? "Nhận" : "Rcv"}</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="volunteers"
@@ -146,6 +155,25 @@ export default function HonorBoard() {
                   )}
                 </>
               )}
+            </TabsContent>
+
+            {/* Recipients Tab */}
+            <TabsContent value="recipients" className="space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-6"
+              >
+                <h2 className="text-2xl font-bold mb-2">
+                  {language === "vi" ? "🎁 Người Nhận Từ Thiện" : "🎁 Charity Recipients"}
+                </h2>
+                <p className="text-muted-foreground">
+                  {language === "vi" 
+                    ? "Những hoàn cảnh đã được cộng đồng hỗ trợ - mỗi người có NFT ID xác minh"
+                    : "People helped by our community - each with verified NFT ID"}
+                </p>
+              </motion.div>
+              <RecipientsList showFilters={true} />
             </TabsContent>
 
             {/* Top Volunteers Tab */}

@@ -63,6 +63,7 @@ const BrandGuidelines = lazy(() => import("./pages/BrandGuidelines"));
 const GiftsFromCosmicFather = lazy(() => import("./pages/GiftsFromCosmicFather"));
 const AdminRewards = lazy(() => import("./pages/AdminRewards"));
 const AdminAngelKnowledge = lazy(() => import("./pages/AdminAngelKnowledge"));
+const RecipientProfile = lazy(() => import("./pages/RecipientProfile"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -210,6 +211,7 @@ const App = () => (
                     <Route path="/gifts" element={<GiftsFromCosmicFather />} />
                     <Route path="/admin/rewards" element={<AdminRewards />} />
                     <Route path="/admin/angel-knowledge" element={<AdminAngelKnowledge />} />
+                    <Route path="/recipient/:id" element={<RecipientProfile />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
