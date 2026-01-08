@@ -4,8 +4,7 @@ import AgoraRTC, {
   IAgoraRTCRemoteUser,
   ICameraVideoTrack,
   IMicrophoneAudioTrack,
-  IRemoteVideoTrack,
-  IRemoteAudioTrack,
+  ILocalAudioTrack,
 } from 'agora-rtc-sdk-ng';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -31,10 +30,14 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
   const [viewerCount, setViewerCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [remoteUser, setRemoteUser] = useState<IAgoraRTCRemoteUser | null>(null);
+  const [isSystemAudioEnabled, setIsSystemAudioEnabled] = useState(false);
 
   const clientRef = useRef<IAgoraRTCClient | null>(null);
   const localAudioTrackRef = useRef<IMicrophoneAudioTrack | null>(null);
   const localVideoTrackRef = useRef<ICameraVideoTrack | null>(null);
+  const mixedAudioTrackRef = useRef<ILocalAudioTrack | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const systemAudioStreamRef = useRef<MediaStream | null>(null);
   const appIdRef = useRef<string>('');
   const channelNameRef = useRef<string>('');
   const isLeavingRef = useRef(false);
@@ -106,8 +109,75 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
     return `live_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   }, []);
 
+  // Capture system audio using getDisplayMedia (desktop only)
+  const captureSystemAudio = useCallback(async (): Promise<MediaStreamTrack | null> => {
+    try {
+      console.log('[AgoraLive] Requesting system audio capture...');
+      
+      // Request screen share with audio - this captures system audio
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true, // Required by browser, but we'll stop it immediately
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+        } as MediaTrackConstraints,
+      });
+
+      // Stop video track immediately - we only need audio
+      displayStream.getVideoTracks().forEach(track => track.stop());
+
+      const audioTracks = displayStream.getAudioTracks();
+      if (audioTracks.length === 0) {
+        console.warn('[AgoraLive] No system audio track captured - user may not have selected audio');
+        toast.warning('Không capture được âm thanh hệ thống. Hãy chọn "Share audio" khi chia sẻ.');
+        return null;
+      }
+
+      systemAudioStreamRef.current = displayStream;
+      console.log('[AgoraLive] System audio captured successfully');
+      return audioTracks[0];
+    } catch (err) {
+      console.error('[AgoraLive] Failed to capture system audio:', err);
+      return null;
+    }
+  }, []);
+
+  // Mix microphone and system audio using Web Audio API
+  const mixAudioSources = useCallback((
+    micTrack: MediaStreamTrack,
+    systemTrack: MediaStreamTrack,
+    micVolume: number = 1.0,
+    systemVolume: number = 0.8
+  ): MediaStreamTrack => {
+    console.log('[AgoraLive] Mixing audio sources...');
+    
+    const audioContext = new AudioContext();
+    audioContextRef.current = audioContext;
+
+    // Create sources from tracks
+    const micSource = audioContext.createMediaStreamSource(new MediaStream([micTrack]));
+    const systemSource = audioContext.createMediaStreamSource(new MediaStream([systemTrack]));
+
+    // Create gain nodes for volume control
+    const micGain = audioContext.createGain();
+    const systemGain = audioContext.createGain();
+    micGain.gain.value = micVolume;
+    systemGain.gain.value = systemVolume;
+
+    // Create destination
+    const destination = audioContext.createMediaStreamDestination();
+
+    // Connect: source -> gain -> destination
+    micSource.connect(micGain).connect(destination);
+    systemSource.connect(systemGain).connect(destination);
+
+    console.log('[AgoraLive] Audio sources mixed successfully');
+    return destination.stream.getAudioTracks()[0];
+  }, []);
+
   // Start broadcast (for host)
-  const startBroadcast = useCallback(async (channelName?: string) => {
+  const startBroadcast = useCallback(async (channelName?: string, enableSystemAudio?: boolean) => {
     if (role !== 'host') {
       console.error('[AgoraLive] Only host can start broadcast');
       return null;
@@ -170,8 +240,35 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
         localAudioTrackRef.current = audioTrack;
         localVideoTrackRef.current = videoTrack;
 
+        let audioTrackToPublish: IMicrophoneAudioTrack | ILocalAudioTrack = audioTrack;
+
+        // If system audio is enabled, capture and mix it
+        if (enableSystemAudio) {
+          const systemAudioTrack = await captureSystemAudio();
+          
+          if (systemAudioTrack) {
+            // Get the raw mic track from Agora track
+            const micMediaTrack = audioTrack.getMediaStreamTrack();
+            
+            // Mix mic + system audio
+            const mixedTrack = mixAudioSources(micMediaTrack, systemAudioTrack);
+            
+            // Create custom Agora track from mixed audio
+            const customAudioTrack = AgoraRTC.createCustomAudioTrack({
+              mediaStreamTrack: mixedTrack,
+            });
+            
+            mixedAudioTrackRef.current = customAudioTrack;
+            audioTrackToPublish = customAudioTrack;
+            setIsSystemAudioEnabled(true);
+            console.log('[AgoraLive] Using mixed audio track (mic + system)');
+          } else {
+            console.log('[AgoraLive] System audio not available, using mic only');
+          }
+        }
+
         if (!isLeavingRef.current) {
-          await client.publish([audioTrack, videoTrack]);
+          await client.publish([audioTrackToPublish, videoTrack]);
           console.log('[AgoraLive] Published tracks');
         }
       } catch (mediaError) {
@@ -191,7 +288,7 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
       setStatus('error');
       throw err;
     }
-  }, [role, initClient, getToken, generateChannelName]);
+  }, [role, initClient, getToken, generateChannelName, captureSystemAudio, mixAudioSources]);
 
   // Join as audience (for viewers)
   const joinAsAudience = useCallback(async (channelName: string) => {
@@ -301,6 +398,31 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
       localVideoTrackRef.current = null;
     }
 
+    // Stop mixed audio track
+    if (mixedAudioTrackRef.current) {
+      try {
+        mixedAudioTrackRef.current.stop();
+        mixedAudioTrackRef.current.close();
+      } catch (e) {}
+      mixedAudioTrackRef.current = null;
+    }
+
+    // Stop system audio stream
+    if (systemAudioStreamRef.current) {
+      try {
+        systemAudioStreamRef.current.getTracks().forEach(track => track.stop());
+      } catch (e) {}
+      systemAudioStreamRef.current = null;
+    }
+
+    // Close audio context
+    if (audioContextRef.current) {
+      try {
+        await audioContextRef.current.close();
+      } catch (e) {}
+      audioContextRef.current = null;
+    }
+
     // Leave channel
     if (clientRef.current) {
       try {
@@ -320,6 +442,7 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
     setViewerCount(0);
     setIsMuted(false);
     setIsVideoOff(false);
+    setIsSystemAudioEnabled(false);
     channelNameRef.current = '';
   }, []);
 
@@ -371,6 +494,7 @@ export const useAgoraLiveStream = (props: UseAgoraLiveStreamProps) => {
     status,
     isMuted,
     isVideoOff,
+    isSystemAudioEnabled,
     viewerCount,
     error,
     remoteUser,

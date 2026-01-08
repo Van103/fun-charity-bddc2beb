@@ -171,6 +171,10 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [excludedFriends, setExcludedFriends] = useState<string[]>([]);
   const [showFriendExcludeModal, setShowFriendExcludeModal] = useState(false);
   
+  // System audio sharing state (desktop only)
+  const [shareSystemAudio, setShareSystemAudio] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  
   // Music & Effects states
   const [showMusicPanel, setShowMusicPanel] = useState(false);
   
@@ -362,6 +366,18 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     }
   }, []);
 
+  // Detect desktop device
+  useEffect(() => {
+    const checkDesktop = () => {
+      const isDesktopDevice = window.innerWidth >= 1024 && 
+        !(/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+      setIsDesktop(isDesktopDevice);
+    };
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
   // Start camera preview
   useEffect(() => {
     if (open) {
@@ -374,6 +390,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       setViewerCount(0);
       setPeakViewers(0);
       setStreamDuration(0);
+      setShareSystemAudio(false);
     }
     return () => {
       stopStream();
@@ -522,10 +539,11 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     setShowCountdown(false);
     
     // Start Agora broadcast first to get channel name
+    // Pass shareSystemAudio flag to enable system audio mixing
     let agoraChannelName: string | null = null;
     try {
-      console.log('[LiveStream] Starting Agora broadcast...');
-      agoraChannelName = await agoraLive.startBroadcast();
+      console.log('[LiveStream] Starting Agora broadcast...', { shareSystemAudio, isDesktop });
+      agoraChannelName = await agoraLive.startBroadcast(undefined, shareSystemAudio && isDesktop);
       
       if (!agoraChannelName) {
         throw new Error('Failed to start Agora broadcast');
@@ -1144,6 +1162,47 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                     className="bg-transparent border-0 text-white placeholder:text-white/60 text-base p-0 h-auto focus-visible:ring-0"
                   />
                 </div>
+
+                {/* System audio share toggle - Desktop only */}
+                {isDesktop && (
+                  <div className="flex items-center justify-between mb-3 py-3 border-t border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        shareSystemAudio ? 'bg-primary' : 'bg-white/20'
+                      }`}>
+                        <Music className={`w-5 h-5 ${shareSystemAudio ? 'text-primary-foreground' : 'text-white/60'}`} />
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-medium">Chia sẻ âm thanh hệ thống</p>
+                        <p className="text-white/60 text-xs">
+                          {shareSystemAudio ? 'Viewers sẽ nghe được nhạc từ máy tính' : 'Chỉ nghe được giọng nói từ mic'}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShareSystemAudio(!shareSystemAudio)}
+                      className={`relative w-12 h-7 rounded-full transition-colors ${
+                        shareSystemAudio ? 'bg-primary' : 'bg-white/30'
+                      }`}
+                    >
+                      <motion.div
+                        className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-md"
+                        animate={{ left: shareSystemAudio ? '26px' : '4px' }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {/* Mobile audio tip */}
+                {!isDesktop && (
+                  <div className="flex items-center gap-2 mb-3 p-3 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                    <Music className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                    <p className="text-blue-200 text-xs">
+                      💡 Để viewers nghe được nhạc, hãy dùng tai nghe có mic hoặc phát nhạc qua loa gần micro.
+                    </p>
+                  </div>
+                )}
 
                 {/* Share to story toggle - Facebook style */}
                 <div className="flex items-center justify-between mb-4 py-3 border-t border-white/10">
