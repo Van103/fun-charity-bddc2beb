@@ -384,7 +384,10 @@ export default function AdminAngelKnowledge() {
             </div>
           </div>
           <Button
-            onClick={() => setIsUploadDialogOpen(true)}
+            onClick={() => {
+              resetForm();
+              setIsUploadDialogOpen(true);
+            }}
             className="gap-2"
           >
             <Plus className="w-4 h-4" />
