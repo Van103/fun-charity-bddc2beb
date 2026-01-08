@@ -131,21 +131,12 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-purple-700">
+                  <h3 className="text-[17px] font-bold flex items-center gap-1 text-purple-700">
                     Angel AI
                     <Sparkles className="w-4 h-4 text-purple-600" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleSaveHistory}
-                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
-                    title="Lưu lịch sử chat"
-                  >
-                    <Download className="w-4 h-4" />
-                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -252,7 +243,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   <Button
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
-                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600"
+                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-purple-700 to-violet-700 hover:from-purple-800 hover:to-violet-800"
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
