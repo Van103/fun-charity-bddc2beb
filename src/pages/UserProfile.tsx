@@ -12,6 +12,7 @@ import { PhotosPreviewCard, PhotosTab } from "@/components/profile/PhotosTab";
 import { DonationHistoryCard } from "@/components/donations/DonationHistoryCard";
 import { CallHistoryCard } from "@/components/chat/CallHistoryCard";
 import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
+import { ProfileImageLightbox } from "@/components/profile/ProfileImageLightbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
@@ -47,6 +48,8 @@ export default function UserProfile() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
   const [photosModalOpen, setPhotosModalOpen] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxType, setLightboxType] = useState<"avatar" | "cover">("avatar");
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -157,7 +160,11 @@ export default function UserProfile() {
                   <img 
                     src={profile.cover_url} 
                     alt="Cover" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer hover:brightness-90 transition-all"
+                    onClick={() => {
+                      setLightboxType("cover");
+                      setLightboxOpen(true);
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-r from-secondary/20 via-primary/10 to-secondary/20" />
@@ -182,14 +189,25 @@ export default function UserProfile() {
                 <div className="flex flex-col md:flex-row md:items-end gap-4">
                   {/* Avatar - Overlapping cover */}
                   <div className="relative -mt-[70px] md:-mt-[85px] z-10">
-                    <Avatar className="w-[140px] h-[140px] md:w-[170px] md:h-[170px] border-4 border-card shadow-xl ring-4 ring-card">
+                    <Avatar 
+                      className="w-[140px] h-[140px] md:w-[170px] md:h-[170px] border-4 border-card shadow-xl ring-4 ring-card cursor-pointer hover:brightness-90 transition-all"
+                      onClick={() => {
+                        if (profile?.avatar_url) {
+                          setLightboxType("avatar");
+                          setLightboxOpen(true);
+                        }
+                      }}
+                    >
                       <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
                       <AvatarFallback className="bg-secondary/20 text-5xl">
                         <UserIcon className="w-20 h-20 text-secondary" />
                       </AvatarFallback>
                     </Avatar>
                     <button 
-                      onClick={() => setEditModalOpen(true)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditModalOpen(true);
+                      }}
                       className="absolute bottom-3 right-3 p-2.5 bg-muted hover:bg-muted/80 rounded-full transition-colors shadow-md border border-border"
                     >
                       <Camera className="w-5 h-5" />
@@ -409,6 +427,15 @@ export default function UserProfile() {
           <PhotosTab userId={profile?.user_id || null} />
         </DialogContent>
       </Dialog>
+
+      {/* Profile Image Lightbox */}
+      <ProfileImageLightbox
+        imageUrl={lightboxType === "avatar" ? profile?.avatar_url || null : profile?.cover_url || null}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        type={lightboxType}
+        userName={profile?.full_name}
+      />
     </>
   );
 }

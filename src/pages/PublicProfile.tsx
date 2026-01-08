@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock, UserMinus, ChevronDown, Phone, Video } from "lucide-react";
 import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
+import { ProfileImageLightbox } from "@/components/profile/ProfileImageLightbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,6 +66,8 @@ export default function PublicProfile() {
   const [friendsCount, setFriendsCount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUnfriendDialog, setShowUnfriendDialog] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxType, setLightboxType] = useState<"avatar" | "cover">("avatar");
 
   // Fetch posts for this user
   const { 
@@ -294,7 +297,15 @@ export default function PublicProfile() {
         {/* Cover Photo */}
         <div className="relative h-48 sm:h-64 md:h-80 rounded-b-xl overflow-hidden bg-gradient-to-r from-primary/20 to-gold-champagne/20">
           {profile.cover_url && (
-            <img src={profile.cover_url} alt="Cover" className="w-full h-full object-cover" />
+            <img 
+              src={profile.cover_url} 
+              alt="Cover" 
+              className="w-full h-full object-cover cursor-pointer hover:brightness-90 transition-all"
+              onClick={() => {
+                setLightboxType("cover");
+                setLightboxOpen(true);
+              }}
+            />
           )}
           
           {/* Personal Honor Board */}
@@ -304,7 +315,15 @@ export default function PublicProfile() {
         {/* Profile Header */}
         <div className="relative px-4 sm:px-8 pb-4">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-16 sm:-mt-20">
-            <div className="p-1 rounded-full bg-gradient-to-br from-gold-champagne to-primary">
+            <div 
+              className="p-1 rounded-full bg-gradient-to-br from-gold-champagne to-primary cursor-pointer hover:brightness-90 transition-all"
+              onClick={() => {
+                if (profile.avatar_url) {
+                  setLightboxType("avatar");
+                  setLightboxOpen(true);
+                }
+              }}
+            >
               <Avatar className="w-32 h-32 sm:w-40 sm:h-40 border-4 border-card">
                 <AvatarImage src={profile.avatar_url || ""} />
                 <AvatarFallback className="text-4xl bg-gradient-to-br from-primary to-gold-champagne text-white">
@@ -554,6 +573,15 @@ export default function PublicProfile() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Profile Image Lightbox */}
+      <ProfileImageLightbox
+        imageUrl={lightboxType === "avatar" ? profile.avatar_url : profile.cover_url}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        type={lightboxType}
+        userName={profile.full_name}
+      />
     </div>
   );
 }
