@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock, UserMinus, ChevronDown, Phone, Video } from "lucide-react";
+import { Loader2, UserPlus, UserCheck, MessageCircle, Users, Camera, MapPin, Briefcase, GraduationCap, Clock, UserMinus, ChevronDown, Phone, Video, Heart } from "lucide-react";
+import { DonorJourneyTimeline } from "@/components/donors/DonorJourneyTimeline";
+import { DonorStatsCard } from "@/components/donors/DonorStatsCard";
+import { useDonorStats } from "@/hooks/useDonorJourney";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
 import { ProfileImageLightbox } from "@/components/profile/ProfileImageLightbox";
 import {
@@ -55,6 +59,7 @@ export default function PublicProfile() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { language } = useLanguage();
   
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileDetails, setProfileDetails] = useState<ProfileDetail[]>([]);
@@ -86,6 +91,9 @@ export default function PublicProfile() {
 
   // Filter posts by this user
   const userPosts = postsData?.pages.flatMap(page => page.posts).filter(p => p.user_id === userId) || [];
+
+  // Donor journey data
+  const { stats: donorStats, milestones, donations: donorDonations, isLoading: donorLoading } = useDonorStats(userId, language);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -429,15 +437,19 @@ export default function PublicProfile() {
 
         {/* Tabs */}
         <Tabs defaultValue="posts" className="mt-4">
-          <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0 gap-4">
+          <TabsList className="w-full justify-start border-b rounded-none bg-transparent p-0 gap-4 overflow-x-auto">
             <TabsTrigger value="posts" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-              Bài viết
+              {language === "vi" ? "Bài viết" : "Posts"}
+            </TabsTrigger>
+            <TabsTrigger value="charity" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex items-center gap-1">
+              <Heart className="w-4 h-4" />
+              {language === "vi" ? "Từ thiện" : "Charity"}
             </TabsTrigger>
             <TabsTrigger value="about" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-              Giới thiệu
+              {language === "vi" ? "Giới thiệu" : "About"}
             </TabsTrigger>
             <TabsTrigger value="photos" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
-              Ảnh
+              {language === "vi" ? "Ảnh" : "Photos"}
             </TabsTrigger>
           </TabsList>
 
@@ -493,6 +505,37 @@ export default function PublicProfile() {
                   ))
                 )}
                 <div ref={loadMoreRef} />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Charity Tab */}
+          <TabsContent value="charity" className="mt-6">
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Stats Card */}
+              <div className="lg:col-span-1">
+                {donorLoading ? (
+                  <div className="glass-card p-8 flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <DonorStatsCard stats={donorStats} />
+                )}
+              </div>
+              
+              {/* Journey Timeline */}
+              <div className="lg:col-span-2">
+                {donorLoading ? (
+                  <div className="glass-card p-8 flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <DonorJourneyTimeline 
+                    donations={donorDonations} 
+                    milestones={milestones}
+                    showCampaignLinks={true}
+                  />
+                )}
               </div>
             </div>
           </TabsContent>
