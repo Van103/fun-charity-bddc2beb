@@ -277,7 +277,7 @@ const Auth = () => {
                 <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
                   <div className="flex items-center justify-center gap-2 text-green-600">
                     <Gift className="w-5 h-5" />
-                    <span className="font-semibold">🎁 Bạn được tặng 50 Camly Coin khi đăng ký!</span>
+                    <span className="font-semibold">🎁 Bạn được tặng 50,000 Camly Coin khi đăng ký!</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Mã giới thiệu: <strong className="text-green-600">{referralCodeFromUrl}</strong>

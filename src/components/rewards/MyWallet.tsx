@@ -150,11 +150,11 @@ export function MyWallet() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-              <div className="flex-1">
+            <div className="flex-1">
                 <p className="text-muted-foreground mb-2">
-                  Chia sẻ link để nhận <strong className="text-amber-500">30 Camly Coin</strong> khi bạn bè đăng ký!
+                  Chia sẻ link để nhận <strong className="text-amber-500">30,000 Camly Coin</strong> khi bạn bè đăng ký!
                   <br />
-                  <span className="text-sm">Bạn bè cũng nhận <strong className="text-green-500">50 Camly Coin</strong> khi đăng ký qua link của bạn!</span>
+                  <span className="text-sm">Bạn bè cũng nhận <strong className="text-green-500">50,000 Camly Coin</strong> khi đăng ký qua link của bạn!</span>
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <div className="bg-background border-2 border-dashed border-purple-500/50 rounded-lg px-4 py-2 font-mono text-lg font-bold tracking-wider">
