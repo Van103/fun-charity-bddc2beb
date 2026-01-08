@@ -487,6 +487,66 @@ export type Database = {
         }
         Relationships: []
       }
+      charity_recipients: {
+        Row: {
+          avatar_url: string | null
+          category: string | null
+          created_at: string | null
+          donation_count: number | null
+          full_name: string
+          id: string
+          is_verified: boolean | null
+          location: string | null
+          nft_minted_at: string | null
+          nft_token_id: string | null
+          story: string | null
+          total_received: number | null
+          updated_at: string | null
+          user_id: string | null
+          verified_at: string | null
+          verified_by: string | null
+          wallet_address: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          donation_count?: number | null
+          full_name: string
+          id?: string
+          is_verified?: boolean | null
+          location?: string | null
+          nft_minted_at?: string | null
+          nft_token_id?: string | null
+          story?: string | null
+          total_received?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          wallet_address?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          donation_count?: number | null
+          full_name?: string
+          id?: string
+          is_verified?: boolean | null
+          location?: string | null
+          nft_minted_at?: string | null
+          nft_token_id?: string | null
+          story?: string | null
+          total_received?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          wallet_address?: string | null
+        }
+        Relationships: []
+      }
       coin_purchases: {
         Row: {
           amount: number
@@ -1726,6 +1786,119 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      recipient_assets: {
+        Row: {
+          asset_name: string
+          asset_type: string
+          asset_value: number | null
+          currency: string | null
+          description: string | null
+          donor_id: string | null
+          donor_name: string | null
+          id: string
+          proof_url: string | null
+          received_at: string | null
+          recipient_id: string
+        }
+        Insert: {
+          asset_name: string
+          asset_type: string
+          asset_value?: number | null
+          currency?: string | null
+          description?: string | null
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          proof_url?: string | null
+          received_at?: string | null
+          recipient_id: string
+        }
+        Update: {
+          asset_name?: string
+          asset_type?: string
+          asset_value?: number | null
+          currency?: string | null
+          description?: string | null
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          proof_url?: string | null
+          received_at?: string | null
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipient_assets_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "charity_recipients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recipient_donations: {
+        Row: {
+          amount: number
+          asset_description: string | null
+          asset_type: string | null
+          currency: string | null
+          donation_id: string | null
+          donor_id: string | null
+          donor_name: string | null
+          id: string
+          message: string | null
+          proof_media_urls: Json | null
+          received_at: string | null
+          recipient_id: string
+          tx_hash: string | null
+        }
+        Insert: {
+          amount: number
+          asset_description?: string | null
+          asset_type?: string | null
+          currency?: string | null
+          donation_id?: string | null
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          message?: string | null
+          proof_media_urls?: Json | null
+          received_at?: string | null
+          recipient_id: string
+          tx_hash?: string | null
+        }
+        Update: {
+          amount?: number
+          asset_description?: string | null
+          asset_type?: string | null
+          currency?: string | null
+          donation_id?: string | null
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          message?: string | null
+          proof_media_urls?: Json | null
+          received_at?: string | null
+          recipient_id?: string
+          tx_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipient_donations_donation_id_fkey"
+            columns: ["donation_id"]
+            isOneToOne: false
+            referencedRelation: "donations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recipient_donations_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "charity_recipients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       referral_codes: {
         Row: {
