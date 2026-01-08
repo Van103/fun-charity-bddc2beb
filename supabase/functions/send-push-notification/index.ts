@@ -5,31 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Web Push library for Deno
-// Using simplified implementation without web-push library
-async function sendWebPush(
-  subscription: { endpoint: string; p256dh: string; auth: string },
-  payload: object,
-  vapidKeys: { publicKey: string; privateKey: string }
-) {
-  // For production, you would use the web-push library
-  // This is a simplified version that works with service workers
-  const response = await fetch(subscription.endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "TTL": "86400",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Push failed: ${response.status}`);
-  }
-
-  return response;
-}
-
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -37,9 +12,35 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // SECURITY: Require authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Create client with user's auth token to verify identity
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    // Verify the caller is authenticated
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseAuth.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const callerId = claimsData.claims.sub;
 
     const { userId, title, body, url, callId, conversationId, callType, callerName, callerAvatar } = await req.json();
 
@@ -50,7 +51,84 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Sending push notification to user: ${userId}`);
+    // Use service role client for database operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // SECURITY: Verify caller has permission to notify target user
+    // Allow if: caller is the target user, OR they share a conversation, OR they have a call session together
+    let hasPermission = false;
+
+    // Always allow notifying yourself
+    if (callerId === userId) {
+      hasPermission = true;
+    }
+
+    // Check if caller is admin
+    if (!hasPermission) {
+      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: callerId });
+      if (isAdmin) {
+        hasPermission = true;
+      }
+    }
+
+    // Check if they share a conversation (for message/call notifications)
+    if (!hasPermission && conversationId) {
+      const { data: participants } = await supabase
+        .from("conversation_participants")
+        .select("user_id")
+        .eq("conversation_id", conversationId);
+      
+      if (participants) {
+        const userIds = participants.map(p => p.user_id);
+        if (userIds.includes(callerId) && userIds.includes(userId)) {
+          hasPermission = true;
+        }
+      }
+    }
+
+    // Check if they're in an active call session
+    if (!hasPermission && callId) {
+      const { data: callSession } = await supabase
+        .from("call_sessions")
+        .select("caller_id, conversation_id")
+        .eq("id", callId)
+        .single();
+      
+      if (callSession && callSession.caller_id === callerId) {
+        // Caller initiated the call, allow notifying participants
+        const { data: participants } = await supabase
+          .from("conversation_participants")
+          .select("user_id")
+          .eq("conversation_id", callSession.conversation_id);
+        
+        if (participants?.some(p => p.user_id === userId)) {
+          hasPermission = true;
+        }
+      }
+    }
+
+    // Check if they are friends
+    if (!hasPermission) {
+      const { data: friendship } = await supabase
+        .from("friendships")
+        .select("id")
+        .or(`and(user_id.eq.${callerId},friend_id.eq.${userId}),and(user_id.eq.${userId},friend_id.eq.${callerId})`)
+        .eq("status", "accepted")
+        .maybeSingle();
+      
+      if (friendship) {
+        hasPermission = true;
+      }
+    }
+
+    if (!hasPermission) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden: No permission to notify this user" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`Sending push notification to user: ${userId} from caller: ${callerId}`);
 
     // Get user's push subscription
     const { data: subscription, error: subError } = await supabase
@@ -96,12 +174,7 @@ Deno.serve(async (req) => {
     console.log("Sending payload:", payload);
 
     // Try to send push notification
-    // Note: In production, you would need proper VAPID authentication
-    // For now, we'll log the attempt and return success
-    // The actual push would require web-push library implementation
-    
     try {
-      // Attempt to send (this will fail without proper VAPID, but logs the attempt)
       await fetch(subscription.endpoint, {
         method: "POST",
         headers: {
