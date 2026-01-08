@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import {
   Pause,
   Eye,
   MoreHorizontal,
+  RotateCcw,
+  RotateCw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -70,11 +72,16 @@ export const VideoReelCard = memo(function VideoReelCard({
   onShare,
 }: VideoReelCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [doubleTapLike, setDoubleTapLike] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showSkipIndicator, setShowSkipIndicator] = useState<'forward' | 'backward' | null>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastTapRef = useRef<number>(0);
   
@@ -85,6 +92,85 @@ export const VideoReelCard = memo(function VideoReelCard({
     addSuffix: false, 
     locale: vi 
   });
+
+  // Format time helper (mm:ss)
+  const formatTime = useCallback((seconds: number) => {
+    if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, []);
+
+  // Skip forward/backward
+  const skipTime = useCallback((seconds: number) => {
+    if (!videoRef.current) return;
+    const newTime = Math.max(0, Math.min(videoRef.current.duration, videoRef.current.currentTime + seconds));
+    videoRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+    setProgress((newTime / videoRef.current.duration) * 100);
+    setShowSkipIndicator(seconds > 0 ? 'forward' : 'backward');
+    setTimeout(() => setShowSkipIndicator(null), 500);
+    setShowControls(true);
+  }, []);
+
+  // Handle progress bar click/drag
+  const handleProgressBarInteraction = useCallback((clientX: number) => {
+    if (!progressBarRef.current || !videoRef.current) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    const percent = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const newTime = percent * videoRef.current.duration;
+    
+    videoRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+    setProgress(percent * 100);
+  }, []);
+
+  const handleProgressBarClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleProgressBarInteraction(e.clientX);
+  }, [handleProgressBarInteraction]);
+
+  const handleProgressBarMouseDown = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    handleProgressBarInteraction(e.clientX);
+  }, [handleProgressBarInteraction]);
+
+  const handleProgressBarTouchStart = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    handleProgressBarInteraction(e.touches[0].clientX);
+  }, [handleProgressBarInteraction]);
+
+  // Handle mouse/touch move for dragging
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      handleProgressBarInteraction(e.clientX);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      handleProgressBarInteraction(e.touches[0].clientX);
+    };
+
+    const handleEnd = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleEnd);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleEnd);
+    };
+  }, [isDragging, handleProgressBarInteraction]);
 
   // Register video with parent observer
   useEffect(() => {
@@ -120,20 +206,41 @@ export const VideoReelCard = memo(function VideoReelCard({
     }
   }, [isMuted, isActive]);
 
-  // Progress update
+  // Progress and duration update
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const handleTimeUpdate = () => {
-      if (video.duration) {
+      if (video.duration && !isDragging) {
+        setCurrentTime(video.currentTime);
         setProgress((video.currentTime / video.duration) * 100);
       }
     };
 
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+    };
+
+    const handleDurationChange = () => {
+      setDuration(video.duration);
+    };
+
     video.addEventListener('timeupdate', handleTimeUpdate);
-    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, []);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('durationchange', handleDurationChange);
+    
+    // Set duration if already loaded
+    if (video.duration) {
+      setDuration(video.duration);
+    }
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('durationchange', handleDurationChange);
+    };
+  }, [isDragging]);
 
   // Auto-hide controls
   useEffect(() => {
@@ -217,14 +324,131 @@ export const VideoReelCard = memo(function VideoReelCard({
         )}
       </AnimatePresence>
 
-      {/* Progress Bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-white/20 z-10">
-        <motion.div
-          className="h-full bg-white"
-          style={{ width: `${progress}%` }}
-          transition={{ duration: 0.1 }}
-        />
-      </div>
+      {/* Skip Indicator Animation */}
+      <AnimatePresence>
+        {showSkipIndicator && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className={cn(
+              "absolute top-1/2 -translate-y-1/2 z-30 pointer-events-none",
+              showSkipIndicator === 'backward' ? "left-12" : "right-12"
+            )}
+          >
+            <div className="w-16 h-16 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center">
+              {showSkipIndicator === 'backward' ? (
+                <div className="flex flex-col items-center">
+                  <RotateCcw className="w-6 h-6 text-white" />
+                  <span className="text-white text-xs mt-1">10s</span>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <RotateCw className="w-6 h-6 text-white" />
+                  <span className="text-white text-xs mt-1">10s</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Facebook-style Video Controls Bottom Bar */}
+      <AnimatePresence>
+        {showControls && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-40 left-3 right-20 z-30"
+          >
+            {/* Progress Bar - Seekable */}
+            <div 
+              ref={progressBarRef}
+              className="relative h-8 flex items-center cursor-pointer group"
+              onClick={handleProgressBarClick}
+              onMouseDown={handleProgressBarMouseDown}
+              onTouchStart={handleProgressBarTouchStart}
+            >
+              {/* Track Background */}
+              <div className="absolute left-0 right-0 h-1 bg-white/30 rounded-full group-hover:h-1.5 transition-all">
+                {/* Progress Fill */}
+                <div 
+                  className="h-full bg-white rounded-full relative"
+                  style={{ width: `${progress}%` }}
+                >
+                  {/* Drag Handle */}
+                  <div 
+                    className={cn(
+                      "absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg transition-transform",
+                      "opacity-0 group-hover:opacity-100",
+                      isDragging && "opacity-100 scale-125"
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Time Display & Skip Controls */}
+            <div className="flex items-center justify-between mt-1">
+              {/* Time Display */}
+              <div className="flex items-center gap-1.5 text-white text-xs font-medium drop-shadow-lg">
+                <span>{formatTime(currentTime)}</span>
+                <span className="text-white/60">/</span>
+                <span className="text-white/80">{formatTime(duration)}</span>
+              </div>
+
+              {/* Skip Controls */}
+              <div className="flex items-center gap-2">
+                {/* Skip Backward 10s */}
+                <button
+                  className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    skipTime(-10);
+                  }}
+                >
+                  <RotateCcw className="w-4 h-4 text-white" />
+                </button>
+
+                {/* Play/Pause */}
+                <button
+                  className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (videoRef.current) {
+                      if (videoRef.current.paused) {
+                        videoRef.current.play();
+                        setIsPlaying(true);
+                      } else {
+                        videoRef.current.pause();
+                        setIsPlaying(false);
+                      }
+                    }
+                  }}
+                >
+                  {isPlaying ? (
+                    <Pause className="w-5 h-5 text-white" />
+                  ) : (
+                    <Play className="w-5 h-5 text-white ml-0.5" />
+                  )}
+                </button>
+
+                {/* Skip Forward 10s */}
+                <button
+                  className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    skipTime(10);
+                  }}
+                >
+                  <RotateCw className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Play/Pause Overlay */}
       <AnimatePresence>
@@ -375,7 +599,7 @@ export const VideoReelCard = memo(function VideoReelCard({
       </div>
 
       {/* Top gradient overlay */}
-      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/50 to-transparent pointer-events-none z-10" />
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/50 to-transparent pointer-events-none z-5" />
       
       {/* Bottom gradient overlay */}
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" />
