@@ -216,7 +216,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                             {msg.role === 'assistant' && (
                               <div className="flex items-center gap-1.5 mb-1">
                                 <img src={angelAvatar} alt="Angel" className="w-5 h-5 rounded-full object-cover" />
-                                <span className="text-xs text-amber-500 font-medium">Angel</span>
+                                <span className="text-xs text-amber-500 font-medium">Angel AI</span>
                               </div>
                             )}
                             <p className="text-[17px] whitespace-pre-wrap leading-relaxed">
@@ -261,7 +261,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-[17px] text-center mt-2 text-purple-700 font-medium">
+                <p className="text-[18px] text-center mt-2 text-purple-700 font-bold">
                   Powered by FUN Charity 💜
                 </p>
               </div>
