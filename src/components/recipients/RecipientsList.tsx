@@ -1,9 +1,12 @@
 import { motion } from "framer-motion";
-import { Loader2, Users, Search } from "lucide-react";
+import { Loader2, Users, Search, UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RecipientNFTCard } from "./RecipientNFTCard";
+import { RegisterRecipientModal } from "./RegisterRecipientModal";
 import { useRecipients } from "@/hooks/useRecipients";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState, useMemo } from "react";
 
@@ -11,14 +14,17 @@ interface RecipientsListProps {
   limit?: number;
   showFilters?: boolean;
   compact?: boolean;
+  showAddButton?: boolean;
 }
 
-export function RecipientsList({ limit, showFilters = true, compact = false }: RecipientsListProps) {
+export function RecipientsList({ limit, showFilters = true, compact = false, showAddButton = true }: RecipientsListProps) {
   const { language } = useLanguage();
   const { data: recipients, isLoading } = useRecipients({ verified: true, limit });
+  const { data: isAdmin } = useAdminCheck();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("total_received");
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const filteredRecipients = useMemo(() => {
     if (!recipients) return [];
@@ -83,6 +89,16 @@ export function RecipientsList({ limit, showFilters = true, compact = false }: R
 
   return (
     <div className="space-y-4">
+      {/* Admin Add Button */}
+      {showAddButton && isAdmin && (
+        <div className="flex justify-end">
+          <Button onClick={() => setShowRegisterModal(true)} className="gap-2">
+            <UserPlus className="w-4 h-4" />
+            {language === "vi" ? "Thêm Người Nhận" : "Add Recipient"}
+          </Button>
+        </div>
+      )}
+
       {showFilters && (
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -152,6 +168,12 @@ export function RecipientsList({ limit, showFilters = true, compact = false }: R
             : `No results found for "${searchTerm}"`}
         </div>
       )}
+
+      {/* Register Modal */}
+      <RegisterRecipientModal 
+        open={showRegisterModal} 
+        onOpenChange={setShowRegisterModal} 
+      />
     </div>
   );
 }
