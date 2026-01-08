@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +26,14 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  Gift,
 } from "lucide-react";
 
 const Auth = () => {
-  const [activeTab, setActiveTab] = useState("login");
+  const [searchParams] = useSearchParams();
+  const referralCodeFromUrl = searchParams.get("ref");
+  
+  const [activeTab, setActiveTab] = useState(referralCodeFromUrl ? "signup" : "login");
   const [userType, setUserType] = useState<"donor" | "volunteer" | "ngo">("donor");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -189,6 +193,7 @@ const Auth = () => {
         data: {
           full_name: result.data.fullName,
           role: userType,
+          referral_code: referralCodeFromUrl || undefined,
         },
       },
     });
@@ -266,6 +271,19 @@ const Auth = () => {
                   ? t("auth.loginSubtitle")
                   : t("auth.signupSubtitle")}
               </p>
+              
+              {/* Referral Bonus Banner */}
+              {referralCodeFromUrl && activeTab === "signup" && (
+                <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
+                  <div className="flex items-center justify-center gap-2 text-green-600">
+                    <Gift className="w-5 h-5" />
+                    <span className="font-semibold">🎁 Bạn được tặng 50 Camly Coin khi đăng ký!</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Mã giới thiệu: <strong className="text-green-600">{referralCodeFromUrl}</strong>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* User Type Selection (for signup) */}

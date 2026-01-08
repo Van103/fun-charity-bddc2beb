@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy } from 'lucide-react';
+import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy, Link2, Share2 } from 'lucide-react';
 import { useUserBalances, useRewardTransactions, useReferralCode, formatCurrency, getCurrencyIcon, getActionName } from '@/hooks/useRewards';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ export function MyWallet() {
   const { data: transactions, isLoading: transactionsLoading } = useRewardTransactions(50);
   const { data: referralCode } = useReferralCode();
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const copyReferralCode = async () => {
     if (referralCode?.code) {
@@ -25,6 +26,35 @@ export function MyWallet() {
       setCopied(true);
       toast.success('Đã sao chép mã giới thiệu!');
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const copyReferralLink = async () => {
+    if (referralCode?.code) {
+      const referralLink = `${window.location.origin}/auth?ref=${referralCode.code}`;
+      await navigator.clipboard.writeText(referralLink);
+      setCopiedLink(true);
+      toast.success('Đã sao chép link giới thiệu!');
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
+
+  const shareReferralLink = async () => {
+    if (referralCode?.code) {
+      const referralLink = `${window.location.origin}/auth?ref=${referralCode.code}`;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'FUN Charity - Mời bạn tham gia',
+            text: 'Đăng ký ngay để nhận 50 Camly Coin miễn phí! 🎁',
+            url: referralLink,
+          });
+        } catch (err) {
+          // User cancelled share
+        }
+      } else {
+        await copyReferralLink();
+      }
     }
   };
 
@@ -118,13 +148,15 @@ export function MyWallet() {
               Mời bạn bè - Nhận thưởng
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
               <div className="flex-1">
                 <p className="text-muted-foreground mb-2">
-                  Chia sẻ mã giới thiệu để nhận <strong className="text-amber-500">30 Camly Coin</strong> khi bạn bè đăng ký!
+                  Chia sẻ link để nhận <strong className="text-amber-500">30 Camly Coin</strong> khi bạn bè đăng ký!
+                  <br />
+                  <span className="text-sm">Bạn bè cũng nhận <strong className="text-green-500">50 Camly Coin</strong> khi đăng ký qua link của bạn!</span>
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <div className="bg-background border-2 border-dashed border-purple-500/50 rounded-lg px-4 py-2 font-mono text-lg font-bold tracking-wider">
                     {referralCode.code}
                   </div>
@@ -133,6 +165,7 @@ export function MyWallet() {
                     size="icon"
                     onClick={copyReferralCode}
                     className="shrink-0"
+                    title="Sao chép mã"
                   >
                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                   </Button>
@@ -142,6 +175,39 @@ export function MyWallet() {
                 <p className="text-sm text-muted-foreground">Đã mời</p>
                 <p className="text-2xl font-bold text-purple-500">{referralCode.uses_count} bạn</p>
                 <p className="text-sm text-amber-500">+{referralCode.total_earned} Camly</p>
+              </div>
+            </div>
+
+            {/* Referral Link Section */}
+            <div className="bg-background/50 rounded-xl p-4 border border-purple-500/20">
+              <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-purple-500" />
+                Link giới thiệu của bạn:
+              </p>
+              <div className="flex items-center gap-2 bg-background rounded-lg p-2 border">
+                <code className="flex-1 text-sm text-muted-foreground truncate">
+                  {window.location.origin}/auth?ref={referralCode.code}
+                </code>
+              </div>
+              <div className="flex gap-2 mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyReferralLink}
+                  className="flex-1"
+                >
+                  {copiedLink ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
+                  {copiedLink ? 'Đã sao chép!' : 'Sao chép Link'}
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={shareReferralLink}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Chia sẻ
+                </Button>
               </div>
             </div>
           </CardContent>
