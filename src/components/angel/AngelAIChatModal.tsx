@@ -14,12 +14,6 @@ interface AngelAIChatModalProps {
   onClose: () => void;
 }
 
-const quickActions = [
-  { label: '🎯 Gợi ý chiến dịch', prompt: 'Gợi ý những chiến dịch từ thiện phù hợp với tôi' },
-  { label: '💝 Cách quyên góp', prompt: 'Hướng dẫn cách quyên góp từ thiện trên nền tảng' },
-  { label: '🤝 Đăng ký tình nguyện', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
-  { label: '🌟 Nhận phần thưởng', prompt: 'Làm sao để nhận phần thưởng khi làm từ thiện?' },
-];
 
 export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
   const [input, setInput] = useState('');
@@ -190,27 +184,12 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 {messages.length === 0 ? (
                   <div className="flex-1 min-h-0 flex flex-col justify-end p-4 text-center">
                     <div className="w-full pb-4">
-                      <h4 className="text-lg font-semibold mb-2 text-white">
+                      <h4 className="text-[21px] font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
-                      <p className="text-sm mb-6 max-w-xs mx-auto text-amber-200">
+                      <p className="text-[17px] max-w-xs mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
-
-                      {/* Quick Actions */}
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {quickActions.map((action, i) => (
-                          <motion.button
-                            key={i}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleQuickAction(action.prompt)}
-                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
-                          >
-                            {action.label}
-                          </motion.button>
-                        ))}
-                      </div>
                     </div>
                   </div>
                 ) : (
