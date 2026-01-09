@@ -225,7 +225,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={toggleExpand}
-                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50 active:scale-90 active:bg-purple-300/60 transition-all duration-100"
                     title={isExpanded ? "Thu nhỏ" : "Phóng to"}
                   >
                     {isExpanded ? (
@@ -238,7 +238,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={clearConversation}
-                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50 active:scale-90 active:bg-purple-300/60 transition-all duration-100"
                     title="Xóa hội thoại"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -247,7 +247,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50 active:scale-90 active:bg-purple-300/60 transition-all duration-100"
                   >
                     <X className="w-5 h-5" />
                   </Button>
@@ -335,7 +335,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                   <Button
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
-                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-purple-700 to-violet-700 hover:from-purple-800 hover:to-violet-800"
+                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-purple-700 to-violet-700 hover:from-purple-800 hover:to-violet-800 active:scale-90 active:from-purple-900 active:to-violet-900 transition-all duration-100"
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
