@@ -32,8 +32,10 @@ import {
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const referralCodeFromUrl = searchParams.get("ref");
+  // Fallback to localStorage if URL param is missing (e.g., after page refresh)
+  const referralCode = referralCodeFromUrl || localStorage.getItem("referral_code");
   
-  const [activeTab, setActiveTab] = useState(referralCodeFromUrl ? "signup" : "login");
+  const [activeTab, setActiveTab] = useState(referralCode ? "signup" : "login");
   const [userType, setUserType] = useState<"donor" | "volunteer" | "ngo">("donor");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -204,7 +206,7 @@ const Auth = () => {
         data: {
           full_name: result.data.fullName,
           role: userType,
-          referral_code: referralCodeFromUrl || undefined,
+          referral_code: referralCode || undefined,
         },
       },
     });
@@ -284,14 +286,14 @@ const Auth = () => {
               </p>
               
               {/* Referral Bonus Banner */}
-              {referralCodeFromUrl && activeTab === "signup" && (
+              {referralCode && activeTab === "signup" && (
                 <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
                   <div className="flex items-center justify-center gap-2 text-green-600">
                     <Gift className="w-5 h-5" />
                     <span className="font-semibold">🎁 Bạn được tặng 50,000 Camly Coin khi đăng ký!</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Mã giới thiệu: <strong className="text-green-600">{referralCodeFromUrl}</strong>
+                    Mã giới thiệu: <strong className="text-green-600">{referralCode}</strong>
                   </p>
                 </div>
               )}
