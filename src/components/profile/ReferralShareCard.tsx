@@ -9,6 +9,30 @@ interface ReferralShareCardProps {
   userId: string | null;
 }
 
+// Hàm chuyển đổi tên thành username format
+const generateUsernameFromName = (fullName: string): string => {
+  if (!fullName) return "";
+  
+  // Bỏ dấu tiếng Việt
+  const removeVietnameseTones = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
+  
+  const normalized = removeVietnameseTones(fullName);
+  
+  // Tách từng từ và viết hoa chữ cái đầu, nối bằng dấu chấm
+  const words = normalized
+    .split(/\s+/)
+    .filter(word => word.length > 0)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  
+  return words.join(".");
+};
+
 export function ReferralShareCard({ userId }: ReferralShareCardProps) {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [usesCount, setUsesCount] = useState(0);
@@ -22,10 +46,26 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
     }
   }, [userId]);
 
-  const generateCode = () => {
-    return Array.from({ length: 8 }, () => 
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
-    ).join('');
+  const generateUniqueUsernameCode = async (baseName: string): Promise<string> => {
+    let code = baseName;
+    let counter = 0;
+    
+    while (true) {
+      const testCode = counter === 0 ? code : `${code}${counter}`;
+      
+      // Kiểm tra xem code đã tồn tại chưa
+      const { data: existing } = await supabase
+        .from("referral_codes")
+        .select("id")
+        .ilike("code", testCode)
+        .maybeSingle();
+      
+      if (!existing) {
+        return testCode;
+      }
+      
+      counter++;
+    }
   };
 
   const fetchOrCreateReferralCode = async () => {
@@ -44,8 +84,19 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
         setReferralCode(data.code);
         setUsesCount(data.uses_count);
       } else {
-        // Tạo code mới nếu chưa có
-        const newCode = generateCode();
+        // Lấy tên người dùng từ profiles
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("user_id", userId)
+          .single();
+        
+        const fullName = profile?.full_name || "User";
+        const baseName = generateUsernameFromName(fullName);
+        
+        // Tạo code unique từ tên
+        const newCode = await generateUniqueUsernameCode(baseName);
+        
         const { data: insertedData, error: insertError } = await supabase
           .from("referral_codes")
           .insert({ user_id: userId, code: newCode })
