@@ -1,14 +1,62 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, X, Coins, Sparkles } from 'lucide-react';
+import { Gift, X, Sparkles } from 'lucide-react';
 import { useRewardNotifications, RewardTransaction, formatCurrency, getCurrencyIcon, getActionName } from '@/hooks/useRewards';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 export function RewardNotification() {
   const [notifications, setNotifications] = useState<RewardTransaction[]>([]);
   const [currentNotification, setCurrentNotification] = useState<RewardTransaction | null>(null);
+  const shownIds = useRef<Set<string>>(new Set());
+  const lastCheckTime = useRef<string | null>(null);
+
+  // Fetch recent rewards on mount and auth change to catch signup/referral rewards
+  useEffect(() => {
+    const checkRecentRewards = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get rewards from last 30 seconds that we haven't shown yet
+      const thirtySecondsAgo = new Date(Date.now() - 30000).toISOString();
+      const checkFrom = lastCheckTime.current || thirtySecondsAgo;
+      
+      const { data: recentRewards } = await supabase
+        .from('reward_transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('created_at', checkFrom)
+        .order('created_at', { ascending: true });
+
+      if (recentRewards && recentRewards.length > 0) {
+        const newRewards = recentRewards.filter(r => !shownIds.current.has(r.id));
+        if (newRewards.length > 0) {
+          newRewards.forEach(r => shownIds.current.add(r.id));
+          setNotifications(prev => [...prev, ...newRewards as RewardTransaction[]]);
+        }
+      }
+      
+      lastCheckTime.current = new Date().toISOString();
+    };
+
+    // Check immediately on mount
+    checkRecentRewards();
+
+    // Also check on auth state change (user just signed up/in)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        // Small delay to allow triggers to complete
+        setTimeout(checkRecentRewards, 1500);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleReward = useCallback((transaction: RewardTransaction) => {
+    // Prevent duplicates
+    if (shownIds.current.has(transaction.id)) return;
+    shownIds.current.add(transaction.id);
     setNotifications(prev => [...prev, transaction]);
   }, []);
 
