@@ -137,7 +137,7 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
       </CardHeader>
       <CardContent className="p-4 space-y-3">
         <p className="text-sm text-muted-foreground">
-          Chia sẻ link giới thiệu để nhận <span className="text-secondary font-semibold">50 Camly</span> cho mỗi người đăng ký!
+          Chia sẻ link giới thiệu để nhận <span className="text-secondary font-semibold">30.000 Camly</span> cho mỗi người đăng ký!
         </p>
 
         {/* Stats */}
