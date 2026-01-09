@@ -1007,6 +1007,7 @@ label,
   color: hsl(var(--foreground));
   border: 2px solid hsla(280, 60%, 60%, 0.5);
   box-shadow: none;
+  text-shadow: none;
 }
 
 .glass-pill-outline::before {
@@ -1025,6 +1026,7 @@ label,
   color: hsl(var(--foreground));
   border: none;
   box-shadow: none;
+  text-shadow: none;
 }
 
 .glass-pill-ghost::before {
@@ -1079,6 +1081,7 @@ button:active:not(:disabled),
   color: hsla(280, 70%, 55%, 1);
   border: none;
   box-shadow: none;
+  text-shadow: none;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
