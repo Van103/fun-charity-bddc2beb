@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import PageLoader from "@/components/ui/PageLoader";
@@ -6,7 +6,6 @@ import PageLoader from "@/components/ui/PageLoader";
 export default function ReferralRedirect() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const validateAndRedirect = async () => {
@@ -42,9 +41,5 @@ export default function ReferralRedirect() {
     validateAndRedirect();
   }, [code, navigate]);
 
-  if (loading) {
-    return <PageLoader />;
-  }
-
-  return null;
+  return <PageLoader />;
 }
