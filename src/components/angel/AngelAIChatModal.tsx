@@ -6,8 +6,25 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAngelAI } from '@/hooks/useAngelAI';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import DOMPurify from 'dompurify';
 import angelQueenBg from '@/assets/angel-queen-bg.png';
 import angelAvatar from '@/assets/angel-avatar-smiling.png';
+
+// Sanitize and format markdown content safely
+const sanitizeAndFormatContent = (content: string): string => {
+  // First apply markdown formatting
+  const formatted = content
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/_(.*?)_/g, '<em>$1</em>');
+  
+  // Then sanitize to prevent XSS attacks
+  return DOMPurify.sanitize(formatted, {
+    ALLOWED_TAGS: ['strong', 'em', 'b', 'i'],
+    ALLOWED_ATTR: [],
+  });
+};
 
 interface AngelAIChatModalProps {
   isOpen: boolean;
@@ -297,11 +314,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                             <div className="text-[17px] whitespace-pre-wrap leading-relaxed">
                               {msg.content ? (
                                 <span dangerouslySetInnerHTML={{ 
-                                  __html: msg.content
-                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                    .replace(/__(.*?)__/g, '<strong>$1</strong>')
-                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                                    .replace(/_(.*?)_/g, '<em>$1</em>')
+                                  __html: sanitizeAndFormatContent(msg.content)
                                 }} />
                               ) : (
                                 <span className="inline-flex items-center gap-1">
