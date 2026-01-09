@@ -257,25 +257,10 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 {messages.length === 0 ? (
                   <div className="flex-1 min-h-0 flex flex-col justify-end p-4 text-center">
                     <div className="w-full pb-4">
-                      <h4 
-                        className="text-[21px] font-bold mb-2"
-                        style={{
-                          background: 'linear-gradient(135deg, #a855f7 0%, #fbbf24 50%, #d946ef 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text',
-                          textShadow: '0 0 20px rgba(251,191,36,0.5)',
-                        }}
-                      >
+                      <h4 className="text-[21px] font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
-                      <p 
-                        className="text-[17px] max-w-xs mx-auto font-semibold"
-                        style={{
-                          color: '#fbbf24',
-                          textShadow: '0 0 10px rgba(251,191,36,0.6), 0 0 20px rgba(251,191,36,0.4)',
-                        }}
-                      >
+                      <p className="text-[17px] max-w-xs mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
                     </div>
