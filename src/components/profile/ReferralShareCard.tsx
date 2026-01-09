@@ -211,9 +211,9 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
   return (
     <Card className="glass-card overflow-hidden border-secondary/30">
       <CardHeader className="pb-2 bg-gradient-to-r from-secondary/10 to-primary/10">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Gift className="w-5 h-5 text-secondary" />
-          <span>Mời bạn bè - Nhận thưởng</span>
+        <CardTitle className="flex items-center justify-center gap-2 text-base">
+          <Gift className="w-5 h-5 text-fuchsia-600" />
+          <span className="text-fuchsia-600 font-bold">Mời bạn bè - Nhận thưởng</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 space-y-3">
