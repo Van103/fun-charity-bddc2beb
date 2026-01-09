@@ -21,6 +21,7 @@ import PageLoader from "@/components/ui/PageLoader";
 import { RewardNotification } from "@/components/rewards/RewardNotification";
 import { MilestoneAnimation } from "@/components/rewards/MilestoneAnimation";
 import { AngelAIButton } from "@/components/angel/AngelAIButton";
+import MobileBackButton from "@/components/layout/MobileBackButton";
 
 // Lazy load all pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -170,6 +171,7 @@ const App = () => (
                 <RewardNotification />
                 <MilestoneAnimation />
                 <AngelAIButton />
+                <MobileBackButton />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     <Route path="/" element={<Index />} />
