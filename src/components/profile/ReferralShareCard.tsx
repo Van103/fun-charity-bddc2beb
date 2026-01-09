@@ -179,40 +179,30 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden border-0 bg-gradient-to-br from-purple-500/20 via-pink-500/15 to-violet-600/20 backdrop-blur-xl shadow-xl shadow-purple-500/10">
-      <CardHeader className="pb-2 bg-gradient-to-r from-purple-600/30 via-pink-500/20 to-violet-500/30">
+    <Card className="glass-card overflow-hidden border-secondary/30">
+      <CardHeader className="pb-2 bg-gradient-to-r from-secondary/10 to-primary/10">
         <CardTitle className="flex items-center gap-2 text-base">
-          <div className="p-1.5 rounded-full bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-500 shadow-lg shadow-orange-400/30">
-            <Gift className="w-4 h-4 text-white" />
-          </div>
-          <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-violet-300 bg-clip-text text-transparent font-bold">
-            Mời bạn bè - Nhận thưởng ✨
-          </span>
+          <Gift className="w-5 h-5 text-secondary" />
+          <span>Mời bạn bè - Nhận thưởng ✨</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 space-y-3">
-        <p className="text-sm text-purple-200/90">
-          Chia sẻ link giới thiệu để nhận{" "}
-          <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-pink-300 bg-clip-text text-transparent font-bold">
-            30.000 Camly 💎
-          </span>{" "}
-          cho mỗi người đăng ký!
+        <p className="text-sm text-muted-foreground">
+          Chia sẻ link giới thiệu để nhận <span className="text-secondary font-semibold">30.000 Camly 💎</span> cho mỗi người đăng ký!
         </p>
 
         {/* Stats */}
-        <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-purple-600/30 via-violet-500/20 to-pink-600/30 rounded-xl border border-purple-400/20 shadow-inner">
-          <div className="p-1.5 rounded-full bg-gradient-to-br from-purple-400 to-pink-400">
-            <Users className="w-3.5 h-3.5 text-white" />
-          </div>
+        <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-lg">
+          <Users className="w-4 h-4 text-primary" />
           <span className="text-sm">
-            <span className="font-bold text-transparent bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text">{usesCount}</span>
-            <span className="text-purple-200/80"> người đã đăng ký qua link của bạn 🎉</span>
+            <span className="font-semibold text-foreground">{usesCount}</span>
+            <span className="text-muted-foreground"> người đã đăng ký qua link của bạn 🎉</span>
           </span>
         </div>
 
         {/* Referral Link Preview */}
-        <div className="p-3 bg-gradient-to-r from-purple-900/40 to-violet-900/40 rounded-xl border border-purple-400/30 shadow-inner">
-          <p className="text-xs text-purple-300/90 truncate font-mono">
+        <div className="p-2 bg-muted/30 rounded-lg border border-border">
+          <p className="text-xs text-muted-foreground truncate font-mono">
             {getReferralLink()}
           </p>
         </div>
@@ -221,13 +211,13 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            className="flex-1 gap-2 border-purple-400/30 bg-purple-500/20 hover:bg-purple-500/40 text-purple-100 hover:text-white transition-all duration-300"
+            className="flex-1 gap-2"
             onClick={handleCopy}
           >
             {copied ? (
               <>
-                <Check className="w-4 h-4 text-green-400" />
-                <span className="text-green-300">Đã sao chép</span>
+                <Check className="w-4 h-4" />
+                Đã sao chép
               </>
             ) : (
               <>
@@ -237,7 +227,7 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
             )}
           </Button>
           <Button 
-            className="flex-1 gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-violet-500 hover:from-purple-600 hover:via-pink-600 hover:to-violet-600 text-white shadow-lg shadow-purple-500/30 transition-all duration-300 hover:shadow-pink-500/40 hover:scale-[1.02]"
+            className="flex-1 gap-2 bg-primary hover:bg-primary/90"
             onClick={handleShare}
           >
             <Share2 className="w-4 h-4" />
