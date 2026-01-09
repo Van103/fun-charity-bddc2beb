@@ -9,11 +9,13 @@ import {
   Trash2,
   CheckCircle,
   Loader2,
+  UserPlus,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useFeedComments, FeedComment } from "@/hooks/useFeedComments";
+import { useGuestMode } from "@/contexts/GuestModeContext";
 
 interface FeedCommentsProps {
   postId: string;
@@ -132,6 +134,7 @@ export function FeedComments({ postId, currentUserAvatar }: FeedCommentsProps) {
     id: string;
     name: string;
   } | null>(null);
+  const { isGuest, requireAuth } = useGuestMode();
 
   const {
     comments,
@@ -144,6 +147,13 @@ export function FeedComments({ postId, currentUserAvatar }: FeedCommentsProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if guest is trying to comment
+    if (isGuest) {
+      requireAuth("Đăng ký để bình luận và tham gia thảo luận");
+      return;
+    }
+    
     if (!commentText.trim()) return;
 
     addComment.mutate(
@@ -161,6 +171,10 @@ export function FeedComments({ postId, currentUserAvatar }: FeedCommentsProps) {
   };
 
   const handleReply = (commentId: string, authorName: string) => {
+    if (isGuest) {
+      requireAuth("Đăng ký để trả lời bình luận");
+      return;
+    }
     setReplyingTo({ id: commentId, name: authorName });
   };
 
@@ -235,38 +249,53 @@ export function FeedComments({ postId, currentUserAvatar }: FeedCommentsProps) {
       </AnimatePresence>
 
       {/* Comment input */}
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <Avatar className="w-8 h-8">
-          <AvatarImage src={currentUserAvatar || ""} />
-          <AvatarFallback className="bg-secondary/20 text-xs">U</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 flex items-center gap-2 bg-muted/50 rounded-full px-3 py-2">
-          <Input
-            placeholder={
-              replyingTo
-                ? `Trả lời ${replyingTo.name}...`
-                : "Viết bình luận..."
-            }
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            className="border-none bg-transparent p-0 h-auto focus-visible:ring-0 text-sm"
-            disabled={addComment.isPending}
-          />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 shrink-0"
-            disabled={!commentText.trim() || addComment.isPending}
+      {isGuest ? (
+        <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/20">
+          <UserPlus className="w-5 h-5 text-primary flex-shrink-0" />
+          <span className="text-sm text-muted-foreground flex-1">
+            Đăng ký để bình luận
+          </span>
+          <Button 
+            size="sm"
+            onClick={() => requireAuth("Đăng ký để bình luận và tham gia thảo luận")}
           >
-            {addComment.isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4 text-secondary" />
-            )}
+            Đăng ký
           </Button>
         </div>
-      </form>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={currentUserAvatar || ""} />
+            <AvatarFallback className="bg-secondary/20 text-xs">U</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 flex items-center gap-2 bg-muted/50 rounded-full px-3 py-2">
+            <Input
+              placeholder={
+                replyingTo
+                  ? `Trả lời ${replyingTo.name}...`
+                  : "Viết bình luận..."
+              }
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className="border-none bg-transparent p-0 h-auto focus-visible:ring-0 text-sm"
+              disabled={addComment.isPending}
+            />
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              disabled={!commentText.trim() || addComment.isPending}
+            >
+              {addComment.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4 text-secondary" />
+              )}
+            </Button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

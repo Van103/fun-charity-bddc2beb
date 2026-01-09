@@ -5,10 +5,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles, Heart, Star, Sun, Moon, Eye } from "lucide-react";
+import { useGuestMode } from "@/contexts/GuestModeContext";
 
 const LawOfLight = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { enterGuestMode } = useGuestMode();
   const [checklist, setChecklist] = useState({
     honest: false,
     responsible: false,
@@ -34,7 +36,8 @@ const LawOfLight = () => {
   };
 
   const handleGuest = () => {
-    navigate("/");
+    enterGuestMode();
+    navigate("/social");
   };
 
   const fadeInUp = {

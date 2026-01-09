@@ -88,6 +88,9 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  
+  // Check if guest mode
+  const isGuestMode = !user && localStorage.getItem('guest_mode') === 'true';
 
   // Enable realtime notifications
   useFriendRequestNotifications(user?.id || null);
@@ -561,18 +564,18 @@ export function Navbar() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <>
+                <div className="flex items-center gap-2">
+                  {isGuestMode && (
+                    <span className="hidden lg:inline text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                      👀 Đang xem
+                    </span>
+                  )}
                   <Link to="/auth">
-                    <Button variant="outline" size="sm" className="text-xs sm:text-sm border-primary text-primary hover:bg-primary hover:text-white font-semibold">
-                      {t("common.login")}
+                    <Button variant="default" size="sm" className="text-xs sm:text-sm bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                      {t("common.login")} / Đăng ký
                     </Button>
                   </Link>
-                  <Link to="/campaigns" className="hidden sm:block ml-2">
-                    <Button variant="default" size="sm" className="text-xs sm:text-sm bg-primary hover:bg-primary/90 text-white font-semibold">
-                      {t("common.donate")}
-                    </Button>
-                  </Link>
-                </>
+                </div>
               )}
             </div>
           </div>

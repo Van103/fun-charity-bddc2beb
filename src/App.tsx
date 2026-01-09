@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-ro
 import { MotionProvider } from "@/contexts/MotionContext";
 import { CursorProvider } from "@/contexts/CursorContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { GuestModeProvider } from "@/contexts/GuestModeContext";
 import { AngelThemeProvider } from "@/components/angel/AngelThemeContext";
 import { AnimatedBackground } from "@/components/background/AnimatedBackground";
 import { EnergyBokeh } from "@/components/background/EnergyBokeh";
@@ -22,6 +23,7 @@ import { RewardNotification } from "@/components/rewards/RewardNotification";
 import { MilestoneAnimation } from "@/components/rewards/MilestoneAnimation";
 import { AngelAIButton } from "@/components/angel/AngelAIButton";
 import MobileBackButton from "@/components/layout/MobileBackButton";
+import GuestAuthPromptModal from "@/components/auth/GuestAuthPromptModal";
 
 // Lazy load all pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -155,75 +157,78 @@ function IncomingCallListener() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <MotionProvider>
-        <CursorProvider>
-          <AngelThemeProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <CustomCursor />
-              <FlyingAngel />
-              <BrowserRouter>
-                <BackgroundWithVariant />
-                <EnergyBokeh />
-                <IncomingCallListener />
-                <GlobalEmailVerificationBanner />
-                <RewardNotification />
-                <MilestoneAnimation />
-                <AngelAIButton />
-                <MobileBackButton />
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/campaigns" element={<Campaigns />} />
-                    <Route path="/campaigns/:id" element={<CampaignDetail />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/needs-map" element={<NeedsMap />} />
-                    <Route path="/profiles" element={<Profiles />} />
-                    <Route path="/reviews" element={<Reviews />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/law-of-light" element={<LawOfLight />} />
-                    <Route path="/auth/callback" element={<AuthCallback />} />
-                    <Route path="/verify-email" element={<VerifyEmail />} />
-                    <Route path="/profile" element={<UserProfile />} />
-                    <Route path="/user/:userId" element={<PublicProfile />} />
-                    <Route path="/messages" element={<Messages />} />
-                    <Route path="/feed" element={<SocialFeed />} />
-                    <Route path="/social" element={<SocialFeed />} />
-                    <Route path="/life" element={<Life />} />
-                    <Route path="/academy" element={<Academy />} />
-                    <Route path="/trading" element={<Trading />} />
-                    <Route path="/investment" element={<Investment />} />
-                    <Route path="/farm" element={<Farm />} />
-                    <Route path="/play" element={<Play />} />
-                    <Route path="/legal" element={<Legal />} />
-                    <Route path="/planet" element={<Planet />} />
-                    <Route path="/friends" element={<Friends />} />
-                    <Route path="/my-campaigns" element={<MyCampaigns />} />
-                    <Route path="/admin/verify" element={<AdminVerify />} />
-                    <Route path="/admin/moderation" element={<AdminModeration />} />
-                    <Route path="/admin/moderation-logs" element={<ModerationLogs />} />
-                    <Route path="/volunteer" element={<Volunteer />} />
-                    <Route path="/install" element={<Install />} />
-                    <Route path="/live/:streamId" element={<LiveStream />} />
-                    <Route path="/honor-board" element={<HonorBoard />} />
-                    <Route path="/wallet" element={<Wallet />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/brand" element={<BrandGuidelines />} />
-                    <Route path="/gifts" element={<GiftsFromCosmicFather />} />
-                    <Route path="/admin/rewards" element={<AdminRewards />} />
-                    <Route path="/admin/angel-knowledge" element={<AdminAngelKnowledge />} />
-                    <Route path="/recipient/:id" element={<RecipientProfile />} />
-                    <Route path="/r/:code" element={<ReferralRedirect />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
-            </TooltipProvider>
-          </AngelThemeProvider>
-        </CursorProvider>
-      </MotionProvider>
+      <GuestModeProvider>
+        <MotionProvider>
+          <CursorProvider>
+            <AngelThemeProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <CustomCursor />
+                <FlyingAngel />
+                <BrowserRouter>
+                  <BackgroundWithVariant />
+                  <EnergyBokeh />
+                  <IncomingCallListener />
+                  <GlobalEmailVerificationBanner />
+                  <RewardNotification />
+                  <MilestoneAnimation />
+                  <AngelAIButton />
+                  <MobileBackButton />
+                  <GuestAuthPromptModal />
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/campaigns" element={<Campaigns />} />
+                      <Route path="/campaigns/:id" element={<CampaignDetail />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/needs-map" element={<NeedsMap />} />
+                      <Route path="/profiles" element={<Profiles />} />
+                      <Route path="/reviews" element={<Reviews />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/law-of-light" element={<LawOfLight />} />
+                      <Route path="/auth/callback" element={<AuthCallback />} />
+                      <Route path="/verify-email" element={<VerifyEmail />} />
+                      <Route path="/profile" element={<UserProfile />} />
+                      <Route path="/user/:userId" element={<PublicProfile />} />
+                      <Route path="/messages" element={<Messages />} />
+                      <Route path="/feed" element={<SocialFeed />} />
+                      <Route path="/social" element={<SocialFeed />} />
+                      <Route path="/life" element={<Life />} />
+                      <Route path="/academy" element={<Academy />} />
+                      <Route path="/trading" element={<Trading />} />
+                      <Route path="/investment" element={<Investment />} />
+                      <Route path="/farm" element={<Farm />} />
+                      <Route path="/play" element={<Play />} />
+                      <Route path="/legal" element={<Legal />} />
+                      <Route path="/planet" element={<Planet />} />
+                      <Route path="/friends" element={<Friends />} />
+                      <Route path="/my-campaigns" element={<MyCampaigns />} />
+                      <Route path="/admin/verify" element={<AdminVerify />} />
+                      <Route path="/admin/moderation" element={<AdminModeration />} />
+                      <Route path="/admin/moderation-logs" element={<ModerationLogs />} />
+                      <Route path="/volunteer" element={<Volunteer />} />
+                      <Route path="/install" element={<Install />} />
+                      <Route path="/live/:streamId" element={<LiveStream />} />
+                      <Route path="/honor-board" element={<HonorBoard />} />
+                      <Route path="/wallet" element={<Wallet />} />
+                      <Route path="/leaderboard" element={<Leaderboard />} />
+                      <Route path="/brand" element={<BrandGuidelines />} />
+                      <Route path="/gifts" element={<GiftsFromCosmicFather />} />
+                      <Route path="/admin/rewards" element={<AdminRewards />} />
+                      <Route path="/admin/angel-knowledge" element={<AdminAngelKnowledge />} />
+                      <Route path="/recipient/:id" element={<RecipientProfile />} />
+                      <Route path="/r/:code" element={<ReferralRedirect />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </TooltipProvider>
+            </AngelThemeProvider>
+          </CursorProvider>
+        </MotionProvider>
+      </GuestModeProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

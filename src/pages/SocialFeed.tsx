@@ -7,6 +7,7 @@ import { SwipeIndicator } from "@/components/layout/SwipeIndicator";
 import { LeftSidebar } from "@/components/social/LeftSidebar";
 import { RightSidebar } from "@/components/social/RightSidebar";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useGuestMode } from "@/contexts/GuestModeContext";
 
 import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
@@ -39,6 +40,7 @@ export default function SocialFeed() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
+  const { isGuest, isAuthenticated } = useGuestMode();
 
   // Get scrollToPostId from navigation state
   useEffect(() => {
@@ -86,6 +88,11 @@ export default function SocialFeed() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
+        // Allow guest mode users to view
+        if (isGuest) {
+          setProfileLoading(false);
+          return;
+        }
         navigate("/auth");
         return;
       }

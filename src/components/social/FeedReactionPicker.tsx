@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useGuestMode } from "@/contexts/GuestModeContext";
 
 export interface Reaction {
   type: string;
@@ -37,10 +38,18 @@ export function FeedReactionPicker({
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { t } = useLanguage();
+  const { isGuest, requireAuth } = useGuestMode();
 
   const activeReaction = REACTIONS.find((r) => r.type === currentReaction);
 
   const handleReactionClick = (reactionType: string) => {
+    // Check guest mode
+    if (isGuest) {
+      requireAuth("Đăng ký để thể hiện cảm xúc với bài viết");
+      setShowPicker(false);
+      return;
+    }
+    
     if (currentReaction === reactionType) {
       onRemoveReaction();
     } else {
@@ -50,6 +59,12 @@ export function FeedReactionPicker({
   };
 
   const handleButtonClick = () => {
+    // Check guest mode
+    if (isGuest) {
+      requireAuth("Đăng ký để thể hiện cảm xúc với bài viết");
+      return;
+    }
+    
     if (currentReaction) {
       onRemoveReaction();
     } else {

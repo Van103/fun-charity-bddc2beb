@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Video } from "lucide-react";
+import { Video, UserPlus } from "lucide-react";
 import { FacebookCreatePostModal } from "./FacebookCreatePostModal";
 import { LiveStreamModal } from "./LiveStreamModal";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useGuestMode } from "@/contexts/GuestModeContext";
+import { Button } from "@/components/ui/button";
 
 interface CreatePostBoxProps {
   profile?: {
@@ -31,6 +33,37 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
   const [showFacebookModal, setShowFacebookModal] = useState(false);
   const [showLiveModal, setShowLiveModal] = useState(false);
   const { t } = useLanguage();
+  const { isGuest, requireAuth } = useGuestMode();
+
+  // If guest mode, show a prompt to register
+  if (isGuest) {
+    return (
+      <div className="mobile-card overflow-hidden">
+        <div className="p-4 sm:p-5 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+              <UserPlus className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground mb-1">
+                Tham gia để chia sẻ
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Đăng ký tài khoản để đăng bài viết và tương tác
+              </p>
+            </div>
+            <Button 
+              onClick={() => requireAuth("Đăng ký để đăng bài viết và chia sẻ với cộng đồng")}
+              className="mt-1"
+              size="sm"
+            >
+              Đăng ký ngay
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
