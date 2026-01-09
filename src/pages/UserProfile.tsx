@@ -13,6 +13,7 @@ import { DonationHistoryCard } from "@/components/donations/DonationHistoryCard"
 import { CallHistoryCard } from "@/components/chat/CallHistoryCard";
 import { PersonalHonorBoard } from "@/components/profile/PersonalHonorBoard";
 import { ProfileImageLightbox } from "@/components/profile/ProfileImageLightbox";
+import { ReferralShareCard } from "@/components/profile/ReferralShareCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Helmet } from "react-helmet-async";
@@ -297,6 +298,9 @@ export default function UserProfile() {
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Left Column - Intro/About */}
               <div className="lg:w-[360px] shrink-0 space-y-4">
+                {/* Referral Share Card - Facebook style */}
+                <ReferralShareCard userId={profile?.user_id || null} />
+                
                 <ProfileIntroCard profile={profile} onEdit={() => setEditModalOpen(true)} />
                 
                 {/* Photos Preview Card */}
