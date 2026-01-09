@@ -124,7 +124,11 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
   };
 
   const getReferralLink = () => {
-    const baseUrl = window.location.origin;
+    const productionDomain = "https://fun-charity.lovable.app";
+    const currentOrigin = window.location.origin;
+    const isProduction = currentOrigin.includes("fun-charity.lovable.app") || 
+                         currentOrigin.includes("fungiveback.org");
+    const baseUrl = isProduction ? currentOrigin : productionDomain;
     return `${baseUrl}/r/${referralCode}`;
   };
 
