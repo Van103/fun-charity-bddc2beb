@@ -34,7 +34,9 @@ export default function ReferralRedirect() {
         console.error("Error validating referral code:", error);
         localStorage.setItem("referral_code", code);
       } finally {
-        navigate("/auth", { replace: true });
+        // Navigate with referral code in URL so Auth.tsx can read it
+        const actualCode = localStorage.getItem("referral_code") || code;
+        navigate(`/auth?ref=${encodeURIComponent(actualCode)}`, { replace: true });
       }
     };
 

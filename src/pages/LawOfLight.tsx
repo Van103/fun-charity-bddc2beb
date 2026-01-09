@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Sparkles, Heart, Star, Sun, Moon, Eye } from "lucide-react";
 
 const LawOfLight = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [checklist, setChecklist] = useState({
     honest: false,
     responsible: false,
@@ -21,7 +22,15 @@ const LawOfLight = () => {
   const handleAgree = () => {
     localStorage.setItem("law_of_light_agreed", "true");
     localStorage.setItem("law_of_light_agreed_at", new Date().toISOString());
-    navigate("/auth");
+    
+    // Navigate back to the original URL (e.g., /auth?ref=AiVan) if provided
+    const nextUrl = searchParams.get("next");
+    // Security: only allow internal paths starting with /
+    if (nextUrl && nextUrl.startsWith("/")) {
+      navigate(nextUrl);
+    } else {
+      navigate("/auth");
+    }
   };
 
   const handleGuest = () => {

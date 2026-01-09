@@ -51,7 +51,9 @@ const Auth = () => {
   useEffect(() => {
     const hasAgreed = localStorage.getItem("law_of_light_agreed");
     if (!hasAgreed) {
-      navigate("/law-of-light");
+      // Preserve current URL (including ?ref=...) so we can return after agreeing
+      const currentUrl = window.location.pathname + window.location.search;
+      navigate(`/law-of-light?next=${encodeURIComponent(currentUrl)}`);
       return;
     }
   }, [navigate]);

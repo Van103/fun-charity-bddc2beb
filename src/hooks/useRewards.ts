@@ -134,11 +134,11 @@ export function useApplyReferralCode() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Tìm mã referral
+      // Tìm mã referral (case-insensitive)
       const { data: referralCode, error: findError } = await supabase
         .from('referral_codes')
         .select('*')
-        .eq('code', code.toUpperCase())
+        .ilike('code', code.trim())
         .eq('is_active', true)
         .single();
 
