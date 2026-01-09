@@ -258,16 +258,16 @@ const Auth = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(43_55%_52%_/_0.15),_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_hsl(275_60%_30%_/_0.3),_transparent_50%)]" />
 
-      <div className="container mx-auto px-4 py-4 sm:py-8 relative z-10">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 sm:mb-8">
+        <div className="flex items-center justify-between mb-8">
           <Link to="/">
             <Logo size="md" />
           </Link>
           <Link to="/">
-            <Button variant="ghost" className="text-primary-foreground hover:bg-primary-light px-2 sm:px-4">
-              <ArrowRight className="w-4 h-4 rotate-180 sm:mr-2" />
-              <span className="hidden sm:inline">{t("auth.backToHome")}</span>
+            <Button variant="ghost" className="text-primary-foreground hover:bg-primary-light">
+              <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
+              {t("auth.backToHome")}
             </Button>
           </Link>
         </div>
@@ -276,18 +276,18 @@ const Auth = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-4 sm:p-6 md:p-8 backdrop-blur-xl bg-card/95 luxury-border"
+            className="glass-card p-8 backdrop-blur-xl bg-card/95 luxury-border"
           >
             {/* Title */}
-            <div className="text-center mb-4 sm:mb-6">
-              <Badge variant="gold" className="mb-3 sm:mb-4">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
+            <div className="text-center mb-6">
+              <Badge variant="gold" className="mb-4">
+                <Sparkles className="w-3.5 h-3.5 mr-1" />
                 {t("auth.joinFunCharity")}
               </Badge>
-              <h1 className="font-display text-xl sm:text-2xl font-bold mb-2">
+              <h1 className="font-display text-2xl font-bold mb-2">
                 {activeTab === "login" ? t("auth.welcomeBack") : t("auth.createAccount")}
               </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {activeTab === "login"
                   ? t("auth.loginSubtitle")
                   : t("auth.signupSubtitle")}
@@ -295,22 +295,25 @@ const Auth = () => {
               
               {/* Referral Bonus Banner */}
               {referralCode && activeTab === "signup" && (
-                <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
+                <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
                   <div className="flex items-center justify-center gap-2 text-green-600">
-                    <Gift className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                    <span className="font-medium text-sm sm:text-base">🎁 Bạn được tặng 50,000 Camly Coin!</span>
+                    <Gift className="w-5 h-5" />
+                    <span className="font-semibold">🎁 Bạn được tặng 50,000 Camly Coin khi đăng ký!</span>
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Mã giới thiệu: <strong className="text-green-600">{referralCode}</strong>
+                  </p>
                 </div>
               )}
             </div>
 
             {/* User Type Selection (for signup) */}
             {activeTab === "signup" && (
-              <div className="mb-4 sm:mb-6">
-                <Label className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 block">
+              <div className="mb-6">
+                <Label className="text-sm text-muted-foreground mb-3 block">
                   {t("auth.joinAsRole")}
                 </Label>
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[
                     { type: "donor", icon: Heart, labelKey: "auth.donor" },
                     { type: "volunteer", icon: Users, labelKey: "auth.volunteer" },
@@ -322,19 +325,19 @@ const Auth = () => {
                         key={option.type}
                         type="button"
                         onClick={() => setUserType(option.type as typeof userType)}
-                        className={`p-2 sm:p-3 rounded-xl border-2 transition-all ${
+                        className={`p-3 rounded-xl border-2 transition-all ${
                           userType === option.type
                             ? "border-secondary bg-secondary/10"
                             : "border-border hover:border-secondary/50"
                         }`}
                       >
                         <Icon
-                          className={`w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-0.5 sm:mb-1 ${
+                          className={`w-5 h-5 mx-auto mb-1 ${
                             userType === option.type ? "text-secondary" : "text-muted-foreground"
                           }`}
                         />
                         <span
-                          className={`text-[10px] sm:text-xs ${
+                          className={`text-xs ${
                             userType === option.type ? "text-secondary font-medium" : "text-muted-foreground"
                           }`}
                         >
@@ -349,11 +352,11 @@ const Auth = () => {
 
             {/* Auth Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full mb-4 sm:mb-6 bg-muted/50">
-                <TabsTrigger value="login" className="flex-1 text-sm">
+              <TabsList className="w-full mb-6 bg-muted/50">
+                <TabsTrigger value="login" className="flex-1">
                   {t("auth.login")}
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="flex-1 text-sm">
+                <TabsTrigger value="signup" className="flex-1">
                   {t("auth.signup")}
                 </TabsTrigger>
               </TabsList>
@@ -494,9 +497,9 @@ const Auth = () => {
 
               {/* Signup Form */}
               <TabsContent value="signup">
-                <form onSubmit={handleSignup} className="space-y-3 sm:space-y-4">
+                <form onSubmit={handleSignup} className="space-y-4">
                   <div>
-                    <Label htmlFor="name" className="text-sm">
+                    <Label htmlFor="name">
                       {userType === "ngo" ? t("auth.organizationName") : t("auth.fullName")}
                     </Label>
                     <div className="relative mt-1">
@@ -519,7 +522,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-email" className="text-sm">{t("auth.email")}</Label>
+                    <Label htmlFor="signup-email">{t("auth.email")}</Label>
                     <div className="relative mt-1">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -537,7 +540,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-password" className="text-sm">{t("auth.password")}</Label>
+                    <Label htmlFor="signup-password">{t("auth.password")}</Label>
                     <div className="relative mt-1">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -563,12 +566,12 @@ const Auth = () => {
                   </div>
 
                   {userType === "ngo" && (
-                    <div className="bg-muted/50 rounded-xl p-3 sm:p-4">
-                      <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
+                    <div className="bg-muted/50 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-secondary" />
-                        <span className="text-xs sm:text-sm font-medium">{t("auth.kycRequirement")}</span>
+                        <span className="text-sm font-medium">{t("auth.kycRequirement")}</span>
                       </div>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         {t("auth.kycDescription")}
                       </p>
                     </div>
@@ -587,34 +590,16 @@ const Auth = () => {
                       </>
                     )}
                   </Button>
-
-                  {/* Referrer Info Box - hiển thị bên dưới nút đăng ký */}
-                  {referralCode && (
-                    <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0">
-                          {referralCode.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[10px] sm:text-xs text-muted-foreground">Bạn được giới thiệu bởi:</p>
-                          <p className="font-semibold text-sm sm:text-base text-secondary truncate">
-                            {referralCode}
-                          </p>
-                        </div>
-                        <Gift className="w-5 h-5 text-pink-500 flex-shrink-0" />
-                      </div>
-                    </div>
-                  )}
                 </form>
               </TabsContent>
             </Tabs>
 
             {/* Divider */}
-            <div className="relative my-4 sm:my-6">
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border"></div>
               </div>
-              <div className="relative flex justify-center text-[10px] sm:text-xs uppercase">
+              <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span>
               </div>
             </div>
@@ -622,11 +607,11 @@ const Auth = () => {
             {/* Google Sign In */}
             <Button 
               variant="outline" 
-              className="w-full bg-white hover:bg-gray-50 text-[#4285F4] border-gray-300 font-medium text-sm"
+              className="w-full bg-white hover:bg-gray-50 text-[#4285F4] border-gray-300 font-medium"
               onClick={handleGoogleLogin}
               disabled={loading}
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -648,12 +633,12 @@ const Auth = () => {
             </Button>
 
             {/* Wallet Connect */}
-            <Button variant="wallet" className="w-full mt-2 sm:mt-3 text-sm">
+            <Button variant="wallet" className="w-full mt-3">
               <Wallet className="w-4 h-4" />
               {t("auth.connectWallet")}
             </Button>
 
-            <p className="text-[10px] sm:text-xs text-center text-muted-foreground mt-3 sm:mt-4">
+            <p className="text-xs text-center text-muted-foreground mt-4">
               {t("auth.walletSupport")}
             </p>
           </motion.div>
