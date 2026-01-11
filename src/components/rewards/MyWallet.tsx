@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy, Link2, Share2, Send, ExternalLink } from 'lucide-react';
+import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy, Link2, Share2, Send, ExternalLink, PartyPopper } from 'lucide-react';
 import { useUserBalances, useRewardTransactions, useReferralCode, formatCurrency, getCurrencyIcon, getActionName } from '@/hooks/useRewards';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { ClaimRewardsButton } from './ClaimRewardsButton';
 import { vi } from 'date-fns/locale';
 import { TransferModal } from '@/components/wallet/TransferModal';
+import { GiftTransferModal } from '@/components/wallet/GiftTransferModal';
 import { WithdrawModal } from '@/components/wallet/WithdrawModal';
 import { WalletConnectModal } from '@/components/wallet/WalletConnectModal';
 import { useWithdrawalRequests } from '@/hooks/useWithdrawal';
@@ -24,6 +25,7 @@ export function MyWallet() {
   const [copied, setCopied] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [giftModalOpen, setGiftModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const [walletConnectOpen, setWalletConnectOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
@@ -131,21 +133,29 @@ export function MyWallet() {
                       Chuyển
                     </Button>
                     <Button
-                      variant="outline"
                       size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        if (connectedWallet) {
-                          setWithdrawModalOpen(true);
-                        } else {
-                          setWalletConnectOpen(true);
-                        }
-                      }}
+                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white"
+                      onClick={() => setGiftModalOpen(true)}
                     >
-                      <ArrowUpRight className="w-4 h-4 mr-1" />
-                      Rút
+                      <PartyPopper className="w-4 h-4 mr-1" />
+                      Tặng quà
                     </Button>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-2"
+                    onClick={() => {
+                      if (connectedWallet) {
+                        setWithdrawModalOpen(true);
+                      } else {
+                        setWalletConnectOpen(true);
+                      }
+                    }}
+                  >
+                    <ArrowUpRight className="w-4 h-4 mr-1" />
+                    Rút về ví
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
@@ -270,18 +280,22 @@ export function MyWallet() {
 
       {/* Tabs: History & Withdraw */}
       <Tabs defaultValue="history" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="history">
             <History className="w-4 h-4 mr-2" />
             Lịch sử
           </TabsTrigger>
-          <TabsTrigger value="withdraw">
-            <ArrowUpRight className="w-4 h-4 mr-2" />
-            Rút tiền
+          <TabsTrigger value="gift">
+            <Gift className="w-4 h-4 mr-2" />
+            Tặng
           </TabsTrigger>
           <TabsTrigger value="transfer">
             <Send className="w-4 h-4 mr-2" />
             Chuyển
+          </TabsTrigger>
+          <TabsTrigger value="withdraw">
+            <ArrowUpRight className="w-4 h-4 mr-2" />
+            Rút
           </TabsTrigger>
         </TabsList>
 
@@ -332,6 +346,68 @@ export function MyWallet() {
                   <p className="text-sm">Hãy đăng bài, quyên góp hoặc mời bạn bè để nhận thưởng!</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="gift" className="mt-4">
+          <Card className="bg-gradient-to-br from-pink-500/5 to-purple-500/5 border-pink-500/20">
+            <CardContent className="p-6 text-center">
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                className="relative inline-block"
+              >
+                <Gift className="w-16 h-16 mx-auto mb-4 text-pink-500" />
+                <motion.div
+                  className="absolute -top-1 -right-1"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <span className="text-2xl">✨</span>
+                </motion.div>
+              </motion.div>
+              <h3 className="text-xl font-bold mb-2 bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                Tặng Quà CAMLY
+              </h3>
+              <p className="text-muted-foreground text-sm mb-6">
+                Gửi những món quà ý nghĩa đến bạn bè với hiệu ứng animation đẹp mắt
+              </p>
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {['💖', '⭐', '💎', '👑', '🚀', '🌈'].map((emoji, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="aspect-square rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 flex items-center justify-center text-3xl"
+                  >
+                    {emoji}
+                  </motion.div>
+                ))}
+              </div>
+              <Button 
+                onClick={() => setGiftModalOpen(true)} 
+                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+              >
+                <PartyPopper className="w-4 h-4 mr-2" />
+                Tặng quà ngay
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="transfer" className="mt-4">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Send className="w-12 h-12 mx-auto mb-4 text-primary" />
+              <h3 className="text-lg font-semibold mb-2">Chuyển Camly Coin</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Gửi Camly Coin cho bạn bè trong cộng đồng Fun Charity
+              </p>
+              <Button onClick={() => setTransferModalOpen(true)} className="w-full">
+                Chuyển tiền
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -395,27 +471,18 @@ export function MyWallet() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="transfer" className="mt-4">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Send className="w-12 h-12 mx-auto mb-4 text-primary" />
-              <h3 className="text-lg font-semibold mb-2">Chuyển Camly Coin</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Gửi Camly Coin cho bạn bè trong cộng đồng Fun Charity
-              </p>
-              <Button onClick={() => setTransferModalOpen(true)} className="w-full">
-                Chuyển tiền
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Modals */}
       <TransferModal
         open={transferModalOpen}
         onOpenChange={setTransferModalOpen}
+        currentBalance={totalCamly}
+      />
+
+      <GiftTransferModal
+        open={giftModalOpen}
+        onOpenChange={setGiftModalOpen}
         currentBalance={totalCamly}
       />
 

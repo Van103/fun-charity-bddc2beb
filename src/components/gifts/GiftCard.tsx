@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { 
   Sparkles, FileText, Heart, Users, Gift, 
-  Video, Star, Coins, Award, Crown 
+  Video, Star, Coins, Award, Crown, Image
 } from "lucide-react";
 import type { RewardConfig } from "@/hooks/useRewardConfig";
 
@@ -16,6 +16,7 @@ const iconMap: Record<string, React.ElementType> = {
   coins: Coins,
   award: Award,
   crown: Crown,
+  image: Image,
 };
 
 interface GiftCardProps {
