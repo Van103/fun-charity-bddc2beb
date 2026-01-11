@@ -217,6 +217,39 @@ export function useFeedComments(postId: string) {
     },
   });
 
+  // Update comment mutation
+  const updateComment = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: string; content: string }) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("feed_comments")
+        .update({ content })
+        .eq("id", commentId)
+        .eq("user_id", user.user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feed-comments", postId] });
+      toast({
+        title: "Đã cập nhật",
+        description: "Bình luận đã được chỉnh sửa",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Lỗi",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Real-time subscription
   useEffect(() => {
     const channel = supabase
@@ -249,5 +282,6 @@ export function useFeedComments(postId: string) {
     currentUserId,
     addComment,
     deleteComment,
+    updateComment,
   };
 }

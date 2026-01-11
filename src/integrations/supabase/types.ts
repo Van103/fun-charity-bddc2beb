@@ -799,7 +799,10 @@ export type Database = {
           feed_post_id: string
           id: string
           image_url: string | null
+          is_edited: boolean | null
           parent_comment_id: string | null
+          sticker_url: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -808,7 +811,10 @@ export type Database = {
           feed_post_id: string
           id?: string
           image_url?: string | null
+          is_edited?: boolean | null
           parent_comment_id?: string | null
+          sticker_url?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -817,7 +823,10 @@ export type Database = {
           feed_post_id?: string
           id?: string
           image_url?: string | null
+          is_edited?: boolean | null
           parent_comment_id?: string | null
+          sticker_url?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
