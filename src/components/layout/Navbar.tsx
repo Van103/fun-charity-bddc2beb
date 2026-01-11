@@ -237,7 +237,7 @@ export function Navbar() {
           </div>
 
           {/* Center Navigation - Home, Platform, Community - Facebook-like centered */}
-          <div className="hidden lg:flex items-center justify-center gap-1 absolute left-1/2 -translate-x-1/2">
+          <div className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
             {/* Home Button */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -246,34 +246,34 @@ export function Navbar() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    className="relative"
+                    className="relative flex items-center justify-center"
                   >
-                        {/* Active indicator line - like Facebook - centered under icon */}
-                        {location.pathname === "/social" && (
-                          <motion.div 
-                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            layoutId="navActiveIndicator"
-                          />
-                        )}
                     <Button 
                       variant="ghost" 
                       size="icon"
-                      className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
+                      className={`relative w-28 h-12 rounded-xl transition-all duration-300 group ${
                         location.pathname === "/social" 
                           ? "hover:bg-primary/10" 
                           : "text-muted-foreground hover:bg-primary/10"
                       }`}
                     >
                       <Home 
-                        className={`w-7 h-7 transition-colors duration-200 ${
+                        className={`w-6 h-6 transition-colors duration-200 ${
                           location.pathname === "/social" ? "text-primary" : "group-hover:text-primary"
                         }`} 
                         fill={location.pathname === "/social" ? "hsl(var(--primary))" : "none"}
                         strokeWidth={location.pathname === "/social" ? 0 : 2} 
                       />
                     </Button>
+                    {/* Active indicator line - like Facebook - centered under button */}
+                    {location.pathname === "/social" && (
+                      <motion.div 
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        layoutId="navActiveIndicator"
+                      />
+                    )}
                   </motion.div>
                 </Link>
               </TooltipTrigger>
@@ -291,13 +291,14 @@ export function Navbar() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      className="relative flex items-center justify-center"
                     >
                       <Button 
                         variant="ghost" 
                         size="default" 
-                        className="w-24 h-12 px-4 gap-1 rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 group"
+                        className="w-28 h-12 px-4 gap-1.5 rounded-xl text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-300 group"
                       >
-                        <Layers className="w-7 h-7 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
+                        <Layers className="w-6 h-6 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
                         <ChevronDown className="w-4 h-4 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
                       </Button>
                     </motion.div>
@@ -343,34 +344,34 @@ export function Navbar() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                        className="relative"
+                        className="relative flex items-center justify-center"
                       >
-                        {/* Active indicator line - like Facebook - centered under icon */}
-                        {isActive && (
-                          <motion.div 
-                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            layoutId="navActiveIndicator"
-                          />
-                        )}
                         <Button
                           variant="ghost"
                           size="icon"
-                          className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
+                          className={`relative w-28 h-12 rounded-xl transition-all duration-300 group ${
                             isActive 
                               ? "hover:bg-primary/10" 
                               : "text-muted-foreground hover:bg-primary/10"
                           }`}
                         >
                           <Icon 
-                            className={`w-7 h-7 transition-colors duration-200 ${
+                            className={`w-6 h-6 transition-colors duration-200 ${
                               isActive ? "text-primary" : "group-hover:text-primary"
                             }`} 
                             fill={isActive ? "hsl(var(--primary))" : "none"}
                             strokeWidth={isActive ? 0 : 2} 
                           />
                         </Button>
+                        {/* Active indicator line - like Facebook - centered under button */}
+                        {isActive && (
+                          <motion.div 
+                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            layoutId="navActiveIndicator"
+                          />
+                        )}
                       </motion.div>
                     </Link>
                   </TooltipTrigger>
@@ -390,33 +391,33 @@ export function Navbar() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      className="relative"
+                      className="relative flex items-center justify-center"
                     >
-                      {location.pathname === "/admin/angel-knowledge" && (
-                        <motion.div 
-                          className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
-                          initial={{ scaleX: 0 }}
-                          animate={{ scaleX: 1 }}
-                          layoutId="navActiveIndicator"
-                        />
-                      )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
+                        className={`relative w-28 h-12 rounded-xl transition-all duration-300 group ${
                           location.pathname === "/admin/angel-knowledge" 
                             ? "hover:bg-primary/10" 
                             : "text-muted-foreground hover:bg-primary/10"
                         }`}
                       >
                         <BookOpen 
-                          className={`w-7 h-7 transition-colors duration-200 ${
+                          className={`w-6 h-6 transition-colors duration-200 ${
                             location.pathname === "/admin/angel-knowledge" ? "text-primary" : "group-hover:text-primary"
                           }`} 
                           fill={location.pathname === "/admin/angel-knowledge" ? "hsl(var(--primary))" : "none"}
                           strokeWidth={location.pathname === "/admin/angel-knowledge" ? 0 : 2} 
                         />
                       </Button>
+                      {location.pathname === "/admin/angel-knowledge" && (
+                        <motion.div 
+                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          layoutId="navActiveIndicator"
+                        />
+                      )}
                     </motion.div>
                   </Link>
                 </TooltipTrigger>
