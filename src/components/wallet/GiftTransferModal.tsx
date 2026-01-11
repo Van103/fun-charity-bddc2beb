@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -109,7 +109,7 @@ const CelebrationAnimation = ({ emoji }: { emoji: string }) => {
   );
 };
 
-export function GiftTransferModal({ open, onOpenChange, currentBalance }: GiftTransferModalProps) {
+export function GiftTransferModal({ open, onOpenChange, currentBalance }: GiftTransferModalProps): React.ReactElement {
   const queryClient = useQueryClient();
   const [step, setStep] = useState<"search" | "select" | "confirm" | "processing" | "success">("search");
   const [searchQuery, setSearchQuery] = useState("");
