@@ -35,9 +35,11 @@ window.addEventListener('unhandledrejection', (event) => {
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    return false;
+    // Return without re-throwing to prevent blank screen
+    return;
   }
   
+  // Only log non-wallet errors, don't let them crash the app
   console.error('Unhandled promise rejection:', reason);
 }, true);
 
