@@ -118,6 +118,9 @@ async function fetchPostsWithData(posts: any[]): Promise<FeedPost[]> {
 export function useInfiniteFeedPosts(filters?: FeedFilters) {
   const queryClient = useQueryClient();
 
+  // If userId filter is provided, only enable query when userId is defined
+  const shouldFetch = filters?.userId !== undefined ? !!filters.userId : true;
+
   const query = useInfiniteQuery({
     queryKey: ["feed-posts-infinite", filters],
     queryFn: async ({ pageParam = 0 }) => {
@@ -162,6 +165,7 @@ export function useInfiniteFeedPosts(filters?: FeedFilters) {
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
+    enabled: shouldFetch,
   });
 
   // Real-time subscription
