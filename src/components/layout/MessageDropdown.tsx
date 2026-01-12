@@ -268,7 +268,7 @@ export function MessageDropdown({ userId, unreadCount }: MessageDropdownProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative w-10 h-10 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+          className="relative !overflow-visible w-10 h-10 rounded-full bg-muted hover:bg-muted/80 transition-colors"
           title={t("nav.messages") || "Messages"}
         >
           <MessageCircle className="w-5 h-5" />
