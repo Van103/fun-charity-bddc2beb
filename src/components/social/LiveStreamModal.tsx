@@ -535,7 +535,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     setShowCountdown(true);
   };
 
-  const handleCountdownComplete = async () => {
+  const handleCountdownComplete = useCallback(async () => {
     setShowCountdown(false);
     
     // Start Agora broadcast first to get channel name
@@ -590,7 +590,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     setViewerCount(1);
     startRecording();
     toast.success("🔴 Bắt đầu phát trực tiếp!");
-  };
+  }, [agoraLive, profile, streamTitle, streamDescription, shareSystemAudio, isDesktop, startRecording]);
 
   const handleGiftSent = (gift: GiftType) => {
     const animationId = Date.now().toString() + Math.random();

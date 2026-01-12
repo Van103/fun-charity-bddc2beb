@@ -10,6 +10,9 @@ export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdow
   const [count, setCount] = useState(3);
   const hasCompletedRef = useRef(false);
   const completeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Use ref to store callback to prevent re-triggering on callback identity change
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!isActive) {
@@ -29,7 +32,7 @@ export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdow
       hasCompletedRef.current = true;
       // Small delay to show "GO!" before completing
       completeTimerRef.current = setTimeout(() => {
-        onComplete();
+        onCompleteRef.current();
       }, 600);
       return;
     }
@@ -39,7 +42,7 @@ export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdow
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [isActive, count, onComplete]);
+  }, [isActive, count]); // Removed onComplete from deps - using ref instead
 
   // Cleanup on unmount
   useEffect(() => {
