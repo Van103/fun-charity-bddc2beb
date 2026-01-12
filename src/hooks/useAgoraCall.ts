@@ -268,7 +268,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
 
   // Leave channel
   const leaveChannel = useCallback(async () => {
-    // Prevent multiple leave calls, but reset joining flag
+    // Prevent multiple leave calls
     if (isLeavingRef.current) {
       console.log('[Agora] Already leaving, skipping...');
       return;
@@ -346,8 +346,9 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     setIsScreenSharing(false);
     setError(null);
     
-    // Reset joining flag
+    // Reset both flags after leave is complete
     isJoiningRef.current = false;
+    // NOTE: isLeavingRef stays true until next joinChannel call resets it
 
     onCallEndedRef.current?.();
   }, []);

@@ -141,6 +141,7 @@ export const AgoraVideoCallModal = ({
   const controlsTimerRef = useRef<NodeJS.Timeout | null>(null);
   const sessionIdRef = useRef<string>(callSessionId || '');
   const hasStartedCallRef = useRef<boolean>(false);
+  const ringingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const {
     callStatus,
     setCallStatus,
@@ -164,6 +165,11 @@ export const AgoraVideoCallModal = ({
       console.log('Remote user joined - call connected');
       setInternalCallStatus('active');
       ringtoneRef.current?.stop();
+      // Clear ringing timeout when someone answers
+      if (ringingTimeoutRef.current) {
+        clearTimeout(ringingTimeoutRef.current);
+        ringingTimeoutRef.current = null;
+      }
     },
     onRemoteUserLeft: () => {
       console.log('Remote user left');
@@ -248,6 +254,39 @@ export const AgoraVideoCallModal = ({
     }
   }, []);
 
+  // Mark call as missed/no_answer
+  const markCallAsNoAnswer = useCallback(async () => {
+    if (!sessionIdRef.current) return;
+    
+    try {
+      // Update call session status to no_answer
+      await supabase
+        .from('call_sessions')
+        .update({ status: 'no_answer', ended_at: new Date().toISOString() })
+        .eq('id', sessionIdRef.current)
+        .eq('status', 'pending');
+      
+      // Save missed call message to chat
+      const callTypeLabel = callType === 'video' ? 'video' : 'thoại';
+      await supabase.from('messages').insert({
+        conversation_id: conversationId,
+        sender_id: currentUserId,
+        content: `📵 Cuộc gọi ${callTypeLabel} không có người trả lời`,
+        is_read: false
+      });
+      
+      // Update conversation's last_message_at
+      await supabase
+        .from('conversations')
+        .update({ last_message_at: new Date().toISOString() })
+        .eq('id', conversationId);
+        
+      console.log('[AgoraVideoCallModal] Call marked as no_answer');
+    } catch (error) {
+      console.error('[AgoraVideoCallModal] Error marking call as no_answer:', error);
+    }
+  }, [callType, conversationId, currentUserId]);
+
   // Start outgoing call
   const startCall = useCallback(async () => {
     // Prevent double start
@@ -291,6 +330,25 @@ export const AgoraVideoCallModal = ({
         }
       });
 
+      // Set timeout for no answer - 30 seconds
+      ringingTimeoutRef.current = setTimeout(async () => {
+        // Only trigger if still ringing (no one answered)
+        if (internalCallStatus === 'ringing' && remoteUsers.length === 0) {
+          console.log('[AgoraVideoCallModal] Call timeout - no answer after 30 seconds');
+          ringtoneRef.current?.stop();
+          callEndSoundRef.current = new CallEndSound();
+          callEndSoundRef.current.play();
+          
+          await markCallAsNoAnswer();
+          await leaveChannel();
+          
+          setInternalCallStatus('ended');
+          hasStartedCallRef.current = false;
+          onCallEnded?.();
+          onClose();
+        }
+      }, 30000);
+
       setIsProcessing(false);
     } catch (err) {
       console.error('Error starting call:', err);
@@ -299,7 +357,7 @@ export const AgoraVideoCallModal = ({
       setIsProcessing(false);
       hasStartedCallRef.current = false;
     }
-  }, [getChannelName, createCallSession, joinChannel, callType, currentUserId, recipientId, recipientName, setCallStatus, isProcessing]);
+  }, [getChannelName, createCallSession, joinChannel, callType, currentUserId, recipientId, recipientName, setCallStatus, isProcessing, markCallAsNoAnswer, leaveChannel, internalCallStatus, remoteUsers.length, onCallEnded, onClose]);
 
   // Answer incoming call
   const answerCall = useCallback(async () => {
@@ -376,6 +434,12 @@ export const AgoraVideoCallModal = ({
     if (isProcessing) return;
     setIsProcessing(true);
     
+    // Clear ringing timeout if exists
+    if (ringingTimeoutRef.current) {
+      clearTimeout(ringingTimeoutRef.current);
+      ringingTimeoutRef.current = null;
+    }
+    
     ringtoneRef.current?.stop();
     callEndSoundRef.current = new CallEndSound();
     callEndSoundRef.current.play();
@@ -425,6 +489,11 @@ export const AgoraVideoCallModal = ({
   // Reset state when modal closes
   useEffect(() => {
     if (!open) {
+      // Clear ringing timeout
+      if (ringingTimeoutRef.current) {
+        clearTimeout(ringingTimeoutRef.current);
+        ringingTimeoutRef.current = null;
+      }
       setHasAutoAnswered(false);
       hasStartedCallRef.current = false;
       setIsProcessing(false);
@@ -484,6 +553,9 @@ export const AgoraVideoCallModal = ({
       ringtoneRef.current?.stop();
       if (controlsTimerRef.current) {
         clearTimeout(controlsTimerRef.current);
+      }
+      if (ringingTimeoutRef.current) {
+        clearTimeout(ringingTimeoutRef.current);
       }
     };
   }, []);
