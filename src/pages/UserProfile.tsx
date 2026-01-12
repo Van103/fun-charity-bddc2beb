@@ -65,7 +65,7 @@ export default function UserProfile() {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteFeedPosts({});
+  } = useInfiniteFeedPosts({ userId: profile?.user_id });
 
   // Pull to refresh handler
   const handleRefresh = useCallback(async () => {

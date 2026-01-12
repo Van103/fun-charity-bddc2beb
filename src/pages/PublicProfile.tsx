@@ -76,21 +76,18 @@ export default function PublicProfile() {
 
   // Fetch posts for this user
   const { 
-    data: postsData, 
+    posts: userPosts, 
     fetchNextPage, 
     hasNextPage, 
     isFetchingNextPage,
     isLoading: isLoadingPosts 
-  } = useInfiniteFeedPosts({});
+  } = useInfiniteFeedPosts({ userId: userId || undefined });
 
   const loadMoreRef = useIntersectionObserver(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, { threshold: 0.1 });
-
-  // Filter posts by this user
-  const userPosts = postsData?.pages.flatMap(page => page.posts).filter(p => p.user_id === userId) || [];
 
   // Donor journey data
   const { stats: donorStats, milestones, donations: donorDonations, isLoading: donorLoading } = useDonorStats(userId, language);

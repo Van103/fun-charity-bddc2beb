@@ -76,6 +76,7 @@ export interface FeedFilters {
   category?: string;
   location?: string;
   search?: string;
+  userId?: string;
 }
 
 const PAGE_SIZE = 10;
@@ -142,6 +143,10 @@ export function useInfiniteFeedPosts(filters?: FeedFilters) {
       
       if (filters?.search) {
         baseQuery = baseQuery.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`);
+      }
+      
+      if (filters?.userId) {
+        baseQuery = baseQuery.eq("user_id", filters.userId);
       }
 
       const { data, error } = await baseQuery;
