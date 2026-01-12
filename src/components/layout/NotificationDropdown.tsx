@@ -399,7 +399,7 @@ export function NotificationDropdown() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative w-10 h-10 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+          className="relative !overflow-visible w-10 h-10 rounded-full bg-muted hover:bg-muted/80 transition-colors"
         >
           <Bell className="w-5 h-5" />
           <AnimatePresence>
