@@ -2,8 +2,7 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Camera, Send, Loader2, X, Smile, ImageIcon } from "lucide-react";
+import { Camera, Send, Loader2, X, Smile, Sticker } from "lucide-react";
 import { CommentStickerPicker } from "./CommentStickerPicker";
 import { GifPicker } from "./GifPicker";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,11 +31,10 @@ export function CommentInput({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
   const [selectedGif, setSelectedGif] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,21 +54,30 @@ export function CommentInput({
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-      setSelectedSticker(null);
       setSelectedGif(null);
     }
   };
 
+  // Append emoji/sticker to text instead of auto-sending
+  const handleEmojiSelect = (emoji: string) => {
+    setCommentText((prev) => prev + emoji);
+    inputRef.current?.focus();
+  };
+
+  // For large stickers, we still want to send them as sticker
   const handleStickerSelect = (sticker: string) => {
-    setSelectedSticker(sticker);
-    setImagePreview(null);
-    setImageFile(null);
-    setSelectedGif(null);
+    // Send sticker directly
+    onSubmit({
+      content: sticker,
+      stickerUrl: sticker,
+      parentCommentId: replyingTo?.id,
+    });
+    setCommentText("");
+    clearAttachment();
   };
 
   const handleGifSelect = (gifUrl: string) => {
     setSelectedGif(gifUrl);
-    setSelectedSticker(null);
     setImagePreview(null);
     setImageFile(null);
   };
@@ -78,7 +85,6 @@ export function CommentInput({
   const clearAttachment = () => {
     setImagePreview(null);
     setImageFile(null);
-    setSelectedSticker(null);
     setSelectedGif(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -118,8 +124,8 @@ export function CommentInput({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Must have either text, image, sticker, or GIF
-    if (!commentText.trim() && !imageFile && !selectedSticker && !selectedGif) return;
+    // Must have either text, image, or GIF
+    if (!commentText.trim() && !imageFile && !selectedGif) return;
 
     let imageUrl: string | undefined;
     if (imageFile) {
@@ -133,9 +139,8 @@ export function CommentInput({
     }
 
     onSubmit({
-      content: selectedSticker ? selectedSticker : commentText,
+      content: commentText,
       imageUrl,
-      stickerUrl: selectedSticker || undefined,
       parentCommentId: replyingTo?.id,
     });
 
@@ -144,8 +149,15 @@ export function CommentInput({
     clearAttachment();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   const isLoading = isSubmitting || isUploadingImage;
-  const hasContent = commentText.trim() || imageFile || selectedSticker || selectedGif;
+  const hasContent = commentText.trim() || imageFile || selectedGif;
 
   return (
     <div className="space-y-2">
@@ -173,7 +185,7 @@ export function CommentInput({
 
       {/* Attachment preview */}
       <AnimatePresence>
-        {(imagePreview || selectedSticker || selectedGif) && (
+        {(imagePreview || selectedGif) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -197,25 +209,6 @@ export function CommentInput({
                   <X className="w-3 h-3" />
                 </Button>
               </div>
-            )}
-            {selectedSticker && (
-              <motion.div 
-                className="relative inline-block"
-                initial={{ scale: 0, rotate: -10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", damping: 10, stiffness: 200 }}
-              >
-                <span className="text-5xl drop-shadow-lg">{selectedSticker}</span>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  className="absolute -top-2 -right-2 h-5 w-5 rounded-full"
-                  onClick={clearAttachment}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </motion.div>
             )}
             {selectedGif && (
               <motion.div 
@@ -250,111 +243,145 @@ export function CommentInput({
           <AvatarFallback className="bg-secondary/20 text-xs">U</AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 flex flex-col gap-1">
+        <div className="flex-1 flex flex-col">
+          {/* Input container - Facebook style */}
           <div 
             className={cn(
-              "flex items-center gap-1 bg-muted/50 rounded-2xl px-3 py-2 transition-all",
+              "relative bg-muted/50 rounded-2xl transition-all",
               isFocused && "ring-1 ring-secondary/30"
             )}
           >
-            {/* Text input */}
-            <Input
+            {/* Text area */}
+            <textarea
               ref={inputRef}
               placeholder={
                 replyingTo
-                  ? `Trả lời ${replyingTo.name}...`
+                  ? `Bình luận dưới tên ${replyingTo.name}`
                   : "Viết bình luận..."
               }
               value={commentText}
-              onChange={(e) => {
-                setCommentText(e.target.value);
-                if (e.target.value && (selectedSticker || selectedGif)) {
-                  setSelectedSticker(null);
-                  setSelectedGif(null);
-                }
-              }}
+              onChange={(e) => setCommentText(e.target.value)}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              className="border-none bg-transparent p-0 h-auto focus-visible:ring-0 text-sm flex-1 min-w-0"
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Action buttons - Facebook style row */}
-          <div className="flex items-center gap-1 ml-1">
-            {/* Sticker picker */}
-            <CommentStickerPicker
-              onSelect={handleStickerSelect}
-              trigger={
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0 rounded-full hover:bg-secondary/20"
-                  disabled={isLoading}
-                >
-                  <Smile className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
-                </Button>
-              }
-            />
-
-            {/* Camera button */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageSelect}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 shrink-0 rounded-full hover:bg-secondary/20"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
-            >
-              <Camera className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
-            </Button>
-
-            {/* GIF picker */}
-            <GifPicker
-              onSelect={handleGifSelect}
-              trigger={
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-2 shrink-0 rounded-full hover:bg-secondary/20"
-                  disabled={isLoading}
-                >
-                  <span className="text-xs font-bold text-muted-foreground hover:text-secondary transition-colors">GIF</span>
-                </Button>
-              }
-            />
-
-            <div className="flex-1" />
-
-            {/* Send button */}
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
+              onKeyDown={handleKeyDown}
+              rows={1}
               className={cn(
-                "h-7 w-7 shrink-0 rounded-full transition-all",
-                hasContent 
-                  ? "text-secondary hover:bg-secondary/20 scale-100" 
-                  : "text-muted-foreground scale-90 opacity-50"
+                "w-full bg-transparent resize-none border-none p-3 pr-32 text-sm",
+                "focus:outline-none focus:ring-0 placeholder:text-muted-foreground",
+                "min-h-[40px] max-h-[120px]"
               )}
-              disabled={!hasContent || isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
+              style={{
+                height: 'auto',
+                overflow: 'hidden'
+              }}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+              }}
+              disabled={isLoading}
+            />
+
+            {/* Right side icons - Facebook style inside input */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+              {/* Emoji picker - append mode */}
+              <CommentStickerPicker
+                onSelect={handleEmojiSelect}
+                appendMode={true}
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                    disabled={isLoading}
+                  >
+                    <Smile className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+                  </Button>
+                }
+              />
+
+              {/* Camera button */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageSelect}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+              >
+                <Camera className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+              </Button>
+
+              {/* GIF picker */}
+              <GifPicker
+                onSelect={handleGifSelect}
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-1.5 rounded-full hover:bg-secondary/20"
+                    disabled={isLoading}
+                  >
+                    <span className="text-[10px] font-bold text-muted-foreground hover:text-secondary transition-colors border border-muted-foreground rounded px-1">GIF</span>
+                  </Button>
+                }
+              />
+
+              {/* Sticker picker - sends immediately */}
+              <CommentStickerPicker
+                onSelect={handleStickerSelect}
+                appendMode={false}
+                trigger={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                    disabled={isLoading}
+                  >
+                    <Sticker className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+                  </Button>
+                }
+              />
+            </div>
           </div>
+
+          {/* Send button - appears when has content */}
+          <AnimatePresence>
+            {hasContent && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex justify-end mt-1"
+              >
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="h-7 px-3 bg-secondary hover:bg-secondary/90 text-white rounded-full"
+                  disabled={!hasContent || isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="w-3 h-3 mr-1" />
+                      Gửi
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </form>
     </div>

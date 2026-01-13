@@ -24,15 +24,20 @@ const TAB_LABELS: Record<string, string> = {
 interface CommentStickerPickerProps {
   onSelect: (sticker: string) => void;
   trigger?: React.ReactNode;
+  /** If true, clicking an emoji appends it to text rather than auto-sending */
+  appendMode?: boolean;
 }
 
-export function CommentStickerPicker({ onSelect, trigger }: CommentStickerPickerProps): React.ReactElement {
+export function CommentStickerPicker({ onSelect, trigger, appendMode = false }: CommentStickerPickerProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("popular");
 
   const handleSelect = (sticker: string) => {
     onSelect(sticker);
-    setIsOpen(false);
+    // Only close if NOT in append mode
+    if (!appendMode) {
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -70,7 +75,7 @@ export function CommentStickerPicker({ onSelect, trigger }: CommentStickerPicker
             >
               {/* Header */}
               <div className="flex items-center justify-between px-3 py-2 border-b border-border">
-                <span className="text-sm font-medium">Stickers</span>
+                <span className="text-sm font-medium">Stickers & Emoji</span>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -107,6 +112,7 @@ export function CommentStickerPicker({ onSelect, trigger }: CommentStickerPicker
                       {stickers.map((sticker, idx) => (
                         <motion.button
                           key={idx}
+                          type="button"
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => handleSelect(sticker)}
