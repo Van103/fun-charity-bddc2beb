@@ -50,6 +50,8 @@ interface FacebookCreatePostModalProps {
     user_id?: string;
   } | null;
   onPostCreated?: () => void;
+  initialMode?: 'text' | 'media' | 'feeling';
+  initialFeeling?: { emoji: string; label: string } | null;
 }
 
 interface MentionUser {
@@ -92,6 +94,8 @@ export function FacebookCreatePostModal({
   onOpenChange,
   profile,
   onPostCreated,
+  initialMode = 'text',
+  initialFeeling = null,
 }: FacebookCreatePostModalProps) {
   const [content, setContent] = useState("");
   const [privacy, setPrivacy] = useState<PrivacyOption>("public");
@@ -105,6 +109,7 @@ export function FacebookCreatePostModal({
   const [selectedTagIndex, setSelectedTagIndex] = useState(0);
   const [mentionedUsers, setMentionedUsers] = useState<MentionUser[]>([]);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [currentFeeling, setCurrentFeeling] = useState<{ emoji: string; label: string } | null>(null);
   
   // Inline mention states (when typing @)
   const [showInlineMention, setShowInlineMention] = useState(false);
@@ -118,6 +123,21 @@ export function FacebookCreatePostModal({
   const [aiStyle, setAiStyle] = useState("thân thiện");
   const [aiImageStyle, setAiImageStyle] = useState("illustration");
   const [generateImage, setGenerateImage] = useState(true);
+  
+  // Handle initial mode and feeling
+  useEffect(() => {
+    if (open) {
+      if (initialFeeling) {
+        setCurrentFeeling(initialFeeling);
+      }
+      if (initialMode === 'media') {
+        // Auto-trigger file input after a short delay
+        setTimeout(() => {
+          fileInputRef.current?.click();
+        }, 300);
+      }
+    }
+  }, [open, initialMode, initialFeeling]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -528,6 +548,7 @@ export function FacebookCreatePostModal({
     setLocation("");
     setShowLocationInput(false);
     setPrivacy("public");
+    setCurrentFeeling(null);
   };
 
   const handleSubmit = async () => {
@@ -598,7 +619,14 @@ export function FacebookCreatePostModal({
               </Avatar>
             </Link>
             <div>
-              <p className="font-semibold text-foreground">{profile?.full_name || "Người dùng"}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-foreground">{profile?.full_name || "Người dùng"}</p>
+                {currentFeeling && (
+                  <span className="text-sm text-muted-foreground">
+                    — đang cảm thấy {currentFeeling.emoji} {currentFeeling.label}
+                  </span>
+                )}
+              </div>
               {/* Privacy Selector */}
               <Popover>
                 <PopoverTrigger asChild>
