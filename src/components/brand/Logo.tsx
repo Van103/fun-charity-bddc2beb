@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import funCharityLogo from "@/assets/fun-charity-logo.jpg";
+import funCharityLogo from "@/assets/fun-charity-logo-transparent.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg" | "xl";
@@ -8,11 +8,12 @@ interface LogoProps {
 }
 
 export function Logo({ size = "md", showText = false, className = "" }: LogoProps) {
+  // Double the original sizes
   const sizes = {
-    sm: { icon: 36, text: "text-lg" },
-    md: { icon: 48, text: "text-xl" },
-    lg: { icon: 60, text: "text-2xl" },
-    xl: { icon: 80, text: "text-3xl" },
+    sm: { icon: 72, text: "text-lg" },
+    md: { icon: 96, text: "text-xl" },
+    lg: { icon: 120, text: "text-2xl" },
+    xl: { icon: 160, text: "text-3xl" },
   };
 
   const s = sizes[size];
