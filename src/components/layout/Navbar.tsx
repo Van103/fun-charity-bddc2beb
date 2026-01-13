@@ -48,6 +48,7 @@ import {
   Trophy,
   Gift,
   BookOpen,
+  ShieldCheck,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -382,49 +383,104 @@ export function Navbar() {
               );
             })}
 
-            {/* Admin Angel Knowledge - Only for Admin */}
+            {/* Admin Menu - Only for Admin */}
             {isAdmin && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link to="/admin/angel-knowledge">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      className="relative flex items-center justify-center"
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`relative w-28 h-12 rounded-xl transition-all duration-300 group ${
-                          location.pathname === "/admin/angel-knowledge" 
-                            ? "hover:bg-primary/10" 
-                            : "text-muted-foreground hover:bg-primary/10"
-                        }`}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        className="relative flex items-center justify-center"
                       >
-                        <BookOpen 
-                          className={`w-6 h-6 transition-colors duration-200 ${
-                            location.pathname === "/admin/angel-knowledge" ? "text-primary" : "group-hover:text-primary"
-                          }`} 
-                          fill={location.pathname === "/admin/angel-knowledge" ? "hsl(var(--primary))" : "none"}
-                          strokeWidth={location.pathname === "/admin/angel-knowledge" ? 0 : 2} 
-                        />
-                      </Button>
-                      {location.pathname === "/admin/angel-knowledge" && (
-                        <motion.div 
-                          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
-                          initial={{ scaleX: 0 }}
-                          animate={{ scaleX: 1 }}
-                          layoutId="navActiveIndicator"
-                        />
-                      )}
-                    </motion.div>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent className="bg-primary text-primary-foreground font-semibold">
-                  {t("sidebar.angelKnowledge")}
-                </TooltipContent>
-              </Tooltip>
+                        <Button 
+                          variant="ghost" 
+                          size="default" 
+                          className={`w-28 h-12 px-4 gap-1.5 rounded-xl transition-all duration-300 group ${
+                            location.pathname.startsWith('/admin')
+                              ? "hover:bg-primary/10"
+                              : "text-muted-foreground hover:bg-primary/10"
+                          }`}
+                        >
+                          <ShieldCheck 
+                            className={`w-6 h-6 transition-colors duration-200 ${
+                              location.pathname.startsWith('/admin') ? "text-primary" : "group-hover:text-primary"
+                            }`} 
+                            fill={location.pathname.startsWith('/admin') ? "hsl(var(--primary))" : "none"}
+                            strokeWidth={location.pathname.startsWith('/admin') ? 0 : 2} 
+                          />
+                          <ChevronDown className="w-4 h-4 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
+                        </Button>
+                        {location.pathname.startsWith('/admin') && (
+                          <motion.div 
+                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            layoutId="navActiveIndicator"
+                          />
+                        )}
+                      </motion.div>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-primary text-primary-foreground font-semibold">
+                    Admin
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="center" className="w-56 bg-background border border-border shadow-xl rounded-xl p-1">
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0 }}>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link to="/admin/users" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Users className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="font-semibold text-foreground">Quản lý người dùng</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }}>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link to="/admin/angel-knowledge" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <BookOpen className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="font-semibold text-foreground">{t("sidebar.angelKnowledge")}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link to="/admin/verify" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Check className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="font-semibold text-foreground">Xác minh KYC</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link to="/admin/rewards" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Gift className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="font-semibold text-foreground">Cấu hình phần thưởng</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </motion.div>
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                      <Link to="/admin/moderation" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <ShieldCheck className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="font-semibold text-foreground">Kiểm duyệt nội dung</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </motion.div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
 
