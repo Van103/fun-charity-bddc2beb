@@ -266,7 +266,7 @@ export function CommentInput({
               onKeyDown={handleKeyDown}
               rows={1}
               className={cn(
-                "w-full bg-transparent resize-none border-none p-3 pr-32 text-sm",
+                "w-full bg-transparent resize-none border-none p-3 text-sm",
                 "focus:outline-none focus:ring-0 placeholder:text-muted-foreground",
                 "min-h-[40px] max-h-[120px]"
               )}
@@ -281,9 +281,11 @@ export function CommentInput({
               }}
               disabled={isLoading}
             />
+          </div>
 
-            {/* Right side icons - Facebook style inside input */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          {/* Action buttons below input - Facebook style */}
+          <div className="flex items-center justify-between mt-1 px-1">
+            <div className="flex items-center gap-1">
               {/* Emoji picker - append mode */}
               <CommentStickerPicker
                 onSelect={handleEmojiSelect}
@@ -293,10 +295,10 @@ export function CommentInput({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                    className="h-8 w-8 rounded-full hover:bg-secondary/20"
                     disabled={isLoading}
                   >
-                    <Smile className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+                    <Smile className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
                   </Button>
                 }
               />
@@ -313,11 +315,11 @@ export function CommentInput({
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                className="h-8 w-8 rounded-full hover:bg-secondary/20"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
               >
-                <Camera className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+                <Camera className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
               </Button>
 
               {/* GIF picker */}
@@ -328,10 +330,10 @@ export function CommentInput({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="h-7 px-1.5 rounded-full hover:bg-secondary/20"
+                    className="h-8 px-2 rounded-full hover:bg-secondary/20"
                     disabled={isLoading}
                   >
-                    <span className="text-[10px] font-bold text-muted-foreground hover:text-secondary transition-colors border border-muted-foreground rounded px-1">GIF</span>
+                    <span className="text-xs font-bold text-muted-foreground hover:text-secondary transition-colors border border-muted-foreground rounded px-1.5 py-0.5">GIF</span>
                   </Button>
                 }
               />
@@ -345,43 +347,42 @@ export function CommentInput({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 rounded-full hover:bg-secondary/20"
+                    className="h-8 w-8 rounded-full hover:bg-secondary/20"
                     disabled={isLoading}
                   >
-                    <Sticker className="w-4 h-4 text-muted-foreground hover:text-secondary transition-colors" />
+                    <Sticker className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
                   </Button>
                 }
               />
             </div>
-          </div>
 
-          {/* Send button - appears when has content */}
-          <AnimatePresence>
-            {hasContent && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="flex justify-end mt-1"
-              >
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="h-7 px-3 bg-secondary hover:bg-secondary/90 text-white rounded-full"
-                  disabled={!hasContent || isLoading}
+            {/* Send button */}
+            <AnimatePresence>
+              {hasContent && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                 >
-                  {isLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Send className="w-3 h-3 mr-1" />
-                      Gửi
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    className="h-8 px-4 bg-secondary hover:bg-secondary/90 text-white rounded-full"
+                    disabled={!hasContent || isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-1" />
+                        Gửi
+                      </>
+                    )}
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </form>
     </div>
