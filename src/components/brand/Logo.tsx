@@ -21,17 +21,17 @@ export function Logo({ size = "md", showText = false, className = "" }: LogoProp
   return (
     <div className={`flex items-center gap-2 group ${className}`}>
       <div className="relative">
-        {/* Logo Container */}
+        {/* Logo Container - no background */}
         <motion.div
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
-          className="overflow-hidden relative shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-all duration-300"
+          className="relative"
           style={{ width: s.icon, height: s.icon }}
         >
           <img
             src={funCharityLogo}
             alt="FUN Charity Logo"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain drop-shadow-lg"
           />
         </motion.div>
       </div>
