@@ -66,6 +66,7 @@ const BrandGuidelines = lazy(() => import("./pages/BrandGuidelines"));
 const GiftsFromCosmicFather = lazy(() => import("./pages/GiftsFromCosmicFather"));
 const AdminRewards = lazy(() => import("./pages/AdminRewards"));
 const AdminAngelKnowledge = lazy(() => import("./pages/AdminAngelKnowledge"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const RecipientProfile = lazy(() => import("./pages/RecipientProfile"));
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
 
@@ -217,6 +218,7 @@ const App = () => (
                       <Route path="/brand" element={<BrandGuidelines />} />
                       <Route path="/gifts" element={<GiftsFromCosmicFather />} />
                       <Route path="/admin/rewards" element={<AdminRewards />} />
+                      <Route path="/admin/users" element={<AdminUsers />} />
                       <Route path="/admin/angel-knowledge" element={<AdminAngelKnowledge />} />
                       <Route path="/recipient/:id" element={<RecipientProfile />} />
                       <Route path="/r/:code" element={<ReferralRedirect />} />
