@@ -30,6 +30,7 @@ import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 import { useTypingIndicator } from "@/hooks/useTypingIndicator";
 import { useMessageReactions } from "@/hooks/useMessageReactions";
 import { ChatStickerPicker } from "@/components/chat/ChatStickerPicker";
+import { ChatGifPicker } from "@/components/chat/ChatGifPicker";
 import { VideoCallModal } from "@/components/chat/VideoCallModal";
 import { AgoraVideoCallModal } from "@/components/chat/AgoraVideoCallModal";
 import { AgoraGroupCallModal } from "@/components/chat/AgoraGroupCallModal";
@@ -1423,8 +1424,11 @@ export default function Messages() {
                     <ImageIcon className="w-5 h-5" />
                   </Button>
                   <ChatStickerPicker onSelect={handleStickerSelect} />
+                  <ChatGifPicker onSelect={(gifUrl) => {
+                    setImagePreview(gifUrl);
+                    setImageFile(null);
+                  }} />
                 </div>
-                
                 {/* Message input */}
                 <div className="flex-1">
                   <Input

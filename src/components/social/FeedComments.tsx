@@ -11,6 +11,8 @@ import {
   Pencil,
   ChevronDown,
   ChevronUp,
+  Share2,
+  Copy,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
@@ -22,6 +24,12 @@ import { CommentReactionButton } from "./CommentReactionButton";
 import { CommentInput } from "./CommentInput";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface FeedCommentsProps {
   postId: string;
@@ -59,6 +67,7 @@ function CommentItem({
   const [editContent, setEditContent] = useState(comment.content);
   const [showAllReplies, setShowAllReplies] = useState(false);
   const { isGuest, requireAuth } = useGuestMode();
+  const { toast } = useToast();
 
   const timeAgo = formatDistanceToNow(new Date(comment.created_at), {
     addSuffix: false,
@@ -70,6 +79,27 @@ function CommentItem({
 
   // Check if content is a sticker (single emoji or short emoji string)
   const isSticker = comment.content.length <= 4 && /^\p{Emoji}+$/u.test(comment.content);
+  
+  // Check if image_url is a GIF
+  const isGif = comment.image_url?.includes('.gif') || comment.image_url?.includes('giphy');
+
+  const handleCopyComment = () => {
+    navigator.clipboard.writeText(comment.content);
+    toast({
+      title: "Đã sao chép",
+      description: "Nội dung bình luận đã được sao chép",
+    });
+  };
+
+  const handleShareComment = () => {
+    if (navigator.share) {
+      navigator.share({
+        text: comment.content,
+      });
+    } else {
+      handleCopyComment();
+    }
+  };
 
   const handleEditSubmit = () => {
     if (editContent.trim() && editContent !== comment.content) {
@@ -153,9 +183,9 @@ function CommentItem({
               </div>
             ) : isSticker ? (
               <motion.p 
-                className="text-4xl"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                className="text-5xl drop-shadow-md"
+                initial={{ scale: 0, rotate: -10 }}
+                animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: "spring", damping: 10, stiffness: 200 }}
               >
                 {comment.content}
@@ -169,15 +199,27 @@ function CommentItem({
               </p>
             )}
 
-            {/* Image */}
+            {/* Image / GIF */}
             {comment.image_url && (
-              <motion.img
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                src={comment.image_url}
-                alt=""
-                className="mt-2 rounded-lg max-w-[200px] max-h-[150px] object-cover cursor-pointer hover:opacity-90 transition-opacity"
-              />
+                className="mt-2"
+              >
+                <img
+                  src={comment.image_url}
+                  alt=""
+                  className={cn(
+                    "rounded-lg cursor-pointer hover:opacity-90 transition-opacity",
+                    isGif 
+                      ? "max-w-[250px] max-h-[180px]" 
+                      : "max-w-[200px] max-h-[150px] object-cover"
+                  )}
+                />
+                {isGif && (
+                  <span className="text-[10px] text-muted-foreground mt-0.5 block">GIF</span>
+                )}
+              </motion.div>
             )}
           </div>
 
@@ -202,6 +244,31 @@ function CommentItem({
             >
               Trả lời
             </button>
+
+            {/* Share button - Facebook style */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="hover:text-secondary font-medium flex items-center gap-1">
+                  Chia sẻ
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 p-1" align="start">
+                <button
+                  onClick={handleCopyComment}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors"
+                >
+                  <Copy className="w-4 h-4" />
+                  Sao chép
+                </button>
+                <button
+                  onClick={handleShareComment}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Chia sẻ
+                </button>
+              </PopoverContent>
+            </Popover>
             
             {isOwner && (
               <>
