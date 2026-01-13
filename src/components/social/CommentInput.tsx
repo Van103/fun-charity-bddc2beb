@@ -243,15 +243,15 @@ export function CommentInput({
           <AvatarFallback className="bg-secondary/20 text-xs">U</AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 flex flex-col">
-          {/* Input container - Facebook style */}
+        <div className="flex-1">
+          {/* Input container with right icons - Facebook style */}
           <div 
             className={cn(
-              "relative bg-muted/50 rounded-2xl transition-all",
+              "flex items-center bg-muted/50 rounded-full transition-all px-3",
               isFocused && "ring-1 ring-secondary/30"
             )}
           >
-            {/* Text area */}
+            {/* Text input */}
             <textarea
               ref={inputRef}
               placeholder={
@@ -266,9 +266,9 @@ export function CommentInput({
               onKeyDown={handleKeyDown}
               rows={1}
               className={cn(
-                "w-full bg-transparent resize-none border-none p-3 text-sm",
+                "flex-1 bg-transparent resize-none border-none py-2.5 text-sm",
                 "focus:outline-none focus:ring-0 placeholder:text-muted-foreground",
-                "min-h-[40px] max-h-[120px]"
+                "min-h-[36px] max-h-[100px]"
               )}
               style={{
                 height: 'auto',
@@ -277,112 +277,139 @@ export function CommentInput({
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
                 target.style.height = 'auto';
-                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+                target.style.height = Math.min(target.scrollHeight, 100) + 'px';
               }}
               disabled={isLoading}
             />
-          </div>
 
-          {/* Action buttons below input - Facebook style */}
-          <div className="flex items-center justify-between mt-1 px-1">
-            <div className="flex items-center gap-1">
-              {/* Emoji picker - append mode */}
+            {/* Right side icons inside input - Facebook style */}
+            <div className="flex items-center gap-0.5 ml-1">
               <CommentStickerPicker
                 onSelect={handleEmojiSelect}
                 appendMode={true}
                 trigger={
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full hover:bg-secondary/20"
+                    className="p-1.5 rounded-full hover:bg-background/50 transition-colors"
                     disabled={isLoading}
                   >
-                    <Smile className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
-                  </Button>
+                    <Smile className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  </button>
                 }
               />
-
-              {/* Camera button */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageSelect}
-              />
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full hover:bg-secondary/20"
+                className="p-1.5 rounded-full hover:bg-background/50 transition-colors"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
               >
-                <Camera className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
-              </Button>
-
-              {/* GIF picker */}
+                <Camera className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+              </button>
               <GifPicker
                 onSelect={handleGifSelect}
                 trigger={
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 rounded-full hover:bg-secondary/20"
+                    className="p-1 rounded hover:bg-background/50 transition-colors"
                     disabled={isLoading}
                   >
-                    <span className="text-xs font-bold text-muted-foreground hover:text-secondary transition-colors border border-muted-foreground rounded px-1.5 py-0.5">GIF</span>
-                  </Button>
+                    <span className="text-[9px] font-bold text-muted-foreground hover:text-foreground border border-muted-foreground/50 rounded px-1 py-0.5">GIF</span>
+                  </button>
                 }
               />
+            </div>
+          </div>
 
-              {/* Sticker picker - sends immediately */}
+          {/* Bottom row - icons left, send right - Facebook style */}
+          <div className="flex items-center justify-between mt-1 px-1">
+            <div className="flex items-center">
+              <CommentStickerPicker
+                onSelect={handleEmojiSelect}
+                appendMode={true}
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
+                    disabled={isLoading}
+                  >
+                    <span className="text-base opacity-70 hover:opacity-100">😊</span>
+                  </button>
+                }
+              />
+              <CommentStickerPicker
+                onSelect={handleEmojiSelect}
+                appendMode={true}
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
+                    disabled={isLoading}
+                  >
+                    <span className="text-base opacity-70 hover:opacity-100">😀</span>
+                  </button>
+                }
+              />
+              <button
+                type="button"
+                className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+              >
+                <Camera className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+              </button>
+              <GifPicker
+                onSelect={handleGifSelect}
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1 rounded hover:bg-muted/50 transition-colors"
+                    disabled={isLoading}
+                  >
+                    <span className="text-[9px] font-bold text-muted-foreground hover:text-foreground border border-muted-foreground/50 rounded px-1 py-0.5">GIF</span>
+                  </button>
+                }
+              />
               <CommentStickerPicker
                 onSelect={handleStickerSelect}
                 appendMode={false}
                 trigger={
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full hover:bg-secondary/20"
+                    className="p-1.5 rounded-full hover:bg-muted/50 transition-colors"
                     disabled={isLoading}
                   >
-                    <Sticker className="w-5 h-5 text-muted-foreground hover:text-secondary transition-colors" />
-                  </Button>
+                    <Sticker className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  </button>
                 }
               />
             </div>
 
-            {/* Send button */}
-            <AnimatePresence>
-              {hasContent && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                >
-                  <Button
-                    type="submit"
-                    size="sm"
-                    className="h-8 px-4 bg-secondary hover:bg-secondary/90 text-white rounded-full"
-                    disabled={!hasContent || isLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-1" />
-                        Gửi
-                      </>
-                    )}
-                  </Button>
-                </motion.div>
+            {/* Send button - always visible like Facebook */}
+            <button
+              type="submit"
+              className={cn(
+                "p-1.5 rounded-full transition-colors",
+                hasContent 
+                  ? "text-secondary hover:bg-secondary/10" 
+                  : "text-muted-foreground/50 cursor-not-allowed"
               )}
-            </AnimatePresence>
+              disabled={!hasContent || isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </button>
           </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageSelect}
+          />
         </div>
       </form>
     </div>
