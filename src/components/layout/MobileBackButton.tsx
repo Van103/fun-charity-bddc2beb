@@ -24,13 +24,16 @@ const MobileBackButton = () => {
   return (
     <motion.button
       whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.05 }}
       onClick={handleBack}
-      className="fixed top-[72px] left-3 z-40 md:hidden 
-        w-10 h-10 rounded-full 
-        bg-background/90 
-        backdrop-blur-sm shadow-lg 
+      className="fixed top-20 left-4 z-40
+        w-10 h-10 sm:w-11 sm:h-11 rounded-full 
+        bg-background/95 
+        backdrop-blur-md shadow-lg 
         flex items-center justify-center
-        border border-border/50"
+        border border-border/50
+        hover:bg-primary/10 hover:border-primary/30
+        transition-colors duration-200"
       aria-label="Quay lại"
     >
       <ArrowLeft className="w-5 h-5 text-foreground" />
