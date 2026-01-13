@@ -383,105 +383,6 @@ export function Navbar() {
               );
             })}
 
-            {/* Admin Menu - Only for Admin */}
-            {isAdmin && (
-              <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                        className="relative flex items-center justify-center"
-                      >
-                        <Button 
-                          variant="ghost" 
-                          size="default" 
-                          className={`w-28 h-12 px-4 gap-1.5 rounded-xl transition-all duration-300 group ${
-                            location.pathname.startsWith('/admin')
-                              ? "hover:bg-primary/10"
-                              : "text-muted-foreground hover:bg-primary/10"
-                          }`}
-                        >
-                          <ShieldCheck 
-                            className={`w-6 h-6 transition-colors duration-200 ${
-                              location.pathname.startsWith('/admin') ? "text-primary" : "group-hover:text-primary"
-                            }`} 
-                            fill={location.pathname.startsWith('/admin') ? "hsl(var(--primary))" : "none"}
-                            strokeWidth={location.pathname.startsWith('/admin') ? 0 : 2} 
-                          />
-                          <ChevronDown className="w-4 h-4 transition-colors duration-200 group-hover:text-primary" strokeWidth={2} />
-                        </Button>
-                        {location.pathname.startsWith('/admin') && (
-                          <motion.div 
-                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-[3px] rounded-full bg-primary"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            layoutId="navActiveIndicator"
-                          />
-                        )}
-                      </motion.div>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-primary text-primary-foreground font-semibold">
-                    Admin
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent align="center" className="w-56 bg-background border border-border shadow-xl rounded-xl p-1">
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0 }}>
-                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link to="/admin/users" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <Users className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-semibold text-foreground">Quản lý người dùng</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 }}>
-                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link to="/admin/angel-knowledge" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <BookOpen className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-semibold text-foreground">{t("sidebar.angelKnowledge")}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link to="/admin/verify" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <Check className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-semibold text-foreground">Xác minh KYC</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
-                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link to="/admin/rewards" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <Gift className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-semibold text-foreground">Cấu hình phần thưởng</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                    <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
-                      <Link to="/admin/moderation" className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
-                        <div className="p-2 rounded-full bg-primary/10">
-                          <ShieldCheck className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-semibold text-foreground">Kiểm duyệt nội dung</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </motion.div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
           </div>
 
 
@@ -561,6 +462,56 @@ export function Navbar() {
                         <span className="font-medium">{t("common.connectWallet")}</span>
                       )}
                     </DropdownMenuItem>
+                    
+                    {/* Admin Section - Only for Admin */}
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator className="my-2" />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <div className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
+                              <ShieldCheck className="w-5 h-5 text-primary" />
+                              <span className="font-medium flex-1">Admin</span>
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          </PopoverTrigger>
+                          <PopoverContent align="end" className="w-64 p-2 bg-card/95 backdrop-blur-xl border-border/50">
+                            <div className="space-y-1">
+                              <Link to="/admin/users" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                                <div className="p-2 rounded-full bg-primary/10">
+                                  <Users className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-sm">Quản lý người dùng</span>
+                              </Link>
+                              <Link to="/admin/angel-knowledge" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                                <div className="p-2 rounded-full bg-primary/10">
+                                  <BookOpen className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-sm">{t("sidebar.angelKnowledge")}</span>
+                              </Link>
+                              <Link to="/admin/verify" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                                <div className="p-2 rounded-full bg-primary/10">
+                                  <Check className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-sm">Xác minh KYC</span>
+                              </Link>
+                              <Link to="/admin/rewards" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                                <div className="p-2 rounded-full bg-primary/10">
+                                  <Gift className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-sm">Cấu hình phần thưởng</span>
+                              </Link>
+                              <Link to="/admin/moderation" className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors">
+                                <div className="p-2 rounded-full bg-primary/10">
+                                  <ShieldCheck className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-sm">Kiểm duyệt nội dung</span>
+                              </Link>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    )}
                     
                     <DropdownMenuSeparator className="my-2" />
                     
@@ -707,14 +658,38 @@ export function Navbar() {
                 );
               })}
 
-              {/* Admin Angel Knowledge - Mobile */}
+              {/* Admin Section - Mobile */}
               {isAdmin && (
                 <div className="py-2">
-                  <p className="px-3 text-xs font-semibold text-muted-foreground mb-2">{t("sidebar.admin")}</p>
+                  <p className="px-3 text-xs font-semibold text-muted-foreground mb-2">Admin</p>
+                  <Link to="/admin/users" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
+                      <Users className="w-6 h-6" strokeWidth={2} />
+                      Quản lý người dùng
+                    </Button>
+                  </Link>
                   <Link to="/admin/angel-knowledge" onClick={() => setIsOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
                       <BookOpen className="w-6 h-6" strokeWidth={2} />
                       {t("sidebar.angelKnowledge")}
+                    </Button>
+                  </Link>
+                  <Link to="/admin/verify" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
+                      <Check className="w-6 h-6" strokeWidth={2} />
+                      Xác minh KYC
+                    </Button>
+                  </Link>
+                  <Link to="/admin/rewards" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
+                      <Gift className="w-6 h-6" strokeWidth={2} />
+                      Cấu hình phần thưởng
+                    </Button>
+                  </Link>
+                  <Link to="/admin/moderation" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
+                      <ShieldCheck className="w-6 h-6" strokeWidth={2} />
+                      Kiểm duyệt nội dung
                     </Button>
                   </Link>
                 </div>
