@@ -11,7 +11,6 @@ import { useGuestMode } from "@/contexts/GuestModeContext";
 
 import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
-import { StoriesSection } from "@/components/social/StoriesSection";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
 import { PostCardSkeletonList, PostCardSkeleton } from "@/components/social/PostCardSkeleton";
 import { PullToRefresh } from "@/components/social/PullToRefresh";
@@ -148,8 +147,6 @@ export default function SocialFeed() {
                 <PullToRefresh onRefresh={handleRefresh}>
                   <div className="space-y-2 sm:space-y-4">
                     <CreatePostBox profile={profile} />
-                    
-                    <StoriesSection />
                     
                     <FriendRequestsSection />
                     
