@@ -270,7 +270,7 @@ export function MyWallet() {
               <p className="text-sm text-muted-foreground">Xem thứ hạng của bạn trong cộng đồng</p>
             </div>
           </div>
-          <Link to="/leaderboard">
+          <Link to="/honor-board">
             <Button variant="outline" size="sm">
               Xem ngay
             </Button>

@@ -39,10 +39,10 @@ const menuItems: MenuItem[] = [
   { image: funPlanetLogo, labelKey: "menu.planet", href: "https://planet.fun.rich/", external: true },
   { image: funPlayLogo, labelKey: "menu.play", href: "https://play.fun.rich/", external: true },
   { icon: MessageCircle, labelKey: "menu.chat", href: "/messages", external: false },
-  { icon: GraduationCap, labelKey: "menu.academy", href: "/academy", external: false },
-  { icon: TrendingUp, labelKey: "menu.trading", href: "/trading", external: false },
-  { icon: PiggyBank, labelKey: "menu.investment", href: "/investment", external: false },
-  { icon: Heart, labelKey: "menu.life", href: "/life", external: false },
+  { icon: GraduationCap, labelKey: "menu.academy", href: "https://academy.fun.rich/", external: true },
+  { icon: TrendingUp, labelKey: "menu.trading", href: "https://trading.fun.rich/", external: true },
+  { icon: PiggyBank, labelKey: "menu.investment", href: "https://investment.fun.rich/", external: true },
+  { icon: Heart, labelKey: "menu.life", href: "https://life.fun.rich/", external: true },
   { icon: Scale, labelKey: "menu.legal", href: "/legal", external: false },
 ];
 
@@ -61,13 +61,6 @@ const quickActions: QuickActionItem[] = [
     href: "/honor-board",
     gradient: "from-amber-500/20 to-yellow-500/20",
     iconColor: "text-amber-500"
-  },
-  { 
-    icon: TrendingUp, 
-    labelKey: "sidebar.trading", 
-    href: "/trading",
-    gradient: "from-emerald-500/20 to-green-500/20",
-    iconColor: "text-emerald-500"
   },
   { 
     icon: HandHeart, 

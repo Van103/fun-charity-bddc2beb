@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { MotionProvider } from "@/contexts/MotionContext";
 import { CursorProvider } from "@/contexts/CursorContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
@@ -32,23 +32,14 @@ const About = lazy(() => import("./pages/About"));
 const Campaigns = lazy(() => import("./pages/Campaigns"));
 const CampaignDetail = lazy(() => import("./pages/CampaignDetail"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const NeedsMap = lazy(() => import("./pages/NeedsMap"));
 const Profiles = lazy(() => import("./pages/Profiles"));
-const Reviews = lazy(() => import("./pages/Reviews"));
 const Auth = lazy(() => import("./pages/Auth"));
 const LawOfLight = lazy(() => import("./pages/LawOfLight"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const PublicProfile = lazy(() => import("./pages/PublicProfile"));
 const SocialFeed = lazy(() => import("./pages/SocialFeed"));
 const Messages = lazy(() => import("./pages/Messages"));
-const Life = lazy(() => import("./pages/Life"));
-const Academy = lazy(() => import("./pages/Academy"));
-const Trading = lazy(() => import("./pages/Trading"));
-const Investment = lazy(() => import("./pages/Investment"));
-const Farm = lazy(() => import("./pages/Farm"));
-const Play = lazy(() => import("./pages/Play"));
 const Legal = lazy(() => import("./pages/Legal"));
-const Planet = lazy(() => import("./pages/Planet"));
 const Friends = lazy(() => import("./pages/Friends"));
 const MyCampaigns = lazy(() => import("./pages/MyCampaigns"));
 const AdminVerify = lazy(() => import("./pages/AdminVerify"));
@@ -61,10 +52,8 @@ const LiveStream = lazy(() => import("./pages/LiveStream"));
 const HonorBoard = lazy(() => import("./pages/HonorBoard"));
 const AdminModeration = lazy(() => import("./pages/AdminModeration"));
 const Wallet = lazy(() => import("./pages/Wallet"));
-const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const ModerationLogs = lazy(() => import("./pages/ModerationLogs"));
 const BrandGuidelines = lazy(() => import("./pages/BrandGuidelines"));
-const GiftsFromCosmicFather = lazy(() => import("./pages/GiftsFromCosmicFather"));
 const AdminRewards = lazy(() => import("./pages/AdminRewards"));
 const AdminAngelKnowledge = lazy(() => import("./pages/AdminAngelKnowledge"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
@@ -186,9 +175,7 @@ const App = () => (
                       <Route path="/campaigns" element={<Campaigns />} />
                       <Route path="/campaigns/:id" element={<CampaignDetail />} />
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/needs-map" element={<NeedsMap />} />
                       <Route path="/profiles" element={<Profiles />} />
-                      <Route path="/reviews" element={<Reviews />} />
                       <Route path="/auth" element={<Auth />} />
                       <Route path="/law-of-light" element={<LawOfLight />} />
                       <Route path="/auth/callback" element={<AuthCallback />} />
@@ -196,16 +183,9 @@ const App = () => (
                       <Route path="/profile" element={<UserProfile />} />
                       <Route path="/user/:userId" element={<PublicProfile />} />
                       <Route path="/messages" element={<Messages />} />
-                      <Route path="/feed" element={<SocialFeed />} />
+                      <Route path="/feed" element={<Navigate to="/social" replace />} />
                       <Route path="/social" element={<SocialFeed />} />
-                      <Route path="/life" element={<Life />} />
-                      <Route path="/academy" element={<Academy />} />
-                      <Route path="/trading" element={<Trading />} />
-                      <Route path="/investment" element={<Investment />} />
-                      <Route path="/farm" element={<Farm />} />
-                      <Route path="/play" element={<Play />} />
                       <Route path="/legal" element={<Legal />} />
-                      <Route path="/planet" element={<Planet />} />
                       <Route path="/friends" element={<Friends />} />
                       <Route path="/my-campaigns" element={<MyCampaigns />} />
                       <Route path="/admin/verify" element={<AdminVerify />} />
@@ -216,14 +196,24 @@ const App = () => (
                       <Route path="/live/:streamId" element={<LiveStream />} />
                       <Route path="/honor-board" element={<HonorBoard />} />
                       <Route path="/wallet" element={<Wallet />} />
-                      <Route path="/leaderboard" element={<Leaderboard />} />
                       <Route path="/brand" element={<BrandGuidelines />} />
-                      <Route path="/gifts" element={<GiftsFromCosmicFather />} />
                       <Route path="/admin/rewards" element={<AdminRewards />} />
                       <Route path="/admin/users" element={<AdminUsers />} />
                       <Route path="/admin/angel-knowledge" element={<AdminAngelKnowledge />} />
                       <Route path="/recipient/:id" element={<RecipientProfile />} />
                       <Route path="/r/:code" element={<ReferralRedirect />} />
+                      {/* Redirects for removed pages */}
+                      <Route path="/academy" element={<Navigate to="/social" replace />} />
+                      <Route path="/investment" element={<Navigate to="/social" replace />} />
+                      <Route path="/planet" element={<Navigate to="/social" replace />} />
+                      <Route path="/life" element={<Navigate to="/social" replace />} />
+                      <Route path="/trading" element={<Navigate to="/social" replace />} />
+                      <Route path="/farm" element={<Navigate to="/social" replace />} />
+                      <Route path="/play" element={<Navigate to="/social" replace />} />
+                      <Route path="/reviews" element={<Navigate to="/social" replace />} />
+                      <Route path="/leaderboard" element={<Navigate to="/honor-board" replace />} />
+                      <Route path="/needs-map" element={<Navigate to="/volunteer" replace />} />
+                      <Route path="/gifts" element={<Navigate to="/wallet" replace />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
