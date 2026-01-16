@@ -791,7 +791,6 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
           <AnimatePresence>
             {showCountdown && (
               <LiveStreamCountdown 
-                isActive={showCountdown} 
                 onComplete={handleCountdownComplete} 
               />
             )}

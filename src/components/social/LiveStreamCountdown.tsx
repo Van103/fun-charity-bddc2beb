@@ -2,58 +2,49 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 
 interface LiveStreamCountdownProps {
-  isActive: boolean;
   onComplete: () => void;
 }
 
-export function LiveStreamCountdown({ isActive, onComplete }: LiveStreamCountdownProps) {
+export function LiveStreamCountdown({ onComplete }: LiveStreamCountdownProps) {
   const [count, setCount] = useState(3);
   const hasCompletedRef = useRef(false);
-  const completeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasStartedRef = useRef(false);
+  
   // Use ref to store callback to prevent re-triggering on callback identity change
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
+  // Single effect that runs once on mount to handle the entire countdown
   useEffect(() => {
-    if (!isActive) {
-      setCount(3);
-      hasCompletedRef.current = false;
-      if (completeTimerRef.current) {
-        clearTimeout(completeTimerRef.current);
-        completeTimerRef.current = null;
-      }
-      return;
-    }
+    // Prevent running more than once
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
 
-    // Prevent double execution
-    if (hasCompletedRef.current) return;
-
-    if (count === 0) {
-      hasCompletedRef.current = true;
-      // Small delay to show "GO!" before completing
-      completeTimerRef.current = setTimeout(() => {
-        onCompleteRef.current();
-      }, 600);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setCount(prev => prev - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [isActive, count]); // Removed onComplete from deps - using ref instead
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (completeTimerRef.current) {
-        clearTimeout(completeTimerRef.current);
+    let currentCount = 3;
+    
+    const countdown = () => {
+      if (hasCompletedRef.current) return;
+      
+      if (currentCount > 0) {
+        currentCount--;
+        setCount(currentCount);
+        setTimeout(countdown, 1000);
+      } else {
+        // Show "GO!" for 600ms then complete
+        hasCompletedRef.current = true;
+        setTimeout(() => {
+          onCompleteRef.current();
+        }, 600);
       }
     };
-  }, []);
 
-  if (!isActive) return null;
+    // Start countdown after 1 second (showing "3" first)
+    const startTimer = setTimeout(countdown, 1000);
+
+    return () => {
+      clearTimeout(startTimer);
+    };
+  }, []); // Empty deps - only run once on mount
 
   return (
     <motion.div
