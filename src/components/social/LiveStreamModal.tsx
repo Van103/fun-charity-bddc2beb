@@ -784,7 +784,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[100vw] md:max-w-4xl h-[100vh] md:h-[90vh] p-0 overflow-hidden bg-black border-0 rounded-none md:rounded-lg">
+      <DialogContent hideCloseButton className="max-w-[100vw] md:max-w-4xl h-[100vh] md:h-[90vh] p-0 overflow-hidden bg-black border-0 rounded-none md:rounded-lg">
         <div className="relative w-full h-full flex flex-col">
           
           {/* Countdown Overlay */}
@@ -880,14 +880,24 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                   </div>
                 </div>
                 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:bg-white/20 rounded-full w-10 h-10"
-                  onClick={() => toast.info('Trung tâm trợ giúp đang được phát triển')}
-                >
-                  <HelpCircle className="w-5 h-5" />
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/20 rounded-full w-10 h-10"
+                    onClick={() => toast.info('Trung tâm trợ giúp đang được phát triển')}
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/20 rounded-full w-10 h-10"
+                    onClick={handleClose}
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
               </div>
 
               {/* Video Preview */}
