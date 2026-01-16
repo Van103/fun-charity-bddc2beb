@@ -130,6 +130,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const [streamDescription, setStreamDescription] = useState("");
   const [audience, setAudience] = useState<AudienceType>('public');
   const [showCountdown, setShowCountdown] = useState(false);
+  const [isGoingLive, setIsGoingLive] = useState(false); // Prevent double click
   
   // Live states
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
@@ -391,6 +392,8 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       setPeakViewers(0);
       setStreamDuration(0);
       setShareSystemAudio(false);
+      setIsGoingLive(false); // Reset going live state
+      setShowCountdown(false); // Reset countdown state
     }
     return () => {
       stopStream();
@@ -527,6 +530,14 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   }, [facingMode, activeVideoDeviceId]);
 
   const goLive = () => {
+    // Prevent double click
+    if (isGoingLive || showCountdown) {
+      console.log('[LiveStream] goLive blocked - already going live');
+      return;
+    }
+    
+    setIsGoingLive(true);
+    
     // Set default title if empty
     if (!streamTitle.trim()) {
       setStreamTitle(`${profile?.full_name || 'Người dùng'} đang phát trực tiếp`);
@@ -537,6 +548,19 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
   const handleCountdownComplete = useCallback(async () => {
     setShowCountdown(false);
+    
+    // CRITICAL: Stop preview stream BEFORE starting Agora to release camera/mic
+    console.log('[LiveStream] Stopping preview stream to release camera for Agora...');
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        console.log('[LiveStream] Stopping track:', track.kind, track.label);
+        track.stop();
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
     
     // Start Agora broadcast first to get channel name
     // Pass shareSystemAudio flag to enable system audio mixing
@@ -552,6 +576,9 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     } catch (err) {
       console.error('[LiveStream] Failed to start Agora broadcast:', err);
       toast.error('Không thể bắt đầu phát trực tiếp (Agora)');
+      setIsGoingLive(false);
+      // Restart camera preview for retry
+      startCameraPreview();
       return;
     }
     
@@ -588,9 +615,18 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     
     setPhase('live');
     setViewerCount(1);
-    startRecording();
+    // Note: Recording is disabled when using Agora - would need Agora Cloud Recording
+    // startRecording(); 
     toast.success("🔴 Bắt đầu phát trực tiếp!");
-  }, [agoraLive, profile, streamTitle, streamDescription, shareSystemAudio, isDesktop, startRecording]);
+  }, [agoraLive, profile, streamTitle, streamDescription, shareSystemAudio, isDesktop, startRecording, startCameraPreview]);
+  
+  // Play Agora local video when live phase starts
+  useEffect(() => {
+    if (phase === 'live' && agoraVideoContainerRef.current) {
+      console.log('[LiveStream] Playing Agora local video in container');
+      agoraLive.playLocalVideo(agoraVideoContainerRef.current);
+    }
+  }, [phase, agoraLive]);
 
   const handleGiftSent = (gift: GiftType) => {
     const animationId = Date.now().toString() + Math.random();
@@ -787,14 +823,12 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       <DialogContent hideCloseButton className="max-w-[100vw] md:max-w-4xl h-[100vh] md:h-[90vh] p-0 overflow-hidden bg-black border-0 rounded-none md:rounded-lg">
         <div className="relative w-full h-full flex flex-col">
           
-          {/* Countdown Overlay */}
-          <AnimatePresence>
-            {showCountdown && (
-              <LiveStreamCountdown 
-                onComplete={handleCountdownComplete} 
-              />
-            )}
-          </AnimatePresence>
+          {/* Countdown Overlay - No AnimatePresence to prevent double render */}
+          {showCountdown && (
+            <LiveStreamCountdown 
+              onComplete={handleCountdownComplete} 
+            />
+          )}
           
           {/* Setup Phase - Facebook-like UI */}
           {phase === 'setup' && (
@@ -1247,9 +1281,9 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 <Button
                   onClick={goLive}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-base font-medium rounded-xl disabled:opacity-50"
-                  disabled={!isCameraReady}
+                  disabled={!isCameraReady || isGoingLive || showCountdown}
                 >
-                  {isCameraReady ? 'Phát trực tiếp' : 'Đang kết nối camera...'}
+                  {isGoingLive || showCountdown ? 'Đang bắt đầu...' : (isCameraReady ? 'Phát trực tiếp' : 'Đang kết nối camera...')}
                 </Button>
               </div>
             </>
@@ -1307,14 +1341,12 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 </div>
               </div>
 
-              {/* Video Preview with Filter */}
+              {/* Video Preview with Filter - Use Agora container for live */}
               <div className="flex-1 relative bg-black overflow-hidden">
-                <video
-                  ref={setVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
+                {/* Agora local video container */}
+                <div 
+                  ref={agoraVideoContainerRef}
+                  className="w-full h-full"
                   style={{ 
                     transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
                     filter: getCurrentFilter()
