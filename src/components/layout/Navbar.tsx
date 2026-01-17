@@ -208,21 +208,22 @@ export function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border/50 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-lg border-b border-border/40 shadow-sm pt-safe">
       <div className="container mx-auto px-2 sm:px-4">
-        <div className="flex items-center justify-between h-14 sm:h-16">
+        <div className="flex items-center justify-between h-12 sm:h-14 md:h-16">
           {/* Left Section: Logo + Search */}
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {/* Logo - Circular, text shows on hover */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link to="/social" className="flex items-center">
+                <Link to="/social" className="flex items-center touch-manipulation">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <Logo size="md" showText={false} />
+                    <Logo size="sm" showText={false} className="sm:hidden" />
+                    <Logo size="md" showText={false} className="hidden sm:block" />
                   </motion.div>
                 </Link>
               </TooltipTrigger>
