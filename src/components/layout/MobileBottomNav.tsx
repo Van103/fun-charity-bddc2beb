@@ -106,75 +106,79 @@ export function MobileBottomNav() {
   }, []);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border md:hidden safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-1">
-        {mainNavItems.map((item) => {
-          const isActive = location.pathname === item.href;
-          const Icon = item.icon;
-          const isChat = item.labelKey === "menu.chat";
-          
-          return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className="flex flex-col items-center justify-center flex-1 h-full py-1.5 relative"
-            >
-              {/* Active indicator line - like Facebook */}
-              <AnimatePresence>
-                {isActive && (
-                  <motion.div 
-                    className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-primary"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    exit={{ scaleX: 0 }}
-                    layoutId="activeIndicator"
-                  />
-                )}
-              </AnimatePresence>
-              
-              <motion.div
-                whileTap={{ scale: 0.9 }}
-                className="p-1.5 rounded-xl transition-colors relative"
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-xl border-t border-border/50 md:hidden shadow-[0_-2px_20px_-5px_hsl(var(--primary)/0.15)]">
+      {/* Safe area padding for iOS home indicator */}
+      <div className="pb-safe">
+        <div className="flex items-center justify-around h-14 px-1">
+          {mainNavItems.map((item) => {
+            const isActive = location.pathname === item.href;
+            const Icon = item.icon;
+            const isChat = item.labelKey === "menu.chat";
+            
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className="flex flex-col items-center justify-center flex-1 h-full py-1 relative touch-manipulation"
               >
-                <Icon 
-                  className={`w-6 h-6 transition-colors relative z-10 ${
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  }`}
-                  fill={isActive ? "hsl(var(--primary))" : "none"}
-                  strokeWidth={isActive ? 0 : 2}
-                />
+                {/* Active indicator line - like Facebook */}
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.div 
+                      className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-primary"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      exit={{ scaleX: 0 }}
+                      layoutId="activeIndicator"
+                    />
+                  )}
+                </AnimatePresence>
                 
-                {/* Unread badge for Chat icon */}
-                {isChat && unreadCount > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center px-1 z-20"
-                  >
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </motion.span>
-                )}
-              </motion.div>
-              <span className={`text-[10px] mt-0.5 font-medium truncate max-w-[56px] transition-colors ${
-                isActive ? "text-primary" : "text-muted-foreground"
-              }`}>
-                {t(item.labelKey)}
-              </span>
-            </Link>
-          );
-        })}
+                <motion.div
+                  whileTap={{ scale: 0.85 }}
+                  className={`p-1.5 rounded-xl transition-all relative ${
+                    isActive ? "bg-primary/10" : ""
+                  }`}
+                >
+                  <Icon 
+                    className={`w-5 h-5 transition-colors relative z-10 ${
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                    fill={isActive ? "hsl(var(--primary))" : "none"}
+                    strokeWidth={isActive ? 0 : 2}
+                  />
+                  
+                  {/* Unread badge for Chat icon */}
+                  {isChat && unreadCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 min-w-[16px] h-[16px] bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full flex items-center justify-center px-1 z-20"
+                    >
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </motion.span>
+                  )}
+                </motion.div>
+                <span className={`text-[9px] mt-0.5 font-medium truncate max-w-[52px] transition-colors leading-tight ${
+                  isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                }`}>
+                  {t(item.labelKey)}
+                </span>
+              </Link>
+            );
+          })}
 
         {/* Menu Button with Sheet */}
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <SheetTrigger asChild>
             <motion.button 
-              whileTap={{ scale: 0.9 }}
-              className="flex flex-col items-center justify-center flex-1 h-full py-1.5"
+              whileTap={{ scale: 0.85 }}
+              className="flex flex-col items-center justify-center flex-1 h-full py-1 touch-manipulation"
             >
               <div className="p-1.5 rounded-xl">
-                <Menu className="w-6 h-6 text-muted-foreground" />
+                <Menu className="w-5 h-5 text-muted-foreground" />
               </div>
-              <span className="text-[10px] mt-0.5 font-medium text-muted-foreground">
+              <span className="text-[9px] mt-0.5 font-medium text-muted-foreground leading-tight">
                 {t("common.menu")}
               </span>
             </motion.button>
@@ -332,6 +336,7 @@ export function MobileBottomNav() {
             </ScrollArea>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </nav>
   );

@@ -116,8 +116,8 @@ export default function SocialFeed() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="pt-16 sm:pt-20 flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-secondary" />
+        <div className="pt-14 sm:pt-16 md:pt-20 flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-b-2 border-secondary" />
         </div>
         <MobileBottomNav />
       </div>
@@ -134,9 +134,9 @@ export default function SocialFeed() {
       <div className="min-h-screen bg-background">
         <Navbar />
 
-        <main className="pt-14 sm:pt-16 pb-20 md:pb-8">
-          <div className="container mx-auto px-0 sm:px-4">
-            <div className="flex gap-4 lg:gap-6">
+        <main className="pt-12 sm:pt-14 md:pt-16 pb-20 md:pb-8">
+          <div className="container mx-auto px-0 sm:px-2 md:px-4">
+            <div className="flex gap-2 md:gap-4 lg:gap-6">
               {/* Left Sidebar - Hidden on mobile/tablet */}
               <div className="hidden lg:block h-[calc(100vh-5rem)] sticky top-16">
                 <LeftSidebar profile={profile} />

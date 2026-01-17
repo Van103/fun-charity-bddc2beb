@@ -269,41 +269,44 @@ const Auth = () => {
   };
 
   return (
-    <main className="min-h-screen bg-primary relative overflow-hidden">
+    <main className="min-h-screen bg-primary relative overflow-hidden safe-area-inset">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(43_55%_52%_/_0.15),_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_hsl(275_60%_30%_/_0.3),_transparent_50%)]" />
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 relative z-10 min-h-screen flex flex-col">
+        {/* Header - Compact on mobile */}
+        <div className="flex items-center justify-between mb-4 sm:mb-8">
           <Link to="/">
-            <Logo size="md" />
+            <Logo size="sm" className="sm:hidden" />
+            <Logo size="md" className="hidden sm:block" />
           </Link>
           <Link to="/">
-            <Button variant="ghost" className="text-primary-foreground hover:bg-primary-light">
-              <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
-              {t("auth.backToHome")}
+            <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-light text-xs sm:text-sm px-2 sm:px-4">
+              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 rotate-180 mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">{t("auth.backToHome")}</span>
+              <span className="xs:hidden">{t("common.home")}</span>
             </Button>
           </Link>
         </div>
 
-        <div className="max-w-md mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-8 backdrop-blur-xl bg-card/95 luxury-border"
-          >
+        <div className="flex-1 flex items-start sm:items-center justify-center pb-8">
+          <div className="w-full max-w-md">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card p-4 sm:p-8 backdrop-blur-xl bg-card/95 luxury-border rounded-2xl sm:rounded-3xl"
+            >
             {/* Title */}
-            <div className="text-center mb-6">
-              <Badge variant="gold" className="mb-4">
-                <Sparkles className="w-3.5 h-3.5 mr-1" />
+            <div className="text-center mb-4 sm:mb-6">
+              <Badge variant="gold" className="mb-3 sm:mb-4 text-xs sm:text-sm">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
                 {t("auth.joinFunCharity")}
               </Badge>
-              <h1 className="font-display text-2xl font-bold mb-2">
+              <h1 className="font-display text-xl sm:text-2xl font-bold mb-1.5 sm:mb-2">
                 {activeTab === "login" ? t("auth.welcomeBack") : t("auth.createAccount")}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {activeTab === "login"
                   ? t("auth.loginSubtitle")
                   : t("auth.signupSubtitle")}
@@ -311,12 +314,12 @@ const Auth = () => {
               
               {/* Referral Bonus Banner */}
               {effectiveReferralCode && activeTab === "signup" && (
-                <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
-                  <div className="flex items-center justify-center gap-2 text-green-600">
-                    <Gift className="w-5 h-5" />
-                    <span className="font-semibold">🎁 Bạn được tặng 50,000 Camly Coin khi đăng ký!</span>
+                <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-green-600">
+                    <Gift className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-semibold text-xs sm:text-sm">🎁 Bạn được tặng 50,000 Camly Coin!</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                     Mã giới thiệu: <strong className="text-green-600">{effectiveReferralCode}</strong>
                   </p>
                 </div>
@@ -325,11 +328,11 @@ const Auth = () => {
 
             {/* User Type Selection (for signup) */}
             {activeTab === "signup" && (
-              <div className="mb-6">
-                <Label className="text-sm text-muted-foreground mb-3 block">
+              <div className="mb-4 sm:mb-6">
+                <Label className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 block">
                   {t("auth.joinAsRole")}
                 </Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   {[
                     { type: "donor", icon: Heart, labelKey: "auth.donor" },
                     { type: "volunteer", icon: Users, labelKey: "auth.volunteer" },
@@ -341,19 +344,19 @@ const Auth = () => {
                         key={option.type}
                         type="button"
                         onClick={() => setUserType(option.type as typeof userType)}
-                        className={`p-3 rounded-xl border-2 transition-all ${
+                        className={`p-2 sm:p-3 rounded-lg sm:rounded-xl border-2 transition-all touch-manipulation ${
                           userType === option.type
                             ? "border-secondary bg-secondary/10"
                             : "border-border hover:border-secondary/50"
                         }`}
                       >
                         <Icon
-                          className={`w-5 h-5 mx-auto mb-1 ${
+                          className={`w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-0.5 sm:mb-1 ${
                             userType === option.type ? "text-secondary" : "text-muted-foreground"
                           }`}
                         />
                         <span
-                          className={`text-xs ${
+                          className={`text-[10px] sm:text-xs block ${
                             userType === option.type ? "text-secondary font-medium" : "text-muted-foreground"
                           }`}
                         >
@@ -752,10 +755,11 @@ const Auth = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-center mt-6 text-primary-foreground/60 text-sm"
+            className="text-center mt-4 sm:mt-6 text-primary-foreground/60 text-xs sm:text-sm"
           >
             <p>{t("auth.tagline")}</p>
           </motion.div>
+          </div>
         </div>
       </div>
     </main>
