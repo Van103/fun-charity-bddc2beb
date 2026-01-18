@@ -1719,11 +1719,14 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          blocked_at: string | null
+          blocked_reason: string | null
           cover_url: string | null
           created_at: string | null
           email: string | null
           full_name: string | null
           id: string
+          is_blocked: boolean | null
           is_verified: boolean | null
           reputation_score: number | null
           role: Database["public"]["Enums"]["user_role"] | null
@@ -1736,11 +1739,14 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           cover_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          is_blocked?: boolean | null
           is_verified?: boolean | null
           reputation_score?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
@@ -1753,11 +1759,14 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           cover_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
+          is_blocked?: boolean | null
           is_verified?: boolean | null
           reputation_score?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
