@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "pwa-192x192.png", "pwa-512x512.png", "apple-touch-icon.png"],
       manifest: {
-        name: "FUN Charity",
-        short_name: "FUN",
+        name: "FUN Charity - Web3 Social Charity",
+        short_name: "FUN Charity",
         description: "Web3 Social Charity Platform - Transparent Giving",
         theme_color: "#7c3aed",
         background_color: "#0a0a0f",
@@ -31,11 +31,19 @@ export default defineConfig(({ mode }) => ({
             src: "/pwa-192x192.png",
             sizes: "192x192",
             type: "image/png",
+            purpose: "any",
           },
           {
             src: "/pwa-512x512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/apple-touch-icon.png",
+            sizes: "180x180",
+            type: "image/png",
+            purpose: "any",
           },
           {
             src: "/pwa-512x512.png",
