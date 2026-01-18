@@ -15,14 +15,15 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
      VitePWA({
        registerType: "autoUpdate",
+       manifestFilename: "manifest-v4.webmanifest",
        includeAssets: [
-         "funcharity-favicon-v3.png",
-         "funcharity-icon-192-v3.png",
-         "funcharity-icon-512-v3.png",
-         "funcharity-apple-touch-icon-v3.png",
+         "funcharity-favicon-v4.png",
+         "funcharity-icon-192-v4.png",
+         "funcharity-icon-512-v4.png",
+         "funcharity-apple-touch-icon-v4.png",
        ],
        manifest: {
-         id: "/?pwa=v3",
+         id: "/?pwa=v4",
          name: "FUN Charity",
          short_name: "FUN Charity",
          description: "Web3 Social Charity Platform - Transparent Giving",
@@ -31,37 +32,39 @@ export default defineConfig(({ mode }) => ({
          display: "standalone",
          orientation: "portrait",
          scope: "/",
-         start_url: "/?pwa=v3",
+         start_url: "/?pwa=v4",
          icons: [
            {
-             src: "/funcharity-icon-192-v3.png",
+             src: "/funcharity-icon-192-v4.png",
              sizes: "192x192",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512-v3.png",
+             src: "/funcharity-icon-512-v4.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-apple-touch-icon-v3.png",
+             src: "/funcharity-apple-touch-icon-v4.png",
              sizes: "180x180",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512-v3.png",
+             src: "/funcharity-icon-512-v4.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "maskable",
            },
          ],
+         related_applications: [],
+         prefer_related_applications: false,
        },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        maximumFileSizeToCacheInBytes: 7 * 1024 * 1024, // 7 MiB - increased for mapbox-gl
+        maximumFileSizeToCacheInBytes: 7 * 1024 * 1024,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

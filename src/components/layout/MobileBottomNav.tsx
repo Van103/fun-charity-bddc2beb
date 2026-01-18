@@ -238,7 +238,7 @@ export function MobileBottomNav() {
                       >
                         <div className="p-3 rounded-full bg-primary/20">
                           <img
-                            src="/funcharity-icon-192-v3.png"
+                            src="/funcharity-icon-192-v4.png"
                             alt="Biểu tượng FUN Charity"
                             className="w-6 h-6 object-contain"
                           />
@@ -260,7 +260,7 @@ export function MobileBottomNav() {
                       >
                         <div className="p-3 rounded-full bg-primary/20">
                           <img
-                            src="/funcharity-icon-192-v3.png"
+                            src="/funcharity-icon-192-v4.png"
                             alt="Biểu tượng FUN Charity"
                             className="w-6 h-6 object-contain"
                           />
