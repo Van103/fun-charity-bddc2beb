@@ -13,46 +13,51 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.png", "pwa-192x192.png", "pwa-512x512.png", "apple-touch-icon.png"],
-      manifest: {
-        name: "FUN Charity - Web3 Social Charity",
-        short_name: "FUN Charity",
-        description: "Web3 Social Charity Platform - Transparent Giving",
-        theme_color: "#7c3aed",
-        background_color: "#0a0a0f",
-        display: "standalone",
-        orientation: "portrait",
-        scope: "/",
-        start_url: "/",
-        icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "any",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any",
-          },
-          {
-            src: "/apple-touch-icon.png",
-            sizes: "180x180",
-            type: "image/png",
-            purpose: "any",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
-        ],
-      },
+     VitePWA({
+       registerType: "autoUpdate",
+       includeAssets: [
+         "funcharity-favicon.png",
+         "funcharity-icon-192.png",
+         "funcharity-icon-512.png",
+         "funcharity-apple-touch-icon.png",
+       ],
+       manifest: {
+         name: "FUN Charity - Web3 Social Charity",
+         short_name: "FUN Charity",
+         description: "Web3 Social Charity Platform - Transparent Giving",
+         theme_color: "#7c3aed",
+         background_color: "#0a0a0f",
+         display: "standalone",
+         orientation: "portrait",
+         scope: "/",
+         start_url: "/",
+         icons: [
+           {
+             src: "/funcharity-icon-192.png",
+             sizes: "192x192",
+             type: "image/png",
+             purpose: "any",
+           },
+           {
+             src: "/funcharity-icon-512.png",
+             sizes: "512x512",
+             type: "image/png",
+             purpose: "any",
+           },
+           {
+             src: "/funcharity-apple-touch-icon.png",
+             sizes: "180x180",
+             type: "image/png",
+             purpose: "any",
+           },
+           {
+             src: "/funcharity-icon-512.png",
+             sizes: "512x512",
+             type: "image/png",
+             purpose: "maskable",
+           },
+         ],
+       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         maximumFileSizeToCacheInBytes: 7 * 1024 * 1024, // 7 MiB - increased for mapbox-gl
