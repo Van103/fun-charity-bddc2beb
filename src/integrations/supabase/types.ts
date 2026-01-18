@@ -1721,6 +1721,7 @@ export type Database = {
           bio: string | null
           cover_url: string | null
           created_at: string | null
+          email: string | null
           full_name: string | null
           id: string
           is_verified: boolean | null
@@ -1737,6 +1738,7 @@ export type Database = {
           bio?: string | null
           cover_url?: string | null
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           id?: string
           is_verified?: boolean | null
@@ -1753,6 +1755,7 @@ export type Database = {
           bio?: string | null
           cover_url?: string | null
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           id?: string
           is_verified?: boolean | null

@@ -51,6 +51,7 @@ import {
   Star,
   UserCog,
   HandHeart,
+  Mail,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,6 +66,7 @@ interface UserProfile {
   full_name: string | null;
   avatar_url: string | null;
   bio: string | null;
+  email: string | null;
   role: string | null;
   is_verified: boolean | null;
   reputation_score: number | null;
@@ -110,9 +112,9 @@ export default function AdminUsers() {
         .from("profiles")
         .select("*", { count: "exact" });
 
-      // Apply search filter
+      // Apply search filter (search by name or email)
       if (searchQuery) {
-        query = query.ilike("full_name", `%${searchQuery}%`);
+        query = query.or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
       }
 
       // Apply role filter - cast to the proper type
@@ -325,7 +327,7 @@ export default function AdminUsers() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Tìm kiếm theo tên..."
+              placeholder="Tìm kiếm theo tên hoặc email..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -366,6 +368,7 @@ export default function AdminUsers() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Người dùng</TableHead>
+                    <TableHead className="hidden sm:table-cell">Email</TableHead>
                     <TableHead>Vai trò</TableHead>
                     <TableHead className="hidden md:table-cell">Xác minh</TableHead>
                     <TableHead className="hidden md:table-cell">Điểm uy tín</TableHead>
@@ -389,10 +392,18 @@ export default function AdminUsers() {
                             <p className="font-medium text-foreground">
                               {user.full_name || "Chưa đặt tên"}
                             </p>
-                            <p className="text-xs text-muted-foreground truncate max-w-[150px]">
-                              {user.user_id}
+                            <p className="text-xs text-muted-foreground truncate max-w-[150px] sm:hidden">
+                              {user.email || user.user_id}
                             </p>
                           </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <div className="flex items-center gap-1.5 text-sm">
+                          <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="truncate max-w-[200px]">
+                            {user.email || "-"}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>{getRoleBadge(user.role)}</TableCell>
@@ -524,7 +535,10 @@ export default function AdminUsers() {
                   <h3 className="text-lg font-semibold text-foreground">
                     {selectedUser.full_name || "Chưa đặt tên"}
                   </h3>
-                  <p className="text-sm text-muted-foreground">{selectedUser.user_id}</p>
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <Mail className="w-4 h-4" />
+                    <span>{selectedUser.email || "Chưa có email"}</span>
+                  </div>
                   <div className="mt-1">{getRoleBadge(selectedUser.role)}</div>
                 </div>
               </div>
