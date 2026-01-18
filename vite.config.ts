@@ -16,10 +16,10 @@ export default defineConfig(({ mode }) => ({
      VitePWA({
        registerType: "autoUpdate",
        includeAssets: [
-         "funcharity-favicon.png",
-         "funcharity-icon-192.png",
-         "funcharity-icon-512.png",
-         "funcharity-apple-touch-icon.png",
+         "funcharity-favicon-v2.png",
+         "funcharity-icon-192-v2.png",
+         "funcharity-icon-512-v2.png",
+         "funcharity-apple-touch-icon-v2.png",
        ],
        manifest: {
          name: "FUN Charity - Web3 Social Charity",
@@ -33,25 +33,25 @@ export default defineConfig(({ mode }) => ({
          start_url: "/",
          icons: [
            {
-             src: "/funcharity-icon-192.png",
+             src: "/funcharity-icon-192-v2.png",
              sizes: "192x192",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512.png",
+             src: "/funcharity-icon-512-v2.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-apple-touch-icon.png",
+             src: "/funcharity-apple-touch-icon-v2.png",
              sizes: "180x180",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512.png",
+             src: "/funcharity-icon-512-v2.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "maskable",
