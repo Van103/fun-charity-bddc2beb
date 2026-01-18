@@ -16,13 +16,14 @@ export default defineConfig(({ mode }) => ({
      VitePWA({
        registerType: "autoUpdate",
        includeAssets: [
-         "funcharity-favicon-v2.png",
-         "funcharity-icon-192-v2.png",
-         "funcharity-icon-512-v2.png",
-         "funcharity-apple-touch-icon-v2.png",
+         "funcharity-favicon-v3.png",
+         "funcharity-icon-192-v3.png",
+         "funcharity-icon-512-v3.png",
+         "funcharity-apple-touch-icon-v3.png",
        ],
        manifest: {
-         name: "FUN Charity - Web3 Social Charity",
+         id: "/?pwa=v3",
+         name: "FUN Charity",
          short_name: "FUN Charity",
          description: "Web3 Social Charity Platform - Transparent Giving",
          theme_color: "#7c3aed",
@@ -30,28 +31,28 @@ export default defineConfig(({ mode }) => ({
          display: "standalone",
          orientation: "portrait",
          scope: "/",
-         start_url: "/",
+         start_url: "/?pwa=v3",
          icons: [
            {
-             src: "/funcharity-icon-192-v2.png",
+             src: "/funcharity-icon-192-v3.png",
              sizes: "192x192",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512-v2.png",
+             src: "/funcharity-icon-512-v3.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-apple-touch-icon-v2.png",
+             src: "/funcharity-apple-touch-icon-v3.png",
              sizes: "180x180",
              type: "image/png",
              purpose: "any",
            },
            {
-             src: "/funcharity-icon-512-v2.png",
+             src: "/funcharity-icon-512-v3.png",
              sizes: "512x512",
              type: "image/png",
              purpose: "maskable",
