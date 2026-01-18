@@ -77,7 +77,7 @@ export function InstallAppBanner() {
             <div className="bg-gradient-to-r from-primary/90 to-primary backdrop-blur-lg rounded-xl shadow-lg shadow-primary/20 p-3 flex items-center gap-3">
               <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg">
                 <img
-                  src="/funcharity-icon-192-v3.png"
+                  src="/funcharity-icon-192-v4.png"
                   alt="Biểu tượng FUN Charity"
                   className="w-5 h-5 object-contain"
                 />

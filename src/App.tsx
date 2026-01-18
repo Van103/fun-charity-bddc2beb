@@ -59,7 +59,7 @@ const AdminAngelKnowledge = lazy(() => import("./pages/AdminAngelKnowledge"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const RecipientProfile = lazy(() => import("./pages/RecipientProfile"));
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
-
+const PwaDebug = lazy(() => import("./pages/PwaDebug"));
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -209,6 +209,7 @@ const App = () => (
                       <Route path="/admin/moderation-logs" element={<ModerationLogs />} />
                       <Route path="/volunteer" element={<Volunteer />} />
                       <Route path="/install" element={<Install />} />
+                      <Route path="/pwa-debug" element={<PwaDebug />} />
                       <Route path="/live/:streamId" element={<LiveStream />} />
                       <Route path="/honor-board" element={<HonorBoard />} />
                       <Route path="/wallet" element={<Wallet />} />

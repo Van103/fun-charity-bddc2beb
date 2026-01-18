@@ -86,7 +86,7 @@ export default function Install() {
           >
             <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/60 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-primary/30">
               <img
-                src="/funcharity-icon-192-v3.png"
+                src="/funcharity-icon-192-v4.png"
                 alt="Biểu tượng ứng dụng FUN Charity"
                 className="w-12 h-12 object-contain"
               />
