@@ -77,6 +77,7 @@ export interface FeedFilters {
   location?: string;
   search?: string;
   userId?: string;
+  includeOwnPending?: boolean; // Allow users to see their own pending posts
 }
 
 const PAGE_SIZE = 10;
@@ -124,6 +125,28 @@ export function useInfiniteFeedPosts(filters?: FeedFilters) {
   const query = useInfiniteQuery({
     queryKey: ["feed-posts-infinite", filters],
     queryFn: async ({ pageParam = 0 }) => {
+      // If includeOwnPending is true, we need to get both approved posts and the user's pending posts
+      if (filters?.includeOwnPending && filters?.userId) {
+        // For own profile: get all posts (including pending) for this user
+        const baseQuery = supabase
+          .from("feed_posts")
+          .select("*")
+          .eq("is_active", true)
+          .eq("user_id", filters.userId)
+          .order("created_at", { ascending: false })
+          .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+
+        const { data, error } = await baseQuery;
+        if (error) throw error;
+        
+        const postsWithData = await fetchPostsWithData(data || []);
+        return {
+          posts: postsWithData,
+          nextPage: data && data.length === PAGE_SIZE ? pageParam + 1 : undefined,
+        };
+      }
+      
+      // Default: only approved posts
       let baseQuery = supabase
         .from("feed_posts")
         .select("*")

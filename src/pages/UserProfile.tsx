@@ -65,7 +65,7 @@ export default function UserProfile() {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteFeedPosts({ userId: profile?.user_id });
+  } = useInfiniteFeedPosts({ userId: profile?.user_id, includeOwnPending: true });
 
   // Pull to refresh handler
   const handleRefresh = useCallback(async () => {
@@ -159,12 +159,16 @@ export default function UserProfile() {
               <div className="relative h-[200px] sm:h-[280px] md:h-[350px] bg-gradient-to-r from-secondary/30 to-primary/30 overflow-hidden rounded-b-lg">
                 {profile?.cover_url ? (
                   <img 
-                    src={profile.cover_url} 
+                    src={`${profile.cover_url}?t=${new Date(profile.cover_url).getTime() || Date.now()}`} 
                     alt="Cover" 
                     className="w-full h-full object-cover cursor-pointer hover:brightness-90 transition-all"
                     onClick={() => {
                       setLightboxType("cover");
                       setLightboxOpen(true);
+                    }}
+                    onError={(e) => {
+                      // Fallback to gradient on error
+                      e.currentTarget.style.display = 'none';
                     }}
                   />
                 ) : (
@@ -199,7 +203,14 @@ export default function UserProfile() {
                         }
                       }}
                     >
-                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.full_name || "Avatar"} />
+                      <AvatarImage 
+                        src={profile?.avatar_url ? `${profile.avatar_url}?t=${Date.now()}` : undefined} 
+                        alt={profile?.full_name || "Avatar"}
+                        onError={(e) => {
+                          // Hide broken image
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                       <AvatarFallback className="bg-secondary/20 text-5xl">
                         <UserIcon className="w-20 h-20 text-secondary" />
                       </AvatarFallback>

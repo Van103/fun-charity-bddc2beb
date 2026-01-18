@@ -105,7 +105,8 @@ const Auth = () => {
 
     setLoading(true);
     
-    const redirectUrl = `${window.location.origin}/auth`;
+    // Redirect to reset-password page after clicking the email link
+    const redirectUrl = `${window.location.origin}/reset-password`;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: redirectUrl,

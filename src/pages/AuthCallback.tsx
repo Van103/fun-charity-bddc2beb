@@ -11,6 +11,15 @@ const AuthCallback = () => {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        // Listen for auth state changes including PASSWORD_RECOVERY
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            // User is resetting password - redirect to reset password page
+            navigate("/reset-password", { replace: true });
+            return;
+          }
+        });
+
         // Get the session - Supabase automatically handles the token exchange
         const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -41,6 +50,9 @@ const AuthCallback = () => {
           // No session, redirect to auth
           navigate("/auth", { replace: true });
         }
+
+        // Cleanup subscription
+        return () => subscription.unsubscribe();
       } catch (err) {
         console.error("Callback processing error:", err);
         navigate("/auth", { replace: true });

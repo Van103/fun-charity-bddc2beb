@@ -59,6 +59,7 @@ const AdminAngelKnowledge = lazy(() => import("./pages/AdminAngelKnowledge"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const RecipientProfile = lazy(() => import("./pages/RecipientProfile"));
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -180,6 +181,7 @@ const App = () => (
                       <Route path="/law-of-light" element={<LawOfLight />} />
                       <Route path="/auth/callback" element={<AuthCallback />} />
                       <Route path="/verify-email" element={<VerifyEmail />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/profile" element={<UserProfile />} />
                       <Route path="/user/:userId" element={<PublicProfile />} />
                       <Route path="/messages" element={<Messages />} />

@@ -61,6 +61,7 @@ interface MentionedUser {
 interface ExtendedFeedPost extends FeedPost {
   is_live_video?: boolean;
   live_viewer_count?: number;
+  moderation_status?: string;
 }
 
 interface SocialPostCardProps {
@@ -84,6 +85,8 @@ const getAvatarGradient = (name: string) => {
 export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
   const isLiveVideo = (post as ExtendedFeedPost).is_live_video;
   const liveViewerCount = (post as ExtendedFeedPost).live_viewer_count || 0;
+  const moderationStatus = (post as ExtendedFeedPost).moderation_status;
+  const isPending = moderationStatus === "pending";
   const [showComments, setShowComments] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
@@ -212,8 +215,16 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
       animate={{ opacity: 1, y: 0 }}
       className={`mobile-card overflow-hidden transition-all duration-500 ${
         isHighlighted ? "ring-4 ring-primary/50 shadow-lg shadow-primary/20" : ""
-      }`}
+      } ${isPending ? "opacity-80 border-2 border-dashed border-yellow-500/50" : ""}`}
     >
+      {/* Pending moderation badge */}
+      {isPending && (
+        <div className="px-3 sm:px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20">
+          <Badge variant="outline" className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/30 text-xs">
+            ⏳ Đang chờ duyệt
+          </Badge>
+        </div>
+      )}
       {/* Header - Mobile optimized padding */}
       <div className="p-3 sm:p-4 pb-2 sm:pb-3">
         <div className="flex items-start justify-between gap-2">
