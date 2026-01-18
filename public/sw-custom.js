@@ -19,8 +19,8 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: data.body || "Bạn có thông báo mới",
-    icon: data.icon || "/pwa-192x192.png",
-    badge: "/pwa-192x192.png",
+    icon: data.icon || "/funcharity-icon-192-v2.png",
+    badge: "/funcharity-icon-192-v2.png",
     vibrate: [200, 100, 200, 100, 200],
     tag: data.tag || "default",
     requireInteraction: true,

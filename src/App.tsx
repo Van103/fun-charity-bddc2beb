@@ -73,6 +73,11 @@ const queryClient = new QueryClient({
 function BackgroundWithVariant() {
   const location = useLocation();
   
+  // Hide background effects on Law of Light page (it has its own white background)
+  if (location.pathname === "/law-of-light") {
+    return null;
+  }
+  
   const getVariant = () => {
     if (location.pathname === "/") return "home";
     if (location.pathname === "/profile") return "profile";
@@ -81,6 +86,17 @@ function BackgroundWithVariant() {
   };
 
   return <AnimatedBackground variant={getVariant()} intensity="medium" />;
+}
+
+// Conditionally render EnergyBokeh (hide on Law of Light page)
+function ConditionalEnergyBokeh() {
+  const location = useLocation();
+  
+  if (location.pathname === "/law-of-light") {
+    return null;
+  }
+  
+  return <EnergyBokeh />;
 }
 
 // Global incoming call listener component
@@ -159,7 +175,7 @@ const App = () => (
                 <FlyingAngel />
                 <BrowserRouter>
                   <BackgroundWithVariant />
-                  <EnergyBokeh />
+                  <ConditionalEnergyBokeh />
                   <IncomingCallListener />
                   <GlobalEmailVerificationBanner />
                   <InstallAppBanner />

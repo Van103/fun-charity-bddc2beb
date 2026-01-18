@@ -157,8 +157,8 @@ Deno.serve(async (req) => {
     const payload = {
       title: title || "FUN Charity",
       body: body || "Bạn có thông báo mới",
-      icon: callerAvatar || "/pwa-192x192.png",
-      badge: "/pwa-192x192.png",
+      icon: callerAvatar || "/funcharity-icon-192-v2.png",
+      badge: "/funcharity-icon-192-v2.png",
       tag: callId || "notification",
       url: url || "/",
       callId,
