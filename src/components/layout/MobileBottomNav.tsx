@@ -25,7 +25,6 @@ import {
   LayoutDashboard,
   Star,
   ExternalLink,
-  Download,
 } from "lucide-react";
 import { useInstallPWA } from "@/hooks/useInstallPWA";
 import funProfileLogo from "@/assets/fun-profile-logo.webp";
@@ -238,7 +237,11 @@ export function MobileBottomNav() {
                         className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all"
                       >
                         <div className="p-3 rounded-full bg-primary/20">
-                          <Download className="w-6 h-6 text-primary" />
+                          <img
+                            src="/funcharity-icon-192-v3.png"
+                            alt="Biểu tượng FUN Charity"
+                            className="w-6 h-6 object-contain"
+                          />
                         </div>
                         <div>
                           <p className="font-medium">{t("install.installApp") || "Cài đặt FUN Charity"}</p>
@@ -256,7 +259,11 @@ export function MobileBottomNav() {
                         className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all text-left"
                       >
                         <div className="p-3 rounded-full bg-primary/20">
-                          <Download className="w-6 h-6 text-primary" />
+                          <img
+                            src="/funcharity-icon-192-v3.png"
+                            alt="Biểu tượng FUN Charity"
+                            className="w-6 h-6 object-contain"
+                          />
                         </div>
                         <div>
                           <p className="font-medium">{t("install.installApp") || "Cài đặt FUN Charity"}</p>

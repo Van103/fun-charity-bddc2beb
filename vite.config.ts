@@ -77,7 +77,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       devOptions: {
-        enabled: false,
+        enabled: mode === "development",
       },
     }),
   ].filter(Boolean),
