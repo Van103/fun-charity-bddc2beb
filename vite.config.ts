@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
       ],
       manifest: {
         name: "FUN Charity",
-        short_name: "FUN",
+        short_name: "FUN Charity",
         description: "Web3 Social Charity Platform - Transparent Giving",
         theme_color: "#7c3aed",
         background_color: "#0a0a0f",

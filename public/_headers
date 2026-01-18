@@ -1,0 +1,24 @@
+# Cloudflare Pages custom headers for PWA assets
+
+# Manifest - always revalidate
+/manifest.webmanifest
+  Cache-Control: no-cache, must-revalidate
+
+# Service Worker - always revalidate
+/sw.js
+  Cache-Control: no-cache, must-revalidate
+
+# PWA Icons - short cache, must revalidate
+/pwa-*.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Favicons - short cache, must revalidate
+/favicon*
+  Cache-Control: public, max-age=0, must-revalidate
+
+# browserconfig.xml
+/browserconfig.xml
+  Cache-Control: public, max-age=0, must-revalidate
