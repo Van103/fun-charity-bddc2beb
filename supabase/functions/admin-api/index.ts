@@ -579,6 +579,111 @@ serve(async (req) => {
       });
     }
 
+    // PATCH /admin-api/users/:id/block - Block/Unblock user
+    if (req.method === 'PATCH' && resource === 'users' && action === 'block') {
+      const userId = pathParts[2];
+      
+      if (!validateUUID(userId)) {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid user ID' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const body = await req.json();
+      const isBlocked = validateBoolean(body.is_blocked, true);
+      const reason = isBlocked ? sanitizeText(body.reason, MAX_REASON_LENGTH) : null;
+
+      const updateData: Record<string, unknown> = {
+        is_blocked: isBlocked,
+        blocked_at: isBlocked ? new Date().toISOString() : null,
+        blocked_reason: reason,
+      };
+
+      const { data: profile, error } = await adminClient
+        .from('profiles')
+        .update(updateData)
+        .eq('user_id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[admin-api] Block user error:', error);
+        throw error;
+      }
+
+      // Log admin action
+      await adminClient.from('admin_actions').insert({
+        admin_id: user.id,
+        action_type: isBlocked ? 'block_user' : 'unblock_user',
+        target_type: 'user',
+        target_id: userId,
+        details: { reason: reason },
+      });
+
+      console.log(`[admin-api] User ${userId} ${isBlocked ? 'blocked' : 'unblocked'} by ${user.id}`);
+
+      return new Response(JSON.stringify({
+        success: true,
+        data: profile,
+        message: isBlocked ? 'User blocked successfully' : 'User unblocked successfully',
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // DELETE /admin-api/users/:id - Delete user permanently
+    if (req.method === 'DELETE' && resource === 'users' && pathParts.length === 3) {
+      const userId = pathParts[2];
+      
+      if (!validateUUID(userId)) {
+        return new Response(JSON.stringify({ success: false, error: 'Invalid user ID' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Prevent admin from deleting themselves
+      if (userId === user.id) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Cannot delete your own account' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Delete the user from auth.users (this will cascade to profiles via trigger)
+      const { error: deleteAuthError } = await adminClient.auth.admin.deleteUser(userId);
+
+      if (deleteAuthError) {
+        console.error('[admin-api] Delete auth user error:', deleteAuthError);
+        throw deleteAuthError;
+      }
+
+      // Also delete profile explicitly in case cascade doesn't work
+      await adminClient.from('profiles').delete().eq('user_id', userId);
+
+      // Log admin action
+      await adminClient.from('admin_actions').insert({
+        admin_id: user.id,
+        action_type: 'delete_user',
+        target_type: 'user',
+        target_id: userId,
+        details: { deleted_at: new Date().toISOString() },
+      });
+
+      console.log(`[admin-api] User ${userId} deleted by ${user.id}`);
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'User deleted successfully',
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // ============= DONATION MANAGEMENT =============
     
     // GET /admin-api/donations - List all donations

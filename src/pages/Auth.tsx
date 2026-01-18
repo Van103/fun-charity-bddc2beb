@@ -166,14 +166,13 @@ const Auth = () => {
 
     setLoading(true);
     
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: result.data.email.trim(),
       password: result.data.password,
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
       let errorMessage = t("auth.loginError");
       if (error.message.includes("Invalid login credentials")) {
         errorMessage = t("auth.invalidCredentials");
@@ -188,6 +187,27 @@ const Auth = () => {
       return;
     }
 
+    // Check if user is blocked
+    if (authData.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_blocked, blocked_reason")
+        .eq("user_id", authData.user.id)
+        .single();
+
+      if (profile?.is_blocked) {
+        await supabase.auth.signOut();
+        setLoading(false);
+        toast({
+          title: "Tài khoản bị chặn",
+          description: profile.blocked_reason || "Tài khoản của bạn đã bị chặn. Vui lòng liên hệ quản trị viên.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setLoading(false);
     toast({
       title: t("auth.loginSuccess"),
       description: t("auth.welcomeBackMessage"),

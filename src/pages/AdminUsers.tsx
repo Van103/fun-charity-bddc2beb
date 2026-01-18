@@ -52,6 +52,10 @@ import {
   UserCog,
   HandHeart,
   Mail,
+  Ban,
+  Trash2,
+  AlertTriangle,
+  ShieldOff,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -69,6 +73,9 @@ interface UserProfile {
   email: string | null;
   role: string | null;
   is_verified: boolean | null;
+  is_blocked: boolean | null;
+  blocked_at: string | null;
+  blocked_reason: string | null;
   reputation_score: number | null;
   wallet_address: string | null;
   created_at: string | null;
@@ -85,6 +92,10 @@ export default function AdminUsers() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [blockReason, setBlockReason] = useState("");
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
 
   // Check if user is admin
   const { data: isAdmin, isLoading: checkingAdmin } = useQuery({
@@ -198,6 +209,73 @@ export default function AdminUsers() {
     },
     onError: () => {
       toast.error("Có lỗi xảy ra khi cập nhật!");
+    },
+  });
+
+  // Toggle block mutation
+  const toggleBlock = useMutation({
+    mutationFn: async ({ userId, isBlocked, reason }: { userId: string; isBlocked: boolean; reason?: string }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-api/users/${userId}/block`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ is_blocked: isBlocked, reason }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to update block status");
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success(variables.isBlocked ? "Đã chặn người dùng!" : "Đã bỏ chặn người dùng!");
+      setShowBlockDialog(false);
+      setBlockReason("");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Có lỗi xảy ra khi cập nhật!");
+    },
+  });
+
+  // Delete user mutation
+  const deleteUser = useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-api/users/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to delete user");
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-users-stats"] });
+      toast.success("Đã xoá tài khoản người dùng!");
+      setShowDeleteDialog(false);
+      setShowDetailDialog(false);
+      setDeleteConfirmName("");
+      setSelectedUser(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Có lỗi xảy ra khi xoá!");
     },
   });
 
@@ -406,7 +484,17 @@ export default function AdminUsers() {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{getRoleBadge(user.role)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {getRoleBadge(user.role)}
+                          {user.is_blocked && (
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                              <Ban className="w-3 h-3 mr-1" />
+                              Đã chặn
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {user.is_verified ? (
                           <CheckCircle className="w-5 h-5 text-green-500" />
@@ -612,6 +700,26 @@ export default function AdminUsers() {
                 )}
               </div>
 
+              {/* Block Status */}
+              {selectedUser.is_blocked && (
+                <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+                  <div className="flex items-center gap-2 text-red-400 mb-1">
+                    <Ban className="w-4 h-4" />
+                    <span className="font-medium">Tài khoản đã bị chặn</span>
+                  </div>
+                  {selectedUser.blocked_reason && (
+                    <p className="text-sm text-muted-foreground">
+                      Lý do: {selectedUser.blocked_reason}
+                    </p>
+                  )}
+                  {selectedUser.blocked_at && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Thời gian: {format(new Date(selectedUser.blocked_at), "dd/MM/yyyy HH:mm")}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex flex-col gap-3 pt-4 border-t">
                 <div className="flex items-center justify-between">
@@ -675,6 +783,63 @@ export default function AdminUsers() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Block/Unblock Button */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Chặn tài khoản</span>
+                  {selectedUser.is_blocked ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-green-500 border-green-500/30 hover:bg-green-500/10"
+                      onClick={() => {
+                        toggleBlock.mutate({
+                          userId: selectedUser.user_id,
+                          isBlocked: false,
+                        });
+                        setSelectedUser({
+                          ...selectedUser,
+                          is_blocked: false,
+                          blocked_at: null,
+                          blocked_reason: null,
+                        });
+                      }}
+                      disabled={toggleBlock.isPending}
+                    >
+                      {toggleBlock.isPending ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <ShieldOff className="w-4 h-4 mr-1" />
+                          Bỏ chặn
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-yellow-500 border-yellow-500/30 hover:bg-yellow-500/10"
+                      onClick={() => setShowBlockDialog(true)}
+                    >
+                      <Ban className="w-4 h-4 mr-1" />
+                      Chặn
+                    </Button>
+                  )}
+                </div>
+
+                {/* Delete Button */}
+                <div className="flex items-center justify-between pt-3 border-t border-red-500/20">
+                  <span className="text-sm font-medium text-red-400">Xoá tài khoản vĩnh viễn</span>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Xoá
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -682,6 +847,142 @@ export default function AdminUsers() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDetailDialog(false)}>
               Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block Confirmation Dialog */}
+      <Dialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-yellow-500">
+              <Ban className="w-5 h-5" />
+              Chặn người dùng
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-yellow-500">Bạn sắp chặn người dùng này</p>
+                  <p className="text-muted-foreground mt-1">
+                    Người dùng <strong>{selectedUser?.full_name || "Chưa đặt tên"}</strong> sẽ không thể đăng nhập vào hệ thống sau khi bị chặn.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Lý do chặn (tuỳ chọn)</label>
+              <Input
+                placeholder="Nhập lý do chặn..."
+                value={blockReason}
+                onChange={(e) => setBlockReason(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => {
+              setShowBlockDialog(false);
+              setBlockReason("");
+            }}>
+              Huỷ
+            </Button>
+            <Button
+              variant="default"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black"
+              onClick={() => {
+                if (selectedUser) {
+                  toggleBlock.mutate({
+                    userId: selectedUser.user_id,
+                    isBlocked: true,
+                    reason: blockReason || undefined,
+                  });
+                  setSelectedUser({
+                    ...selectedUser,
+                    is_blocked: true,
+                    blocked_at: new Date().toISOString(),
+                    blocked_reason: blockReason || null,
+                  });
+                }
+              }}
+              disabled={toggleBlock.isPending}
+            >
+              {toggleBlock.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Ban className="w-4 h-4 mr-2" />
+              )}
+              Xác nhận chặn
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Trash2 className="w-5 h-5" />
+              Xoá tài khoản vĩnh viễn
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-red-500">Hành động này không thể hoàn tác!</p>
+                  <p className="text-muted-foreground mt-1">
+                    Toàn bộ dữ liệu của người dùng <strong>{selectedUser?.full_name || "Chưa đặt tên"}</strong> sẽ bị xoá vĩnh viễn khỏi hệ thống.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Nhập <strong className="text-red-500">{selectedUser?.full_name || selectedUser?.email || "xác nhận"}</strong> để xác nhận xoá
+              </label>
+              <Input
+                placeholder="Nhập tên người dùng để xác nhận..."
+                value={deleteConfirmName}
+                onChange={(e) => setDeleteConfirmName(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => {
+              setShowDeleteDialog(false);
+              setDeleteConfirmName("");
+            }}>
+              Huỷ
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (selectedUser) {
+                  deleteUser.mutate(selectedUser.user_id);
+                }
+              }}
+              disabled={
+                deleteUser.isPending ||
+                deleteConfirmName !== (selectedUser?.full_name || selectedUser?.email || "xác nhận")
+              }
+            >
+              {deleteUser.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Trash2 className="w-4 h-4 mr-2" />
+              )}
+              Xoá vĩnh viễn
             </Button>
           </DialogFooter>
         </DialogContent>
